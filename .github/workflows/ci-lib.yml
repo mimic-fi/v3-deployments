@@ -1,0 +1,37 @@
+name: Deployments Lib CI
+
+env:
+  CI: true
+
+on:
+  push:
+    branches: "*"
+    paths:
+      - packages/lib/**
+  pull_request:
+    branches: "*"
+    paths:
+      - packages/lib/**
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up environment
+        uses: ./.github/actions/setup
+      - name: Lint
+        run: yarn workspace @mimic-fi/v3-deployments-lib lint
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up environment
+        uses: ./.github/actions/setup
+      - name: Build
+        run: yarn build
+      - name: Lint
+        run: yarn workspace @mimic-fi/v3-deployments-lib test

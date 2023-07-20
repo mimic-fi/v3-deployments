@@ -9,6 +9,8 @@
     "test": "yarn workspaces run test"
   },
   "workspaces": {
-    "packages": []
+    "packages": [
+      "packages/lib"
+    ]
   }
 }
