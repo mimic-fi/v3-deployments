@@ -13,7 +13,7 @@ describe(script.id, () => {
     registry = await script.deployedInstance('Registry')
   })
 
-  it('registers the authorizer in the registry correctly', async () => {
+  it('sets the protocol multisig as the owner', async () => {
     expect(await registry.owner()).to.be.equal(PROTOCOL_ADMIN.safe)
   })
 })

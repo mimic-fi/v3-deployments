@@ -52,9 +52,4 @@ const avalanche: RegistryImplementationDeployment = {
   ],
 }
 
-const localhost: RegistryImplementationDeployment = {
-  ...shared,
-  args: [dependency('core/registry/v1.0.0-beta'), dependency('core/fee-controller/v1.0.0-beta'), tokens.mainnet.WETH],
-}
-
-export default { mainnet, polygon, arbitrum, optimism, gnosis, bsc, fantom, avalanche, localhost }
+export default { mainnet, polygon, arbitrum, optimism, gnosis, bsc, fantom, avalanche }

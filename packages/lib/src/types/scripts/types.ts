@@ -14,6 +14,7 @@ export type ContractDeployment = {
 export type RegistryImplementationDeployment = ContractDeployment & {
   registry: Dependency
   stateless: boolean
+  deployerIfFail?: Account
 }
 
 export type EnvironmentDeployment = CreateEnvironmentParams & {

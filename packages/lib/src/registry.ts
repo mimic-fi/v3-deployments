@@ -16,7 +16,17 @@ export async function createRegistryImplementation(
     logger.info(`Registering ${name}...`)
     const bytecode = await script.getCreationCode(params.contract, params.args)
     const registry = await script.dependencyInstance(params.registry)
-    const tx = await script.callContract(registry, 'create', [name, bytecode, params.stateless], txParams.from)
+
+    let tx
+    try {
+      tx = await script.callContract(registry, 'create', [name, bytecode, params.stateless], txParams.from)
+    } catch (error) {
+      if (!error.message.includes('exceeds block gas limit')) throw error
+      const deployTxParams = { force: txParams.force, from: params.deployerIfFail || txParams.from }
+      const impl = await script.deployAndVerify(params.contract, params.args, deployTxParams, params.name)
+      tx = await script.callContract(registry, 'register', [name, impl.address, params.stateless], txParams.from)
+    }
+
     if (tx) {
       const event = await assertEvent(tx, 'Registered', { name })
       logger.success(`${params.contract} registered as ${name} at ${event.args.implementation}`)
