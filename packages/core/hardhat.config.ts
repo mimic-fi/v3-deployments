@@ -1,4 +1,5 @@
 import '@mimic-fi/v3-deployments-lib/dist/src/hardhat/deploy'
+import '@mimic-fi/v3-deployments-lib/dist/src/hardhat/verify'
 import '@mimic-fi/v3-helpers/dist/tests'
 import '@nomiclabs/hardhat-ethers'
 import '@nomiclabs/hardhat-waffle'
