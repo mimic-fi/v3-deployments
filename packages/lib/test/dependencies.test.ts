@@ -22,7 +22,7 @@ describe('dependencies', () => {
   })
 
   describe('solveDependency', () => {
-    const scriptA = new Script(DEPLOY_A, DIRECTORY, 'hardhat')
+    const scriptA = new Script(DEPLOY_A, DIRECTORY, 'hardhat', 'hardhat')
 
     context('when no path is given', () => {
       context('when no key is given', () => {
@@ -70,7 +70,7 @@ describe('dependencies', () => {
 
       context('when a key is given', () => {
         const dependencyB = dependency(DEPLOY_B, 'foo')
-        const scriptB = new Script(DEPLOY_B, DIRECTORY, 'hardhat')
+        const scriptB = new Script(DEPLOY_B, DIRECTORY, 'hardhat', 'hardhat')
 
         context('when the dependency does not exist', () => {
           beforeEach('save output', async () => {
@@ -117,7 +117,7 @@ describe('dependencies', () => {
 
     context('when a path is given', () => {
       context('when no key is given', () => {
-        const dependencyA = dependency('packages/lib/deploy-a')
+        const dependencyA = dependency('lib/deploy-a')
 
         context('when there is only one output key', () => {
           context('when the output is a key-value pair', () => {
@@ -155,15 +155,15 @@ describe('dependencies', () => {
 
           it('returns the existing key', async () => {
             expect(() => solveDependency(scriptA, dependencyA)).to.throw(
-              'Please specify dependency key for "packages/lib/deploy-a"'
+              'Please specify dependency key for "lib/deploy-a"'
             )
           })
         })
       })
 
       context('when a key is given', () => {
-        const dependencyB = dependency('packages/lib/deploy-b', 'foo')
-        const scriptB = new Script(DEPLOY_B, DIRECTORY, 'hardhat')
+        const dependencyB = dependency('lib/deploy-b', 'foo')
+        const scriptB = new Script(DEPLOY_B, DIRECTORY, 'hardhat', 'hardhat')
 
         context('when the dependency does not exist', () => {
           beforeEach('save output', async () => {

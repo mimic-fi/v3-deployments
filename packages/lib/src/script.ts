@@ -3,6 +3,7 @@ import {
   deploy,
   fp,
   getCreationCode,
+  getForkedNetwork,
   getSigner,
   getSigners,
   impersonate,
@@ -10,9 +11,7 @@ import {
   Libraries,
 } from '@mimic-fi/v3-helpers'
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
-import SafeApiKit from '@safe-global/api-kit'
-import Safe, { EthersAdapter } from '@safe-global/protocol-kit'
-import { BigNumber, Contract, ContractTransaction, ethers } from 'ethers'
+import { BigNumber, Contract, ContractTransaction } from 'ethers'
 import fs from 'fs'
 import { BuildInfo, HardhatRuntimeEnvironment } from 'hardhat/types'
 import path, { extname } from 'path'
@@ -21,6 +20,7 @@ import { solveDependency } from './dependencies'
 import { deployEnvironment, updateEnvironment } from './deployer'
 import logger from './logger'
 import { createRegistryImplementation } from './registry'
+import { sendSafeTransaction } from './safe'
 import {
   Account,
   Artifact,
@@ -41,7 +41,6 @@ import {
   Output,
   ReadOutputParams,
   RegistryImplementationDeployment,
-  SafeSigner,
   ScriptInput,
   TxParams,
 } from './types'
@@ -55,51 +54,35 @@ const SCRIPTS_DIRECTORY = path.resolve(process.cwd(), 'deploys')
 export class Script {
   id: string
   directory: string
-  _network?: Network
+  inputNetwork: Network
+  outputNetwork: Network
   _verifier?: Verifier
-  _outputFile?: string
+
+  static forForkedNetwork(id: string, hre: HardhatRuntimeEnvironment, verifier?: Verifier): Script {
+    return new this(id, SCRIPTS_DIRECTORY, getForkedNetwork(hre), hre.network.name, verifier)
+  }
 
   static fromHRE(id: string, hre: HardhatRuntimeEnvironment, verifier?: Verifier): Script {
-    return new this(id, SCRIPTS_DIRECTORY, hre.network.name, verifier)
+    return new this(id, SCRIPTS_DIRECTORY, hre.network.name, hre.network.name, verifier)
   }
 
-  static forTest(id: string, network: Network, outputTestFile = 'test'): Script {
-    const script = new this(id, SCRIPTS_DIRECTORY, network)
-    script.outputFile = outputTestFile
-    return script
-  }
+  constructor(id: string, directory: string, inputNetwork: Network, outputNetwork: Network, verifier?: Verifier) {
+    if (!NETWORKS.includes(inputNetwork)) throw Error(`Unknown input network ${inputNetwork}`)
+    if (!NETWORKS.includes(outputNetwork)) throw Error(`Unknown output network ${outputNetwork}`)
 
-  constructor(id: string, directory: string, network?: Network, verifier?: Verifier) {
-    if (network && !NETWORKS.includes(network)) throw Error(`Unknown network ${network}`)
     this.id = id
     this.directory = directory
-    this._network = network
+    this.inputNetwork = inputNetwork
+    this.outputNetwork = outputNetwork
     this._verifier = verifier
   }
 
-  get isTest(): boolean {
-    return this._outputFile === 'test'
-  }
-
   get isDevelopment(): boolean {
-    return this.network === 'hardhat' || this.network === 'localhost'
+    return this.outputNetwork === 'hardhat' || this.outputNetwork === 'localhost'
   }
 
   get outputFile(): string {
-    return `${this._outputFile || this.network}.json`
-  }
-
-  set outputFile(file: string) {
-    this._outputFile = file
-  }
-
-  get network(): Network {
-    if (!this._network) throw Error('A network must be specified to define a deployment script')
-    return this._network
-  }
-
-  set network(name: Network) {
-    this._network = name
+    return `${this.outputNetwork}.json`
   }
 
   async getCreationCode(contractName: string, args: Array<any> = [], libs?: Libraries): Promise<string> {
@@ -135,7 +118,7 @@ export class Script {
     return typeof output === 'string' ? output : output.address
   }
 
-  async run(from?: string, force?: boolean): Promise<void> {
+  async run({ from, force }: { from?: string; force?: boolean }): Promise<void> {
     const input = this.input() as ScriptInput
     const account = from ? { address: from } : input.from
     const txParams = { from: account, force: !!force }
@@ -172,12 +155,11 @@ export class Script {
       await tx.wait()
       return tx
     } else if (isSafeSigner(from)) {
-      const { safe, safeTransaction } = await this._proposeSafeTransaction(contract, method, args, from)
-      if (!from.execute) return
-      const executeTxResponse = await safe.executeTransaction(safeTransaction)
-      if (!executeTxResponse.transactionResponse) throw Error('Could not fetch safe transaction response')
-      await executeTxResponse.transactionResponse.wait()
-      return executeTxResponse.transactionResponse
+      if (!this.isDevelopment) return sendSafeTransaction(this, contract, method, args, from)
+      const signer = await this.getSigner(from.safe)
+      const tx = await contract.connect(signer)[method](...args)
+      await tx.wait()
+      return tx
     } else {
       throw Error('Cannot call contract from other account type than EOA or safe')
     }
@@ -228,8 +210,8 @@ export class Script {
     const signer = signers.find((signer) => signer.address == address)
     if (signer) return getSigner(address)
 
-    if (!this.isTest && !this.isDevelopment) throw Error(`Please add the PK for signer ${address}`)
-    logger.warn(`Impersonating ${address} due to dev/test env detected`)
+    if (!this.isDevelopment) throw Error(`Please add the PK for signer ${address}`)
+    logger.warn(`Impersonating ${address} due to dev env detected`)
     return impersonate(address, fp(10))
   }
 
@@ -277,21 +259,20 @@ export class Script {
     const rawInput = this.rawInput()
     const globalInput = { ...rawInput }
     NETWORKS.forEach((network) => delete globalInput[network])
-    const networkInput = rawInput[this.network] || {}
+    const networkInput = rawInput[this.inputNetwork] || {}
     return { ...globalInput, ...networkInput }
   }
 
   rawInput(): Input {
-    const networkInputPath = path.join(this.dir(), `input.${this.network}.ts`)
+    const networkInputPath = path.join(this.dir(), `input.${this.inputNetwork}.ts`)
     if (this._existsFile(networkInputPath)) return require(networkInputPath).default
     const globalInputPath = this._fileAt(this.dir(), 'input.ts')
     return require(globalInputPath).default
   }
 
-  output({ ensure = true, network, outputFile }: ReadOutputParams = {}): Output {
-    if (network) this.network = network
+  output({ ensure = true }: ReadOutputParams = {}): Output {
     const scriptOutputDir = this._dirAt(this.dir(), 'output', ensure)
-    const scriptOutputFile = this._fileAt(scriptOutputDir, outputFile || this.outputFile, ensure)
+    const scriptOutputFile = this._fileAt(scriptOutputDir, this.outputFile, ensure)
     return this._read(scriptOutputFile)
   }
 
@@ -309,33 +290,6 @@ export class Script {
     const scriptOutputDir = this._dirAt(this.dir(), 'output')
     const scriptOutputFile = this._fileAt(scriptOutputDir, this.outputFile)
     fs.unlinkSync(scriptOutputFile)
-  }
-
-  private async _proposeSafeTransaction(contract: Contract, method: string, args: any[], from: SafeSigner) {
-    const data = contract.interface.encodeFunctionData(method, args)
-    const safeTransactionData = { to: contract.address, value: '0', data }
-
-    const signer = await this.getSigner(from.signer)
-    const ethAdapter = new EthersAdapter({ ethers, signerOrProvider: signer })
-
-    const safe = await Safe.create({ ethAdapter, safeAddress: from.safe })
-    const safeTransaction = await safe.createTransaction({ safeTransactionData })
-    const safeTransactionHash = await safe.getTransactionHash(safeTransaction)
-    const senderSignature = await safe.signTransactionHash(safeTransactionHash)
-    const txServiceUrl = `https://safe-transaction.${this.network}.gnosis.io/`
-    const safeService = new SafeApiKit({ txServiceUrl, ethAdapter })
-    await safeService.proposeTransaction({
-      safeAddress: await safe.getAddress(),
-      safeTransactionData: safeTransaction.data,
-      safeTxHash: safeTransactionHash,
-      senderAddress: signer.address,
-      senderSignature: senderSignature.data,
-    })
-
-    const { safeTxHash } = await safeService.getTransaction(safeTransactionHash)
-    const signature = await safe.signTransactionHash(safeTxHash)
-    await safeService.confirmTransaction(safeTxHash, signature.data)
-    return { safe, safeTransaction }
   }
 
   private _parseRawInput(rawNetworkInput: Input): Input {

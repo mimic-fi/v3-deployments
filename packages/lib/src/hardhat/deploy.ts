@@ -15,5 +15,5 @@ task('deploy', 'Run deployment task')
     Logger.setDefaults(false, true)
     // Logger.setDefaults(false, args.verbose || false)
     const verifier = args.key ? new Verifier(hre.network, args.key) : undefined
-    await Script.fromHRE(args.id, hre, verifier).run(args.from, args.force)
+    await Script.fromHRE(args.id, hre, verifier).run({ from: args.from, force: args.force })
   })

@@ -15,13 +15,14 @@ export function solveDependency(currentScript: Script, dependency: Dependency): 
 
 function fetchDependencyScript(currentScript: Script, dependency: Dependency): Script {
   if (dependency.id.indexOf('/') < 0) {
-    return dependency.key ? new Script(dependency.id, currentScript.directory, currentScript.network) : currentScript
+    if (!dependency.key) return currentScript
+    return new Script(dependency.id, currentScript.directory, currentScript.inputNetwork, currentScript.outputNetwork)
   }
 
-  const base = dependency.id.substring(0, dependency.id.lastIndexOf('/'))
-  const id = dependency.id.substring(dependency.id.lastIndexOf('/') + 1)
-  const directory = path.join(__dirname, '../../../', base, 'deploys')
-  return new Script(id, directory, currentScript.network)
+  const base = dependency.id.substring(0, dependency.id.indexOf('/'))
+  const id = dependency.id.substring(dependency.id.indexOf('/') + 1)
+  const directory = path.join(findPackagesDir(), base, 'deploys')
+  return new Script(id, directory, currentScript.inputNetwork, currentScript.outputNetwork)
 }
 
 function validateDependencyKey(currentScript: Script, dependencyScript: Script, dependency: Dependency): string {
@@ -36,4 +37,11 @@ function validateDependencyKey(currentScript: Script, dependencyScript: Script, 
     else if (outputs[dependency.id]) return dependency.id
     throw Error(`Please specify dependency key for "${dependency.id}"`)
   }
+}
+
+function findPackagesDir(): string {
+  let directory = __dirname
+  for (let i = 0; i < 100 && !directory.endsWith('v3-deployments/packages'); i++) directory = path.join(directory, '..')
+  if (!directory.endsWith('v3-deployments/packages')) throw Error('Could not find "packages" dir in root project')
+  return directory
 }

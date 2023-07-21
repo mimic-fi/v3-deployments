@@ -1,5 +1,4 @@
 import { Dependency } from '../dependencies'
-import { Network } from '../shared'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -13,6 +12,4 @@ export type Output = {
 
 export type ReadOutputParams = {
   ensure?: boolean
-  network?: Network
-  outputFile?: string
 }
