@@ -11,7 +11,8 @@
   "workspaces": {
     "packages": [
       "packages/lib",
-      "packages/core"
+      "packages/core",
+      "packages/**/*"
     ]
   }
 }
