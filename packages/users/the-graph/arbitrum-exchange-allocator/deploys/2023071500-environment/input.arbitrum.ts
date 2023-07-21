@@ -1,3 +1,4 @@
+import { OP } from '@mimic-fi/v3-authorizer'
 import {
   balanceConnectorId,
   dependency,
@@ -46,7 +47,7 @@ const deployment: EnvironmentDeployment = {
         taskConfig: {
           baseConfig: {
             smartVault: dependency('2023071500-environment', 'smart-vault'),
-            nextBalanceConnectorId: balanceConnectorId('withdrawer'),
+            nextBalanceConnectorId: balanceConnectorId('exchange-allocator-withdrawer'),
           },
           gasLimitConfig: {
             gasPriceLimit: 10e9,
@@ -58,8 +59,8 @@ const deployment: EnvironmentDeployment = {
           tokenThresholdConfig: {
             defaultThreshold: {
               token: GRT,
-              min: fp(1000),
-              max: fp(100000),
+              min: fp(10),
+              max: fp(100),
             },
           },
         },
@@ -73,7 +74,7 @@ const deployment: EnvironmentDeployment = {
         taskConfig: {
           baseConfig: {
             smartVault: dependency('smart-vault'),
-            previousBalanceConnectorId: balanceConnectorId('withdrawer'),
+            previousBalanceConnectorId: balanceConnectorId('exchange-allocator-withdrawer'),
           },
           gasLimitConfig: {
             gasPriceLimit: 10e9,
@@ -108,7 +109,7 @@ const deployment: EnvironmentDeployment = {
             defaultThreshold: {
               token: tokens.arbitrum.WETH,
               min: fp(0.005),
-              max: fp(0.1),
+              max: fp(0.01),
             },
           },
         },
@@ -180,7 +181,47 @@ const deployment: EnvironmentDeployment = {
       },
     },
   ],
-  permissionChanges: [],
+  permissions: {
+    from: USERS_ADMIN,
+    changes: [
+      {
+        where: dependency('smart-vault'),
+        revokes: [],
+        grants: [{ who: dependency('collector-exchange-allocator'), what: 'collect', how: [] }],
+      },
+      {
+        where: dependency('smart-vault'),
+        revokes: [],
+        grants: [{ who: dependency('exchange-allocator-withdrawer'), what: 'withdraw', how: [] }],
+      },
+      {
+        where: dependency('smart-vault'),
+        revokes: [],
+        grants: [{ who: dependency('collector-relayer-funder'), what: 'collect', how: [] }],
+      },
+      {
+        where: dependency('smart-vault'),
+        revokes: [],
+        grants: [
+          {
+            who: dependency('relayer-funder-swapper'),
+            what: 'execute',
+            how: [{ op: OP.EQ, value: dependency('core/connectors/1inch-v5/v1.0.0-beta') }],
+          },
+        ],
+      },
+      {
+        where: dependency('smart-vault'),
+        revokes: [],
+        grants: [{ who: dependency('relayer-funder-unwrapper'), what: 'unwrap', how: [] }],
+      },
+      {
+        where: dependency('smart-vault'),
+        revokes: [],
+        grants: [{ who: dependency('relayer-depositor'), what: 'call', how: [] }],
+      },
+    ],
+  }
 }
 
 export default deployment

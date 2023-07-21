@@ -18,7 +18,7 @@ export const PROTOCOL_ADMIN: SafeSigner = {
 
 export const USERS_ADMIN: SafeSigner = {
   safe: '0x26A0c29261d18C49e6Cf0Cee175018274D58f90C',
-  signer: '0xfACCB9EAb53E669f6A382bb4507A131961E94C8B',
+  signer: '0x14C108D06244D664388Db620dF6A13DEC0C97960',
   execute: true,
 }
 

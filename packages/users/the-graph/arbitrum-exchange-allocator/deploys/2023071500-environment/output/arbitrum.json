@@ -1,0 +1,39 @@
+{
+  "authorizer": {
+    "version": "core/authorizer/v1.0.0-beta",
+    "address": "0x4A867cBE06eADb969d8FF9cFeA1e904716F599ED"
+  },
+  "price-oracle": {
+    "version": "core/price-oracle/v1.0.0-beta",
+    "address": "0x79cD17eF28D0F27A953A0a6Ea03B956B69Af6C5F"
+  },
+  "smart-vault": {
+    "version": "core/smart-vault/v1.0.0-beta",
+    "address": "0xFdEa2778C830A9DD6c20c037014D1fB65daCc5AB"
+  },
+  "ExchangeAllocator": "0x1Ae265BB183Bb5661Ab50C41EA44Da5a4b285f3f",
+  "collector-exchange-allocator": {
+    "version": "ExchangeAllocator",
+    "address": "0xFFDa086bf13363CC8e518a0e437fd95EB093C390"
+  },
+  "exchange-allocator-withdrawer": {
+    "version": "core/tasks/primitives/withdrawer/v1.0.0-beta",
+    "address": "0x657fAe2CB8d0457ef242A20fA4EB1d52a5675d1B"
+  },
+  "collector-relayer-funder": {
+    "version": "core/tasks/relayer/collector/v1.0.0-beta",
+    "address": "0xB52ea981FdFD783e3417cE66366c9ED625c154e6"
+  },
+  "relayer-funder-swapper": {
+    "version": "core/tasks/swap/1inch-v5/v1.0.0-beta",
+    "address": "0x574B2877AD9D70d8680C20CC0F945321D4875EEb"
+  },
+  "relayer-funder-unwrapper": {
+    "version": "core/tasks/primitives/unwrapper/v1.0.0-beta",
+    "address": "0x03889623BfBc2d4638A040CA74205B49F281eBA0"
+  },
+  "relayer-depositor": {
+    "version": "core/tasks/relayer/depositor/v1.1.0-beta",
+    "address": "0xb4982b87Ba256293DD54Cf0FCC66519b0D88Da74"
+  }
+}
