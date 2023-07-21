@@ -68,8 +68,10 @@ export default class Verifier {
   ): Promise<EtherscanResponse> {
     const deployedBytecodeHex = await retrieveContractBytecode(address, this.network.provider, this.network.name)
     const deployedBytecode = new Bytecode(deployedBytecodeHex)
-    const buildInfo = await script.buildInfo(name)
+    const buildInfo = script.buildInfos().find((buildInfo) => !!this.findContractSourceName(buildInfo, name))
+    if (!buildInfo) throw Error('Could not find a bytecode matching the requested contract')
     const sourceName = this.findContractSourceName(buildInfo, name)
+    if (!sourceName) throw Error('Could not find a source name for the requested contract')
     const contractInformation = await extractMatchingContractInformation(sourceName, name, buildInfo, deployedBytecode)
     if (!contractInformation) throw Error('Could not find a bytecode matching the requested contract')
 
@@ -168,10 +170,10 @@ export default class Verifier {
     return etherscanResponse
   }
 
-  private findContractSourceName(buildInfo: BuildInfo, contractName: string): string {
+  private findContractSourceName(buildInfo: BuildInfo, contractName: string): string | undefined {
     const names = this.getAllFullyQualifiedNames(buildInfo)
     const contractMatches = names.filter((name) => name.contractName === contractName)
-    if (contractMatches.length === 0) throw Error('Could not find a bytecode matching the requested contract')
+    if (contractMatches.length === 0) return
     if (contractMatches.length > 1) throw Error('More than one contract was found to match the deployed bytecode')
     return contractMatches[0].sourceName
   }

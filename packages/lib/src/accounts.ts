@@ -12,7 +12,7 @@ export const DEPLOYER: EOA = {
 
 export const PROTOCOL_ADMIN: SafeSigner = {
   safe: '0x6c0542DAeE8Cc6866529D4a68163eb157Fb78999',
-  signer: '0x7d1e4F0ff0cec20B2Ac07824033Bf449F511C51A',
+  signer: '0x14C108D06244D664388Db620dF6A13DEC0C97960',
   execute: false,
 }
 

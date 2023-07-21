@@ -165,25 +165,6 @@ export class Script {
     }
   }
 
-  async deploy(contractName: string, args: Array<any>, txParams: TxParams): Promise<Contract> {
-    const artifactLike = this.artifactLike(contractName)
-    if (!isEOA(txParams.from)) throw Error('Cannot deploy contract from other account type than EOA')
-    const signer = await this.getSigner(txParams.from.address)
-    const instance = await deploy(artifactLike, args, signer, txParams.libs)
-    logger.success(`Deployed ${contractName} at ${instance.address}`)
-    return instance
-  }
-
-  async verify(contractName: string, address: string, args: unknown, libs?: Libraries): Promise<void> {
-    try {
-      if (!this._verifier) return logger.warn('Skipping contract verification, no verifier defined')
-      const url = await this._verifier.call(this, contractName, address, args, libs)
-      logger.success(`Verified contract ${contractName} at ${url}`)
-    } catch (error) {
-      logger.error(`Failed trying to verify ${contractName} at ${address}: ${error}`)
-    }
-  }
-
   async deployAndVerify(
     contractName: string,
     args: Array<any>,
@@ -193,16 +174,32 @@ export class Script {
     const output = this.output({ ensure: false })[instanceName]
 
     if (txParams.force || !output) {
-      const instance = await this.deploy(contractName, args, txParams)
+      const instance = await this._deploy(contractName, args, txParams)
       this.save({ [instanceName]: instance.address })
-      await this.verify(contractName, instance.address, args, txParams.libs)
+      await this._verify(contractName, instance.address, args, txParams.libs)
       return instance
     } else {
       const address = typeof output === 'string' ? output : output.address
       logger.info(`${contractName} already deployed at ${address}`)
-      await this.verify(contractName, address, args, txParams.libs)
+      await this._verify(contractName, address, args, txParams.libs)
       return this.instanceAt(contractName, address)
     }
+  }
+
+  async verify(contract?: string): Promise<void> {
+    const input = this.input() as ScriptInput
+    if (!isContractDeployment(input)) throw Error('Only contract deployments can be verified')
+
+    const outputs = this.output({ ensure: false })
+    const contracts = Object.keys(outputs)
+    if (contract && !outputs[contract]) throw Error(`Could not find output for contract "${contract}"`)
+    if (contracts.length == 0 && !contract) throw Error('No script output to verify')
+    if (contracts.length > 1 && !contract) throw Error('Please specify contract to verify')
+
+    const contractName = contract || contracts[0]
+    const output = outputs[contractName]
+    const address = typeof output === 'string' ? output : output.address
+    await this._verify(contractName, address, input.args)
   }
 
   async getSigner(address: string): Promise<SignerWithAddress> {
@@ -301,6 +298,25 @@ export class Script {
       else input[key] = this._parseRawInput(item)
       return input
     }, {})
+  }
+
+  private async _deploy(contractName: string, args: Array<any>, txParams: TxParams): Promise<Contract> {
+    const artifactLike = this.artifactLike(contractName)
+    if (!isEOA(txParams.from)) throw Error('Cannot deploy contract from other account type than EOA')
+    const signer = await this.getSigner(txParams.from.address)
+    const instance = await deploy(artifactLike, args, signer, txParams.libs)
+    logger.success(`Deployed ${contractName} at ${instance.address}`)
+    return instance
+  }
+
+  private async _verify(contractName: string, address: string, args: unknown, libs?: Libraries): Promise<void> {
+    try {
+      if (!this._verifier) return logger.warn('Skipping contract verification, no verifier defined')
+      const url = await this._verifier.call(this, contractName, address, args, libs)
+      logger.success(`Verified contract ${contractName} at ${url}`)
+    } catch (error) {
+      logger.error(`Failed trying to verify ${contractName} at ${address}: ${error}`)
+    }
   }
 
   private _read(path: string): Output {

@@ -18,7 +18,7 @@ export async function sendSafeTransaction(
   const signer = await script.getSigner(from.signer)
   const ethAdapter = new EthersAdapter({ ethers, signerOrProvider: signer })
   const safe = await Safe.create({ ethAdapter, safeAddress: from.safe })
-  const txServiceUrl = `https://safe-transaction.${script.inputNetwork}.gnosis.io/`
+  const txServiceUrl = `https://safe-transaction-${script.inputNetwork}.safe.global`
   const safeService = new SafeApiKit({ txServiceUrl, ethAdapter })
 
   const data = contract.interface.encodeFunctionData(method, args)
@@ -27,7 +27,7 @@ export async function sendSafeTransaction(
   const safeTransactionHash = await safe.getTransactionHash(safeTransaction)
   const senderSignature = await safe.signTransactionHash(safeTransactionHash)
 
-  logger.info(`Proposing safe transaction ${safeTransaction.data}...`)
+  logger.info(`Proposing safe transaction ${safeTransactionHash}...`)
   await safeService.proposeTransaction({
     safeAddress: await safe.getAddress(),
     safeTransactionData: safeTransaction.data,

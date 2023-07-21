@@ -8,7 +8,7 @@ import {
 
 export function isContractDeployment(input: ScriptInput): input is ContractDeployment {
   const contractDeployment = input as ContractDeployment
-  return !!contractDeployment.contract && !isRegistryImplementationDeployment(input)
+  return !!contractDeployment.contract
 }
 
 export function isRegistryImplementationDeployment(input: ScriptInput): input is RegistryImplementationDeployment {
