@@ -19,7 +19,7 @@ describe(script.id, () => {
     depositor = await script.deployedInstance('RelayerDepositor')
   })
 
-  it('registers the relayer depositr in the registry correctly', async () => {
+  it('registers the relayer depositor in the registry correctly', async () => {
     expect(await registry.isRegistered(depositor.address)).to.be.true
     expect(await registry.isStateless(depositor.address)).to.be.false
     expect(await registry.isDeprecated(depositor.address)).to.be.false
