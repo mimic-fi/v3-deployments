@@ -2,13 +2,13 @@ import { Contract } from 'ethers'
 
 import logger from './logger'
 import { Script } from './script'
-import { GrantPermission, PermissionChange, RevokePermission, TxParams } from './types'
+import { Account, GrantPermission, isDependency, PermissionChange, RevokePermission } from './types'
 
 export async function executePermissionChanges(
   script: Script,
   authorizer: Contract,
   changes: PermissionChange[],
-  txParams: TxParams
+  from: Account
 ): Promise<void> {
   logger.info(`Executing ${changes.length} permission changes requests on authorizer ${authorizer.address}...`)
   const parsedChanges = await Promise.all(
@@ -18,7 +18,11 @@ export async function executePermissionChanges(
       const grants = change.grants.map((grant: GrantPermission) => {
         const who = typeof grant.who === 'string' ? grant.who : script.dependencyAddress(grant.who)
         const what = where.interface.getSighash(grant.what)
-        return { who, what, how: grant.how || [] }
+        const how = (grant.how || []).map(({ op, value }) => {
+          return { op, value: isDependency(value) ? script.dependencyAddress(value) : value }
+        })
+
+        return { who, what, params: how }
       })
 
       const revokes = change.revokes.map((revoke: RevokePermission) => {
@@ -27,10 +31,10 @@ export async function executePermissionChanges(
         return { who, what }
       })
 
-      return { where, grants, revokes }
+      return { where: where.address, grants, revokes }
     })
   )
 
-  await script.callContract(authorizer, 'changePermissions', [parsedChanges], txParams.from)
+  await script.callContract(authorizer, 'changePermissions', [parsedChanges], from)
   logger.success(`Executed permission changes requests on manager ${authorizer.address} successfully`)
 }

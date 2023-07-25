@@ -55,7 +55,7 @@ export async function deployEnvironment(
     env.tasks = env.tasks?.concat(task)
   }
 
-  await executePermissionChanges(script, env.authorizer, params.permissionChanges, txParams)
+  await executePermissionChanges(script, env.authorizer, params.permissions.changes, params.permissions.from)
   return env
 }
 
@@ -74,7 +74,7 @@ export async function updateEnvironment(
     env.tasks = env.tasks?.concat(task)
   }
 
-  await executePermissionChanges(script, env.authorizer, params.permissionChanges, txParams)
+  await executePermissionChanges(script, env.authorizer, params.permissions.changes, params.permissions.from)
   return env
 }
 
@@ -137,7 +137,8 @@ export async function deployTask(
     ? await script.deployAndVerify(params.version as string, [], txParams)
     : await script.dependencyInstance(params.version as Dependency)
 
-  const args = [solveStandardTaskConfig(script, params.config), ...(params.args || [])]
+  const customArgs = (params.args || []).map((arg) => (isDependency(arg) ? script.dependencyAddress(arg) : arg))
+  const args = [solveStandardTaskConfig(script, params.config), ...customArgs]
   const deployParams = {
     impl: implementation.address,
     custom: isCustomTask,

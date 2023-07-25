@@ -1,6 +1,7 @@
 import { BigNumberish } from '@mimic-fi/v3-helpers'
 import { Contract } from 'ethers'
 
+import { Account } from './accounts'
 import { Dependency } from './dependencies'
 import { StandardTaskConfig } from './tasks'
 
@@ -41,7 +42,7 @@ export type RevokePermission = {
 export type GrantPermission = {
   who: string | Dependency
   what: string
-  how: { op: number; value: string | BigNumberish }[]
+  how: { op: number; value: string | BigNumberish | Dependency }[]
 }
 
 export type PermissionChange = {
@@ -56,14 +57,20 @@ export type CreateEnvironmentParams = {
   priceOracle: PriceOracleParams
   smartVault: SmartVaultParams
   tasks: TaskParams[]
-  permissionChanges: PermissionChange[]
+  permissions: {
+    from: Account
+    changes: PermissionChange[]
+  }
 }
 
 export type UpdateEnvironmentParams = {
   namespace: string
   authorizer: Dependency
   tasks: TaskParams[]
-  permissionChanges: PermissionChange[]
+  permissions: {
+    from: Account
+    changes: PermissionChange[]
+  }
 }
 
 export type Environment = {

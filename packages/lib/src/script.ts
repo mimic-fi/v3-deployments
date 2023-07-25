@@ -16,7 +16,7 @@ import fs from 'fs'
 import { BuildInfo, HardhatRuntimeEnvironment } from 'hardhat/types'
 import path, { extname } from 'path'
 
-import { solveDependency } from './dependencies'
+import { dependency, solveDependency } from './dependencies'
 import { deployEnvironment, updateEnvironment } from './deployer'
 import logger from './logger'
 import { createRegistryImplementation } from './registry'
@@ -98,8 +98,9 @@ export class Script {
   async deployedInstance(contractName: string, instanceName = contractName): Promise<Contract> {
     const output = this.output()[instanceName]
     if (!output) throw Error(`Could not find deployed address for ${instanceName}`)
-    const address = typeof output === 'string' ? output : output.address
-    return this.instanceAt(contractName, address)
+    if (typeof output === 'string') return this.instanceAt(contractName, output)
+    const versionDependency = isDependency(output.version) ? output.version : dependency(output.version)
+    return this.dependencyInstanceAt(versionDependency, output.address)
   }
 
   async dependencyInstance(dependency: Dependency): Promise<Contract> {
