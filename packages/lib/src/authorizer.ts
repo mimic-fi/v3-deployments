@@ -2,7 +2,7 @@ import { Contract } from 'ethers'
 
 import logger from './logger'
 import { Script } from './script'
-import { Account, GrantPermission, isDependency, PermissionChange, RevokePermission, TxParams } from './types'
+import { Account, GrantPermission, isDependency, PermissionChange, RevokePermission } from './types'
 
 export async function executePermissionChanges(
   script: Script,
