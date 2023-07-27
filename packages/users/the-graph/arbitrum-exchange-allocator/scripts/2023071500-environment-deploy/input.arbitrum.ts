@@ -12,7 +12,7 @@ import { chainlink, fp, NATIVE_TOKEN_ADDRESS, tokens } from '@mimic-fi/v3-helper
 
 /* eslint-disable no-secrets/no-secrets */
 
-const GRT = '0x23a941036ae778ac51ab04cea08ed6e2fe103614'
+const GRT = '0x9623063377ad1b27544c965ccd7342f7ea7e88c7'
 const THE_GRAPH_OWNER = '0x270Ea4ea9e8A699f8fE54515E3Bb2c418952623b'
 const THE_GRAPH_FUNDER = '0x43734F373Eb68bDabe0b89172d7da828219EF861'
 const THE_GRAPH_ALLOCATION_EXCHANGE = '0x993F00C98D1678371a7b261Ed0E0D4b6F42d9aEE'
