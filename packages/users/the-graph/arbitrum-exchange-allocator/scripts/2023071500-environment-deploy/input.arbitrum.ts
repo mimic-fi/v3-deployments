@@ -233,6 +233,36 @@ const deployment: EnvironmentDeployment = {
         revokes: [],
         grants: [{ who: dependency('relayer-depositor'), what: 'call', params: [] }],
       },
+      {
+        where: dependency('collector-exchange-allocator'),
+        revokes: [],
+        grants: [{ who: dependency('core/relayer/v1.0.0-beta'), what: 'call', how: [] }],
+      },
+      {
+        where: dependency('exchange-allocator-withdrawer'),
+        revokes: [],
+        grants: [{ who: dependency('core/relayer/v1.0.0-beta'), what: 'call', how: [] }],
+      },
+      {
+        where: dependency('collector-relayer-funder'),
+        revokes: [],
+        grants: [{ who: dependency('core/relayer/v1.0.0-beta'), what: 'call', how: [] }],
+      },
+      {
+        where: dependency('relayer-funder-swapper'),
+        revokes: [],
+        grants: [{ who: dependency('core/relayer/v1.0.0-beta'), what: 'call', how: [] }],
+      },
+      {
+        where: dependency('relayer-funder-unwrapper'),
+        revokes: [],
+        grants: [{ who: dependency('core/relayer/v1.0.0-beta'), what: 'call', how: [] }],
+      },
+      {
+        where: dependency('relayer-depositor'),
+        revokes: [],
+        grants: [{ who: dependency('core/relayer/v1.0.0-beta'), what: 'call', how: [] }],
+      },
     ],
   },
   feeSettings: {
