@@ -2,7 +2,14 @@ import { Contract } from 'ethers'
 
 import logger from './logger'
 import { Script } from './script'
-import { Account, GrantPermission, isDependency, PermissionChange, RevokePermission } from './types'
+import {
+  Account,
+  GrantPermission,
+  isDependency,
+  ParsedPermissionChange,
+  PermissionChange,
+  RevokePermission,
+} from './types'
 
 export async function executePermissionChanges(
   script: Script,
@@ -11,18 +18,26 @@ export async function executePermissionChanges(
   from: Account
 ): Promise<void> {
   logger.info(`Executing ${changes.length} permission changes requests on authorizer ${authorizer.address}...`)
-  const parsedChanges = await Promise.all(
+  const parsedChanges = await parsePermissionChanges(script, changes)
+  const filteredChanges = await removeDuplicatedPermissions(authorizer, parsedChanges)
+
+  await script.callContract(authorizer, 'changePermissions', [filteredChanges], from)
+  logger.success(`Executed permission changes requests on manager ${authorizer.address} successfully`)
+}
+
+async function parsePermissionChanges(script: Script, changes: PermissionChange[]): Promise<ParsedPermissionChange[]> {
+  return Promise.all(
     changes.map(async (change: PermissionChange) => {
       const where = await script.dependencyInstance(change.where)
 
       const grants = change.grants.map((grant: GrantPermission) => {
         const who = typeof grant.who === 'string' ? grant.who : script.dependencyAddress(grant.who)
         const what = where.interface.getSighash(grant.what)
-        const how = (grant.how || []).map(({ op, value }) => {
+        const params = (grant.params || []).map(({ op, value }) => {
           return { op, value: isDependency(value) ? script.dependencyAddress(value) : value }
         })
 
-        return { who, what, params: how }
+        return { who, what, params }
       })
 
       const revokes = change.revokes.map((revoke: RevokePermission) => {
@@ -34,7 +49,31 @@ export async function executePermissionChanges(
       return { where: where.address, grants, revokes }
     })
   )
+}
 
-  await script.callContract(authorizer, 'changePermissions', [parsedChanges], from)
-  logger.success(`Executed permission changes requests on manager ${authorizer.address} successfully`)
+async function removeDuplicatedPermissions(
+  authorizer: Contract,
+  changes: ParsedPermissionChange[]
+): Promise<ParsedPermissionChange[]> {
+  const result: ParsedPermissionChange[] = []
+
+  for (const change of changes) {
+    const filteredChange: ParsedPermissionChange = { where: change.where, grants: [], revokes: [] }
+
+    for (const grant of change.grants) {
+      const isAuthorized = await authorizer.isAuthorized(grant.who, change.where, grant.what, [])
+      if (!isAuthorized) filteredChange.grants.push(grant)
+    }
+
+    for (const revoke of change.revokes) {
+      const isAuthorized = await authorizer.isAuthorized(revoke.who, change.where, revoke.what, [])
+      if (isAuthorized) filteredChange.revokes.push(revoke)
+    }
+
+    if (filteredChange.grants.length > 0 || filteredChange.revokes.length > 0) {
+      result.push(filteredChange)
+    }
+  }
+
+  return result
 }
