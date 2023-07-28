@@ -19,14 +19,12 @@ describe('accounts', () => {
   describe('protocol admin', () => {
     it('is a safe signer', async () => {
       expect(isSafeSigner(PROTOCOL_ADMIN)).to.be.true
-      expect(PROTOCOL_ADMIN.execute).to.be.false
     })
   })
 
   describe('users admin', () => {
     it('is a safe signer', async () => {
       expect(isSafeSigner(USERS_ADMIN)).to.be.true
-      expect(USERS_ADMIN.execute).to.be.true
     })
   })
 

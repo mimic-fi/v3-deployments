@@ -32,7 +32,7 @@ export async function createRegistryImplementation(
       logger.success(`${params.contract} registered as ${name} at ${event.args.implementation}`)
       script.save({ [params.contract]: event.args.implementation })
     } else {
-      logger.warn(`Could not retrieve a receipt from the transaction. Possibly a safe tx needs to be confirmed.`)
+      logger.warn(`Could not retrieve a receipt from the transaction. Possibly a safe tx needs to be executed.`)
     }
   }
 }
