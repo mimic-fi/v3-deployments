@@ -46,7 +46,8 @@ import {
 } from './types'
 import Verifier from './verifier'
 
-const SCRIPTS_DIRECTORY = path.resolve(process.cwd(), 'deploys')
+export const DEFAULT_SCRIPTS_DIRECTORY_NAME = 'scripts'
+const SCRIPTS_DIRECTORY = path.resolve(process.cwd(), DEFAULT_SCRIPTS_DIRECTORY_NAME)
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
