@@ -1,6 +1,6 @@
 import { Account } from '../accounts'
 import { Dependency } from '../dependencies'
-import { CreateEnvironmentParams, UpdateEnvironmentParams } from '../environment'
+import { DeployEnvironmentParams, UpdateEnvironmentParams } from '../environment'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -17,7 +17,7 @@ export type RegistryImplementationDeployment = ContractDeployment & {
   deployerIfFail?: Account
 }
 
-export type EnvironmentDeployment = CreateEnvironmentParams & {
+export type EnvironmentDeployment = DeployEnvironmentParams & {
   deployer: Dependency
   from: Account
 }

@@ -5,6 +5,7 @@ import {
   DEPLOYER,
   EnvironmentDeployment,
   MIMIC_V2_BOT,
+  PROTOCOL_ADMIN,
   USERS_ADMIN,
 } from '@mimic-fi/v3-deployments-lib'
 import { chainlink, fp, NATIVE_TOKEN_ADDRESS, tokens } from '@mimic-fi/v3-helpers'
@@ -221,6 +222,19 @@ const deployment: EnvironmentDeployment = {
         grants: [{ who: dependency('relayer-depositor'), what: 'call', how: [] }],
       },
     ],
+  },
+  settings: {
+    fee: {
+      feeController: dependency('core/fee-controller/v1.0.0-beta'),
+      maxFeePct: fp(0.02),
+      feePct: fp(0.0001),
+      from: PROTOCOL_ADMIN,
+    },
+    relayer: {
+      relayer: dependency('core/relayer/v1.0.0-beta'),
+      quota: fp(0.01),
+      from: PROTOCOL_ADMIN,
+    },
   },
 }
 
