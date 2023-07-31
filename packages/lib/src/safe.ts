@@ -1,6 +1,6 @@
 import SafeApiKit from '@safe-global/api-kit'
 import Safe, { EthersAdapter } from '@safe-global/protocol-kit'
-import { Contract, ContractTransaction, ethers } from 'ethers'
+import { Contract, ethers } from 'ethers'
 
 import logger from './logger'
 import { Script } from './script'
@@ -14,7 +14,7 @@ export async function sendSafeTransaction(
   method: string,
   args: any[],
   from: SafeSigner
-): Promise<ContractTransaction | undefined> {
+): Promise<void> {
   const signer = await script.getSigner(from.signer)
   const ethAdapter = new EthersAdapter({ ethers, signerOrProvider: signer })
   const safe = await Safe.create({ ethAdapter, safeAddress: from.safe })
@@ -35,23 +35,11 @@ export async function sendSafeTransaction(
     senderAddress: signer.address,
     senderSignature: senderSignature.data,
   })
-  logger.success(`Safe transaction proposed!`)
+  logger.success(`Safe transaction ${safeTransactionHash} proposed!`)
 
   const { safeTxHash } = await safeService.getTransaction(safeTransactionHash)
   const signature = await safe.signTransactionHash(safeTxHash)
   logger.info(`Confirming safe transaction ${safeTxHash}...`)
   await safeService.confirmTransaction(safeTxHash, signature.data)
-  logger.success(`Safe transaction confirmed!`)
-
-  if (!from.execute) {
-    logger.warn(`Skipping safe transaction execution...`)
-    return
-  }
-
-  logger.info(`Executing safe transaction...`)
-  const executeTxResponse = await safe.executeTransaction(safeTransaction)
-  if (!executeTxResponse.transactionResponse) throw Error('Could not fetch safe transaction response')
-  await executeTxResponse.transactionResponse.wait()
-  logger.success(`Safe transaction executed!`)
-  return executeTxResponse.transactionResponse
+  logger.success(`Safe transaction ${safeTxHash} confirmed! Please make sure to execute it before proceeding.`)
 }

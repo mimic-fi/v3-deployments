@@ -150,20 +150,11 @@ export class Script {
     args: any[],
     from: Account
   ): Promise<ContractTransaction | undefined> {
-    if (isEOA(from)) {
-      const signer = await this.getSigner(from.address)
-      const tx = await contract.connect(signer)[method](...args)
-      await tx.wait()
-      return tx
-    } else if (isSafeSigner(from)) {
-      if (!this.isDevelopment) return sendSafeTransaction(this, contract, method, args, from)
-      const signer = await this.getSigner(from.safe)
-      const tx = await contract.connect(signer)[method](...args)
-      await tx.wait()
-      return tx
-    } else {
-      throw Error('Cannot call contract from other account type than EOA or safe')
-    }
+    if (isEOA(from)) return this._call(contract, method, args, from.address)
+    else if (isSafeSigner(from)) {
+      if (this.isDevelopment) return this._call(contract, method, args, from.safe)
+      else await sendSafeTransaction(this, contract, method, args, from)
+    } else throw Error('Cannot call contract from other account type than EOA or safe')
   }
 
   async deployAndVerify(
@@ -299,6 +290,13 @@ export class Script {
       else input[key] = this._parseRawInput(item)
       return input
     }, {})
+  }
+
+  private async _call(contract: Contract, method: string, args: any[], from: string): Promise<ContractTransaction> {
+    const signer = await this.getSigner(from)
+    const tx = await contract.connect(signer)[method](...args)
+    await tx.wait()
+    return tx
   }
 
   private async _deploy(contractName: string, args: Array<any>, txParams: TxParams): Promise<Contract> {

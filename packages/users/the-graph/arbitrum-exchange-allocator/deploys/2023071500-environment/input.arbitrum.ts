@@ -221,7 +221,7 @@ const deployment: EnvironmentDeployment = {
         grants: [{ who: dependency('relayer-depositor'), what: 'call', how: [] }],
       },
     ],
-  }
+  },
 }
 
 export default deployment

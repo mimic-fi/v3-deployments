@@ -81,6 +81,8 @@ contract ExchangeAllocator is IExchangeAllocator, Collector {
      */
     function getTaskAmount(address token) public view virtual override(IBaseTask, BaseTask) returns (uint256) {
         Threshold memory threshold = TokenThresholdTask.getTokenThreshold(token);
+        if (threshold.token == address(0)) return 0;
+
         uint256 price = _getPrice(threshold.token, token);
         uint256 currentBalance = IERC20(token).balanceOf(allocationExchange);
         uint256 minThresholdInToken = threshold.min.mulUp(price);
@@ -95,6 +97,8 @@ contract ExchangeAllocator is IExchangeAllocator, Collector {
      */
     function _beforeTokenThresholdTask(address token, uint256 amount) internal virtual override {
         Threshold memory threshold = TokenThresholdTask.getTokenThreshold(token);
+        require(threshold.token != address(0), 'TASK_TOKEN_THRESHOLD_NOT_SET');
+
         uint256 price = _getPrice(threshold.token, token);
         uint256 currentBalance = IERC20(token).balanceOf(allocationExchange);
         require(currentBalance < threshold.min.mulUp(price), 'TASK_TOKEN_THRESHOLD_NOT_MET');
