@@ -47,7 +47,7 @@ const deployment: EnvironmentDeployment = {
         tokensSource: THE_GRAPH_FUNDER,
         taskConfig: {
           baseConfig: {
-            smartVault: dependency('2023071500-environment', 'smart-vault'),
+            smartVault: dependency('smart-vault'),
             nextBalanceConnectorId: balanceConnectorId('exchange-allocator-withdrawer'),
           },
           gasLimitConfig: {
@@ -96,7 +96,7 @@ const deployment: EnvironmentDeployment = {
         tokensSource: THE_GRAPH_FUNDER,
         taskConfig: {
           baseConfig: {
-            smartVault: dependency('2023071500-environment', 'smart-vault'),
+            smartVault: dependency('smart-vault'),
             nextBalanceConnectorId: balanceConnectorId('relayer-funder-swapper'),
           },
           gasLimitConfig: {
@@ -128,7 +128,7 @@ const deployment: EnvironmentDeployment = {
           customMaxSlippages: [],
           taskConfig: {
             baseConfig: {
-              smartVault: dependency('2023071500-environment', 'smart-vault'),
+              smartVault: dependency('smart-vault'),
               previousBalanceConnectorId: balanceConnectorId('relayer-funder-swapper'),
               nextBalanceConnectorId: balanceConnectorId('relayer-funder-unwrapper'),
             },
@@ -149,7 +149,7 @@ const deployment: EnvironmentDeployment = {
       config: {
         taskConfig: {
           baseConfig: {
-            smartVault: dependency('2023071500-environment', 'smart-vault'),
+            smartVault: dependency('smart-vault'),
             previousBalanceConnectorId: balanceConnectorId('relayer-funder-unwrapper'),
             nextBalanceConnectorId: balanceConnectorId('relayer-depositor'),
           },

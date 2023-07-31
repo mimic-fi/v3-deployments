@@ -1,6 +1,6 @@
 import path from 'path'
 
-import { Script } from './script'
+import { DEFAULT_SCRIPTS_DIRECTORY_NAME, Script } from './script'
 import { Dependency, SolvedDependency } from './types'
 
 export function dependency(id: string, key?: string): Dependency {
@@ -21,7 +21,7 @@ function fetchDependencyScript(currentScript: Script, dependency: Dependency): S
 
   const base = dependency.id.substring(0, dependency.id.indexOf('/'))
   const id = dependency.id.substring(dependency.id.indexOf('/') + 1)
-  const directory = path.join(findPackagesDir(), base, 'deploys')
+  const directory = path.join(findPackagesDir(), base, DEFAULT_SCRIPTS_DIRECTORY_NAME)
   return new Script(id, directory, currentScript.inputNetwork, currentScript.outputNetwork)
 }
 
