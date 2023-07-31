@@ -51,26 +51,46 @@ export type PermissionChange = {
   revokes: RevokePermission[]
 }
 
-export type CreateEnvironmentParams = {
+export type PermissionChanges = {
+  from: Account
+  changes: PermissionChange[]
+}
+
+export type SmartVaultFeeSettings = {
+  from: Account
+  feeController: Dependency
+  maxFeePct: BigNumberish
+  feePct?: BigNumberish
+  feeCollector?: string | Dependency
+}
+
+export type SmartVaultRelayerSettings = {
+  from: Account
+  relayer: Dependency
+  quota?: BigNumberish
+  collector?: string | Dependency
+}
+
+export type SmartVaultAdminSettings = {
+  fee: SmartVaultFeeSettings
+  relayer?: SmartVaultRelayerSettings
+}
+
+export type DeployEnvironmentParams = {
   namespace: string
   authorizer: AuthorizerParams
   priceOracle: PriceOracleParams
   smartVault: SmartVaultParams
   tasks: TaskParams[]
-  permissions: {
-    from: Account
-    changes: PermissionChange[]
-  }
+  permissions: PermissionChanges
+  settings: SmartVaultAdminSettings
 }
 
 export type UpdateEnvironmentParams = {
   namespace: string
   authorizer: Dependency
   tasks: TaskParams[]
-  permissions: {
-    from: Account
-    changes: PermissionChange[]
-  }
+  permissions: PermissionChanges
 }
 
 export type Environment = {

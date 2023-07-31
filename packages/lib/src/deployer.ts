@@ -14,6 +14,7 @@ import {
   isEOA,
   OptionalTaskConfig,
   PriceOracleParams,
+  SmartVaultAdminSettings,
   SmartVaultParams,
   StandardTaskConfig,
   TaskParams,
@@ -56,6 +57,7 @@ export async function deployEnvironment(
   }
 
   await executePermissionChanges(script, env.authorizer, params.permissions.changes, params.permissions.from)
+  await executeAdminSettings(script, env.smartVault, params.settings)
   return env
 }
 
@@ -224,5 +226,54 @@ function solveOptionalTaskConfig(script: Script, config: OptionalTaskConfig): vo
 function solveConnectorDependency(script: Script, baseConfig: { connector: string | Dependency }): void {
   if (typeof baseConfig.connector !== 'string') {
     baseConfig.connector = script.dependencyAddress(baseConfig.connector)
+  }
+}
+
+async function executeAdminSettings(
+  script: Script,
+  smartVault: Contract,
+  settings: SmartVaultAdminSettings
+): Promise<void> {
+  const { fee: feeSettings } = settings
+  const feeController = await script.dependencyInstance(feeSettings.feeController)
+
+  const { maxFeePct } = feeSettings
+  logger.info(`Setting max fee pct to ${maxFeePct}...`)
+  await script.callContract(feeController, 'setMaxFeePercentage', [smartVault.address, maxFeePct], feeSettings.from)
+  logger.success(`Max fee pct set to ${maxFeePct}`)
+
+  if (feeSettings.feePct) {
+    const { feePct, from } = feeSettings
+    logger.info(`Setting fee pct to ${feePct}...`)
+    await script.callContract(feeController, 'setFeePercentage', [smartVault.address, feePct], from)
+    logger.success(`Fee pct set to ${maxFeePct}`)
+  }
+
+  if (feeSettings.feeCollector) {
+    const { feeCollector, from } = feeSettings
+    const address = typeof feeCollector === 'string' ? feeCollector : script.dependencyAddress(feeCollector)
+    logger.info(`Setting fee collector to ${address}...`)
+    await script.callContract(feeController, 'setFeeCollector', [smartVault.address, address], from)
+    logger.success(`Fee collector set to ${address}`)
+  }
+
+  if (settings.relayer) {
+    const { relayer: relayerSettings } = settings
+    const relayer = await script.dependencyInstance(relayerSettings.relayer)
+
+    if (relayerSettings.quota) {
+      const { quota, from } = relayerSettings
+      logger.info(`Setting relayer max quota to ${quota}...`)
+      await script.callContract(relayer, 'setSmartVaultMaxQuota', [smartVault.address, quota], from)
+      logger.success(`Relayer max quota set to ${quota}`)
+    }
+
+    if (relayerSettings.collector) {
+      const { collector, from } = relayerSettings
+      const address = typeof collector === 'string' ? collector : script.dependencyAddress(collector)
+      logger.info(`Setting relayer collector to ${address}...`)
+      await script.callContract(relayer, 'setSmartVaultCollector', [smartVault.address, address], from)
+      logger.success(`Relayer collector set to ${address}`)
+    }
   }
 }
