@@ -188,17 +188,17 @@ const deployment: EnvironmentDeployment = {
       {
         where: dependency('smart-vault'),
         revokes: [],
-        grants: [{ who: dependency('collector-exchange-allocator'), what: 'collect', how: [] }],
+        grants: [{ who: dependency('collector-exchange-allocator'), what: 'collect', params: [] }],
       },
       {
         where: dependency('smart-vault'),
         revokes: [],
-        grants: [{ who: dependency('exchange-allocator-withdrawer'), what: 'withdraw', how: [] }],
+        grants: [{ who: dependency('exchange-allocator-withdrawer'), what: 'withdraw', params: [] }],
       },
       {
         where: dependency('smart-vault'),
         revokes: [],
-        grants: [{ who: dependency('collector-relayer-funder'), what: 'collect', how: [] }],
+        grants: [{ who: dependency('collector-relayer-funder'), what: 'collect', params: [] }],
       },
       {
         where: dependency('smart-vault'),
@@ -207,19 +207,19 @@ const deployment: EnvironmentDeployment = {
           {
             who: dependency('relayer-funder-swapper'),
             what: 'execute',
-            how: [{ op: OP.EQ, value: dependency('core/connectors/1inch-v5/v1.0.0-beta') }],
+            params: [{ op: OP.EQ, value: dependency('core/connectors/1inch-v5/v1.0.0-beta') }],
           },
         ],
       },
       {
         where: dependency('smart-vault'),
         revokes: [],
-        grants: [{ who: dependency('relayer-funder-unwrapper'), what: 'unwrap', how: [] }],
+        grants: [{ who: dependency('relayer-funder-unwrapper'), what: 'unwrap', params: [] }],
       },
       {
         where: dependency('smart-vault'),
         revokes: [],
-        grants: [{ who: dependency('relayer-depositor'), what: 'call', how: [] }],
+        grants: [{ who: dependency('relayer-depositor'), what: 'call', params: [] }],
       },
     ],
   },

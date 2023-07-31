@@ -42,13 +42,30 @@ export type RevokePermission = {
 export type GrantPermission = {
   who: string | Dependency
   what: string
-  how: { op: number; value: string | BigNumberish | Dependency }[]
+  params: { op: number; value: string | BigNumberish | Dependency }[]
 }
 
 export type PermissionChange = {
   where: Dependency
   grants: GrantPermission[]
   revokes: RevokePermission[]
+}
+
+export type ParsedRevokePermission = {
+  who: string
+  what: string
+}
+
+export type ParsedGrantPermission = {
+  who: string
+  what: string
+  params: { op: number; value: string | BigNumberish | Dependency }[]
+}
+
+export type ParsedPermissionChange = {
+  where: string
+  grants: ParsedGrantPermission[]
+  revokes: ParsedRevokePermission[]
 }
 
 export type PermissionChanges = {
