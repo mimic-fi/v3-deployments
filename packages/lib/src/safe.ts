@@ -1,6 +1,6 @@
 import SafeApiKit from '@safe-global/api-kit'
 import Safe, { EthersAdapter } from '@safe-global/protocol-kit'
-import { Contract, ethers } from 'ethers'
+import { Contract, ContractTransaction, ethers } from 'ethers'
 
 import logger from './logger'
 import { Script } from './script'
@@ -14,7 +14,7 @@ export async function sendSafeTransaction(
   method: string,
   args: any[],
   from: SafeSigner
-): Promise<void> {
+): Promise<ContractTransaction | undefined> {
   const signer = await script.getSigner(from.signer)
   const ethAdapter = new EthersAdapter({ ethers, signerOrProvider: signer })
   const safe = await Safe.create({ ethAdapter, safeAddress: from.safe })
@@ -41,5 +41,30 @@ export async function sendSafeTransaction(
   const signature = await safe.signTransactionHash(safeTxHash)
   logger.info(`Confirming safe transaction ${safeTxHash}...`)
   await safeService.confirmTransaction(safeTxHash, signature.data)
-  logger.success(`Safe transaction ${safeTxHash} confirmed! Please make sure to execute it before proceeding.`)
+
+  if (from.wait) {
+    logger.warn(`Waiting Safe transaction ${safeTxHash} to be executed before proceeding...`)
+    const transactionHash = await waitForExecution(safeService, safeTransactionHash)
+    logger.success(`Safe transaction executed!`)
+    const { ethers: hreEthers } = await import('hardhat')
+    const tx = await hreEthers.provider.getTransaction(transactionHash)
+    await tx.wait()
+    return tx
+  } else {
+    logger.success(`Safe transaction ${safeTxHash} confirmed!`)
+    logger.warn(`Please make sure to execute it before proceeding.`)
+  }
+}
+
+async function waitForExecution(safeService: SafeApiKit, safeTransactionHash: string): Promise<string> {
+  let transaction = await safeService.getTransaction(safeTransactionHash)
+  while (!transaction.isExecuted) {
+    await sleep(2)
+    transaction = await safeService.getTransaction(safeTransactionHash)
+  }
+  return transaction.transactionHash
+}
+
+async function sleep(seconds: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, seconds * 1000))
 }

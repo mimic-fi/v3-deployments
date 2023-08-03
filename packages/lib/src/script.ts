@@ -136,7 +136,7 @@ export class Script {
       await createRegistryImplementation(this, input as RegistryImplementationDeployment, txParams)
     } else if (isContractDeployment(input)) {
       logger.info('Deploying stand alone contract...')
-      await this.deployAndVerify(input.contract, input.args, txParams, input.name)
+      await this.deployAndVerify(input.contract, input.args, txParams, input.instanceName)
     } else {
       logger.info('Running custom script...')
       const scriptPath = this._fileAt(this.dir(), 'index.ts')
@@ -154,7 +154,7 @@ export class Script {
     if (isEOA(from)) return this._call(contract, method, args, from.address)
     else if (isSafeSigner(from)) {
       if (this.isDevelopment) return this._call(contract, method, args, from.safe)
-      else await sendSafeTransaction(this, contract, method, args, from)
+      else return sendSafeTransaction(this, contract, method, args, from)
     } else throw Error('Cannot call contract from other account type than EOA or safe')
   }
 

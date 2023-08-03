@@ -19,8 +19,8 @@ export type AxelarBridgeConfig = {
 
 export type ConnextBridgeConfig = {
   baseBridgeConfig: BaseBridgeConfig
-  defaultRelayerFee: BigNumberish
-  customRelayerFees: { token: string; relayerFee: BigNumberish }[]
+  maxFeePct: BigNumberish
+  customMaxFeePcts: { token: string; maxFeePct: BigNumberish }[]
 }
 
 export type HopBridgeConfig = {

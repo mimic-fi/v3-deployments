@@ -5,6 +5,7 @@ export type EOA = {
 export type SafeSigner = {
   safe: string
   signer: string
+  wait?: boolean
 }
 
 export type SmartVaultAccount = {

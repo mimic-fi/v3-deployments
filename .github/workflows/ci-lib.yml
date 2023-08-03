@@ -33,5 +33,5 @@ jobs:
         uses: ./.github/actions/setup
       - name: Build
         run: yarn build
-      - name: Lint
+      - name: Test
         run: yarn workspace @mimic-fi/v3-deployments-lib test
