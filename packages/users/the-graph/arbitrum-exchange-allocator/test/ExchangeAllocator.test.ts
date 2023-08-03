@@ -1,17 +1,28 @@
-import { assertEvent, assertIndirectEvent, deployProxy, deployTokenMock, fp, getSigners } from '@mimic-fi/v3-helpers'
+import {
+  assertEvent,
+  assertIndirectEvent,
+  BigNumberish,
+  deployProxy,
+  deployTokenMock,
+  fp,
+  getSigners,
+  ZERO_ADDRESS,
+} from '@mimic-fi/v3-helpers'
 import { buildEmptyTaskConfig, deployEnvironment } from '@mimic-fi/v3-tasks'
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { expect } from 'chai'
 import { Contract } from 'ethers'
 import { ethers } from 'hardhat'
 
+/* eslint-disable no-secrets/no-secrets */
+
 describe('ExchangeAllocator', () => {
   let task: Contract, smartVault: Contract, authorizer: Contract
-  let owner: SignerWithAddress, funder: SignerWithAddress, allocationExchange: SignerWithAddress
+  let owner: SignerWithAddress, tokensSource: SignerWithAddress, allocationExchange: SignerWithAddress
 
   before('setup', async () => {
     // eslint-disable-next-line prettier/prettier
-    ([, owner, funder, allocationExchange] = await getSigners())
+    ([, owner, tokensSource, allocationExchange] = await getSigners())
     ;({ authorizer, smartVault } = await deployEnvironment(owner))
   })
 
@@ -21,7 +32,7 @@ describe('ExchangeAllocator', () => {
       [],
       [
         {
-          tokensSource: funder.address,
+          tokensSource: tokensSource.address,
           taskConfig: buildEmptyTaskConfig(owner, smartVault),
         },
         allocationExchange.address,
@@ -38,82 +49,142 @@ describe('ExchangeAllocator', () => {
   })
 
   describe('call', () => {
-    let token: Contract
-
-    const min = fp(2)
-    const max = fp(4)
-
-    beforeEach('deploy token and allow smart vault', async () => {
-      token = await deployTokenMock('GRT')
-      await token.mint(funder.address, max.mul(2))
-      await token.connect(funder).approve(smartVault.address, max.mul(2))
-    })
-
     beforeEach('authorize task', async () => {
       const collectRole = smartVault.interface.getSighash('collect')
       await authorizer.connect(owner).authorize(task.address, smartVault.address, collectRole, [])
     })
 
-    beforeEach('set default token threshold', async () => {
-      const setDefaultTokenThresholdRole = task.interface.getSighash('setDefaultTokenThreshold')
-      await authorizer.connect(owner).authorize(owner.address, task.address, setDefaultTokenThresholdRole, [])
-      await task.connect(owner).setDefaultTokenThreshold(token.address, min, max)
-    })
-
-    beforeEach('allow sender', async () => {
-      const callRole = task.interface.getSighash('call')
-      await authorizer.connect(owner).authorize(owner.address, task.address, callRole, [])
-      task = task.connect(owner)
-    })
-
-    context('when the current balance is below the min threshold', () => {
-      beforeEach('set allocation exchange balance', async () => {
-        await token.mint(allocationExchange.address, min.div(2))
+    context('when the sender is allowed', () => {
+      beforeEach('allow sender', async () => {
+        const callRole = task.interface.getSighash('call')
+        await authorizer.connect(owner).authorize(owner.address, task.address, callRole, [])
+        task = task.connect(owner)
       })
 
-      it('computes the token amount correctly', async () => {
-        const amount = await task.getTaskAmount(token.address)
+      context('when there is a threshold set', () => {
+        let token: Contract
+        const min = fp(2)
+        const max = fp(4)
 
-        const allocationExchangeBalance = await token.balanceOf(allocationExchange.address)
-        expect(amount).to.be.equal(max.sub(allocationExchangeBalance))
-      })
+        beforeEach('set default token threshold', async () => {
+          token = await deployTokenMock('GRT')
+          const setDefaultTokenThresholdRole = task.interface.getSighash('setDefaultTokenThreshold')
+          await authorizer.connect(owner).authorize(owner.address, task.address, setDefaultTokenThresholdRole, [])
+          await task.connect(owner).setDefaultTokenThreshold(token.address, min, max)
+        })
 
-      it('calls the collect primitive', async () => {
-        const previousSmartVaultBalance = await token.balanceOf(smartVault.address)
+        context('when the current balance is below the min threshold', () => {
+          const balance = min.sub(2)
 
-        const amount = await task.getTaskAmount(token.address)
-        const tx = await task.call(token.address, amount)
+          beforeEach('set allocation exchange balance', async () => {
+            await token.mint(allocationExchange.address, balance)
+          })
 
-        const currentSmartVaultBalance = await token.balanceOf(smartVault.address)
-        expect(currentSmartVaultBalance).to.be.equal(previousSmartVaultBalance.add(amount))
+          it('computes the task amount correctly', async () => {
+            const amount = await task.getTaskAmount(token.address)
+            const allocationExchangeBalance = await token.balanceOf(allocationExchange.address)
+            expect(amount).to.be.equal(max.sub(allocationExchangeBalance))
+          })
 
-        await assertIndirectEvent(tx, smartVault.interface, 'Collected', {
-          token,
-          amount,
-          from: funder.address,
+          context('when the resulting balance is above the min threshold', () => {
+            context('when the resulting balance is below the max threshold', () => {
+              const itExecutesAsExpected = (requestedAmount: BigNumberish, expectedAmount = requestedAmount) => {
+                it('calls the collect primitive', async () => {
+                  const previousSmartVaultBalance = await token.balanceOf(smartVault.address)
+
+                  const tx = await task.call(token.address, requestedAmount)
+
+                  const currentSmartVaultBalance = await token.balanceOf(smartVault.address)
+                  expect(currentSmartVaultBalance).to.be.equal(previousSmartVaultBalance.add(expectedAmount))
+
+                  await assertIndirectEvent(tx, smartVault.interface, 'Collected', {
+                    token,
+                    amount: expectedAmount,
+                    from: tokensSource.address,
+                  })
+                })
+
+                it('emits an Executed event', async () => {
+                  const tx = await task.call(token.address, requestedAmount)
+
+                  await assertEvent(tx, 'Executed')
+                })
+              }
+
+              context('when specifying an amount', () => {
+                const amount = min.sub(balance)
+
+                beforeEach('fund tokens source', async () => {
+                  await token.mint(tokensSource.address, amount)
+                  await token.connect(tokensSource).approve(smartVault.address, amount)
+                })
+
+                itExecutesAsExpected(amount)
+              })
+
+              context('when specifying no amount', () => {
+                const expectedAmount = max.sub(balance)
+
+                beforeEach('fund tokens source', async () => {
+                  await token.mint(tokensSource.address, expectedAmount)
+                  await token.connect(tokensSource).approve(smartVault.address, expectedAmount)
+                })
+
+                itExecutesAsExpected(0, expectedAmount)
+              })
+            })
+
+            context('when the resulting balance is above the max threshold', () => {
+              const amount = max.sub(balance).add(1)
+
+              it('reverts', async () => {
+                await expect(task.call(token.address, amount)).to.be.revertedWith('TaskNewAllocationBalanceAboveMax')
+              })
+            })
+          })
+
+          context('when the resulting balance is below the min threshold', () => {
+            const amount = min.sub(balance).sub(1)
+
+            it('reverts', async () => {
+              await expect(task.call(token.address, amount)).to.be.revertedWith('TaskNewAllocationBalanceBelowMin')
+            })
+          })
+        })
+
+        context('when the current balance is above the min threshold', () => {
+          beforeEach('set allocation exchange balance', async () => {
+            await token.mint(allocationExchange.address, min)
+          })
+
+          it('computes the token amount correctly', async () => {
+            const amount = await task.getTaskAmount(token.address)
+            expect(amount).to.be.equal(0)
+          })
+
+          it('reverts', async () => {
+            await expect(task.call(token.address, 0)).to.be.revertedWith('TaskAllocationBalanceAboveMin')
+          })
         })
       })
 
-      it('emits an Executed event', async () => {
-        const amount = await task.getTaskAmount(token.address)
-        const tx = await task.call(token.address, amount)
+      context('when there is no a threshold set', () => {
+        const token = ZERO_ADDRESS
 
-        await assertEvent(tx, 'Executed')
+        it('computes the token amount correctly', async () => {
+          const amount = await task.getTaskAmount(token)
+          expect(amount).to.be.equal(0)
+        })
+
+        it('reverts', async () => {
+          await expect(task.call(token, 0)).to.be.revertedWith('TaskTokenThresholdNotSet')
+        })
       })
     })
 
-    context('when the current balance is above the min threshold', () => {
-      beforeEach('set allocation exchange balance', async () => {
-        await token.mint(allocationExchange.address, min)
-      })
-
-      it('computes the token amount correctly', async () => {
-        const amount = await task.getTaskAmount(token.address)
-        expect(amount).to.be.equal(0)
-      })
-
+    context('when the sender is not allowed', () => {
       it('reverts', async () => {
-        await expect(task.call(token.address, fp(1))).to.be.revertedWith('TASK_TOKEN_THRESHOLD_NOT_MET')
+        await expect(task.call(ZERO_ADDRESS, 0)).to.be.revertedWith('AuthSenderNotAllowed')
       })
     })
   })

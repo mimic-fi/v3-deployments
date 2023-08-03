@@ -18,18 +18,18 @@ const THE_GRAPH_FUNDER = '0x43734F373Eb68bDabe0b89172d7da828219EF861'
 const THE_GRAPH_ALLOCATION_EXCHANGE = '0x993F00C98D1678371a7b261Ed0E0D4b6F42d9aEE'
 
 const deployment: EnvironmentDeployment = {
-  deployer: dependency('core/deployer/v1.0.0-beta'),
+  deployer: dependency('core/deployer/v1.0.0'),
   namespace: 'the-graph',
   authorizer: {
     from: DEPLOYER,
     name: 'authorizer',
-    version: dependency('core/authorizer/v1.0.0-beta'),
+    version: dependency('core/authorizer/v1.0.0'),
     owners: [THE_GRAPH_OWNER, USERS_ADMIN.safe],
   },
   priceOracle: {
     from: DEPLOYER,
     name: 'price-oracle',
-    version: dependency('core/price-oracle/v1.0.0-beta'),
+    version: dependency('core/price-oracle/v1.0.0'),
     authorizer: dependency('authorizer'),
     signer: MIMIC_V2_BOT.address,
     pivot: chainlink.denominations.USD,
@@ -38,7 +38,7 @@ const deployment: EnvironmentDeployment = {
   smartVault: {
     from: DEPLOYER,
     name: 'smart-vault',
-    version: dependency('core/smart-vault/v1.0.0-beta'),
+    version: dependency('core/smart-vault/v1.0.0'),
     authorizer: dependency('authorizer'),
     priceOracle: dependency('price-oracle'),
   },
@@ -76,7 +76,7 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: 'exchange-allocator-withdrawer',
-      version: dependency('core/tasks/primitives/withdrawer/v1.0.0-beta'),
+      version: dependency('core/tasks/primitives/withdrawer/v1.0.0'),
       config: {
         recipient: THE_GRAPH_ALLOCATION_EXCHANGE,
         taskConfig: {
@@ -97,9 +97,9 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: 'collector-relayer-funder',
-      version: dependency('core/tasks/relayer/collector/v1.0.0-beta'),
+      version: dependency('core/tasks/relayer/collector/v1.0.0'),
       initialize: 'initializeCollectorRelayerFunder',
-      args: [dependency('core/relayer/v1.0.0-beta')],
+      args: [dependency('core/relayer/v1.0.0')],
       config: {
         tokensSource: THE_GRAPH_FUNDER,
         taskConfig: {
@@ -127,10 +127,10 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: 'relayer-funder-swapper',
-      version: dependency('core/tasks/swap/1inch-v5/v1.0.0-beta'),
+      version: dependency('core/tasks/swap/1inch-v5/v1.0.0'),
       config: {
         baseSwapConfig: {
-          connector: dependency('core/connectors/1inch-v5/v1.0.0-beta'),
+          connector: dependency('core/connectors/1inch-v5/v1.0.0'),
           tokenOut: tokens.arbitrum.WETH,
           maxSlippage: fp(0.002),
           customTokensOut: [],
@@ -155,7 +155,7 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: 'relayer-funder-unwrapper',
-      version: dependency('core/tasks/primitives/unwrapper/v1.0.0-beta'),
+      version: dependency('core/tasks/primitives/unwrapper/v1.0.0'),
       config: {
         taskConfig: {
           baseConfig: {
@@ -176,8 +176,8 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: 'relayer-depositor',
-      version: dependency('core/tasks/relayer/depositor/v1.1.0-beta'),
-      args: [dependency('core/relayer/v1.0.0-beta')],
+      version: dependency('core/tasks/relayer/depositor/v1.0.0'),
+      args: [dependency('core/relayer/v1.0.0')],
       config: {
         baseConfig: {
           smartVault: dependency('smart-vault'),
@@ -210,7 +210,7 @@ const deployment: EnvironmentDeployment = {
           {
             who: dependency('relayer-funder-swapper'),
             what: 'execute',
-            params: [{ op: OP.EQ, value: dependency('core/connectors/1inch-v5/v1.0.0-beta') }],
+            params: [{ op: OP.EQ, value: dependency('core/connectors/1inch-v5/v1.0.0') }],
           },
           { who: dependency('relayer-funder-swapper'), what: 'updateBalanceConnector', params: [] },
           { who: dependency('relayer-funder-unwrapper'), what: 'unwrap', params: [] },
@@ -254,14 +254,14 @@ const deployment: EnvironmentDeployment = {
   feeSettings: {
     from: PROTOCOL_ADMIN,
     smartVault: dependency('smart-vault'),
-    feeController: dependency('core/fee-controller/v1.0.0-beta'),
+    feeController: dependency('core/fee-controller/v1.0.0'),
     maxFeePct: fp(0.02),
     feePct: fp(0.0001),
   },
   relayerSettings: {
     from: PROTOCOL_ADMIN,
     smartVault: dependency('smart-vault'),
-    relayer: dependency('core/relayer/v1.0.0-beta'),
+    relayer: dependency('core/relayer/v1.0.0'),
     quota: fp(0.01),
   },
 }

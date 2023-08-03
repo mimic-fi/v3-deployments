@@ -21,6 +21,36 @@ import '@mimic-fi/v3-tasks/contracts/interfaces/primitives/ICollector.sol';
  */
 interface IExchangeAllocator is ICollector {
     /**
+     * @dev The allocation exchange address is zero
+     */
+    error TaskAllocationExchangeZero();
+
+    /**
+     * @dev The task initializer is disabled
+     */
+    error TaskInitializerDisabled();
+
+    /**
+     * @dev There is no threshold set for the given token
+     */
+    error TaskTokenThresholdNotSet(address token);
+
+    /**
+     * @dev The current allocation exchange balance is above the minimum threshold
+     */
+    error TaskAllocationBalanceAboveMin(uint256 balance, uint256 min);
+
+    /**
+     * @dev The current allocation exchange balance is below the minimum threshold
+     */
+    error TaskNewAllocationBalanceBelowMin(uint256 balance, uint256 min);
+
+    /**
+     * @dev The new allocation exchange balance is above the maximum threshold
+     */
+    error TaskNewAllocationBalanceAboveMax(uint256 balance, uint256 max);
+
+    /**
      * @dev Emitted every time the allocation exchange address is set
      */
     event AllocationExchangeSet(address indexed allocationExchange);
