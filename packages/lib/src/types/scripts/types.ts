@@ -6,13 +6,14 @@ import { DeployEnvironmentParams, UpdateEnvironmentParams } from '../environment
 
 export type ContractDeployment = {
   contract: string
-  name?: string
+  instanceName?: string
   args: any[]
   from: Account
 }
 
 export type RegistryImplementationDeployment = ContractDeployment & {
   registry: Dependency
+  name: string
   stateless: boolean
   deployerIfFail?: Account
 }
