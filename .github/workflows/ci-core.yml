@@ -48,4 +48,4 @@ jobs:
       - name: Build
         run: yarn build
       - name: Integration
-        run: yarn workspace @mimic-fi/v3-deployments-core test:mainnet
+        run: yarn workspace @mimic-fi/v3-deployments-core test:arbitrum

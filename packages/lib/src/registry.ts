@@ -1,4 +1,4 @@
-import { assertEvent, assertIndirectEvent } from '@mimic-fi/v3-helpers'
+import { assertIndirectEvent } from '@mimic-fi/v3-helpers'
 
 import logger from './logger'
 import { Script } from './script'

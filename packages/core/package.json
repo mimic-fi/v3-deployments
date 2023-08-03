@@ -3,13 +3,13 @@
   "version": "0.0.1",
   "license": "GPL-3.0",
   "files": [
-    "deploys/**/*"
+    "scripts/**/*"
   ],
   "scripts": {
     "build": "rm -rf dist && tsc",
     "lint": "eslint . --ext .ts",
     "test": "hardhat test",
-    "test:mainnet": "hardhat test --fork mainnet --chain-id 1 --block-number 17735210",
+    "test:arbitrum": "yarn test --fork arbitrum --block-number 117028691 --chain-id 42161",
     "prepare": "yarn build"
   },
   "dependencies": {
@@ -29,6 +29,7 @@
     "typescript": "~4.3.4"
   },
   "eslintConfig": {
-    "extends": "eslint-config-mimic"
+    "extends": "eslint-config-mimic",
+    "ignorePatterns": ["dist"]
   }
 }
