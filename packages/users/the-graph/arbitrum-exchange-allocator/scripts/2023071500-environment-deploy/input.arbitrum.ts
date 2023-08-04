@@ -222,32 +222,32 @@ const deployment: EnvironmentDeployment = {
       {
         where: dependency('collector-exchange-allocator'),
         revokes: [],
-        grants: [{ who: dependency('core/relayer/v1.0.0-beta'), what: 'call', params: [] }],
+        grants: [{ who: dependency('core/relayer/v1.0.0'), what: 'call', params: [] }],
       },
       {
         where: dependency('exchange-allocator-withdrawer'),
         revokes: [],
-        grants: [{ who: dependency('core/relayer/v1.0.0-beta'), what: 'call', params: [] }],
+        grants: [{ who: dependency('core/relayer/v1.0.0'), what: 'call', params: [] }],
       },
       {
         where: dependency('collector-relayer-funder'),
         revokes: [],
-        grants: [{ who: dependency('core/relayer/v1.0.0-beta'), what: 'call', params: [] }],
+        grants: [{ who: dependency('core/relayer/v1.0.0'), what: 'call', params: [] }],
       },
       {
         where: dependency('relayer-funder-swapper'),
         revokes: [],
-        grants: [{ who: dependency('core/relayer/v1.0.0-beta'), what: 'call', params: [] }],
+        grants: [{ who: dependency('core/relayer/v1.0.0'), what: 'call', params: [] }],
       },
       {
         where: dependency('relayer-funder-unwrapper'),
         revokes: [],
-        grants: [{ who: dependency('core/relayer/v1.0.0-beta'), what: 'call', params: [] }],
+        grants: [{ who: dependency('core/relayer/v1.0.0'), what: 'call', params: [] }],
       },
       {
         where: dependency('relayer-depositor'),
         revokes: [],
-        grants: [{ who: dependency('core/relayer/v1.0.0-beta'), what: 'call', params: [] }],
+        grants: [{ who: dependency('core/relayer/v1.0.0'), what: 'call', params: [] }],
       },
     ],
   },
