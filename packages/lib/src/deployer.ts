@@ -11,7 +11,10 @@ import {
   EnvironmentDeployment,
   EnvironmentUpdate,
   isDependency,
+  isEnvironmentSettingUpdate,
   isEOA,
+  isPermissionsUpdate,
+  isTaskParams,
   OptionalTaskConfig,
   PriceOracleParams,
   SmartVaultParams,
@@ -48,8 +51,18 @@ export async function deployEnvironment(script: Script, params: EnvironmentDeplo
 }
 
 export async function updateEnvironment(script: Script, params: EnvironmentUpdate): Promise<void> {
-  for (const taskParams of params.tasks) await deployTask(script, params.deployer, params.namespace, taskParams)
-  await executePermissionChanges(script, params.permissions)
+  for (const step of params.steps) {
+    if (isEnvironmentSettingUpdate(step)) {
+      const target = await script.dependencyInstance(step.target)
+      await script.callContract(target, step.method, step.args, step.from)
+    } else if (isPermissionsUpdate(step)) {
+      await executePermissionChanges(script, step)
+    } else if (isTaskParams(step)) {
+      await deployTask(script, params.deployer, params.namespace, step)
+    } else {
+      logger.warn(`Unknown environment update step ${JSON.stringify(step)}`)
+    }
+  }
 }
 
 export async function deployAuthorizer(

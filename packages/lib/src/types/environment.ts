@@ -82,6 +82,14 @@ export type EnvironmentDeployment = {
 export type EnvironmentUpdate = {
   deployer: Dependency
   namespace: string
-  tasks: TaskParams[]
-  permissions: PermissionsUpdate
+  steps: EnvironmentUpdateStep[]
 }
+
+export type EnvironmentSettingUpdate = {
+  from: Account
+  target: Dependency
+  method: string
+  args: any[]
+}
+
+export type EnvironmentUpdateStep = TaskParams | EnvironmentSettingUpdate | PermissionsUpdate
