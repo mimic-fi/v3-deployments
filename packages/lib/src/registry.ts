@@ -2,29 +2,28 @@ import { assertIndirectEvent } from '@mimic-fi/v3-helpers'
 
 import logger from './logger'
 import { Script } from './script'
-import { isSafeSigner, RegistryImplementationDeployment, TxParams } from './types'
+import { isSafeSigner, RegistryImplementationDeployment } from './types'
 
 export async function createRegistryImplementation(
   script: Script,
-  params: RegistryImplementationDeployment,
-  txParams: TxParams
+  params: RegistryImplementationDeployment
 ): Promise<void> {
   const instanceName = params.instanceName || params.contract
   const output = script.output({ ensure: false })[instanceName]
 
-  if (txParams.force || !output) {
+  if (!output) {
     logger.info(`Registering ${params.name}...`)
     const bytecode = await script.getCreationCode(params.contract, params.args)
     const registry = await script.dependencyInstance(params.registry)
+    const from = isSafeSigner(params.from) ? { ...params.from, wait: true } : params.from
 
-    const from = isSafeSigner(txParams.from) ? { ...txParams.from, wait: true } : txParams.from
     let tx
     try {
       tx = await script.callContract(registry, 'create', [params.name, bytecode, params.stateless], from)
     } catch (error) {
       if (!error.message.includes('exceeds block gas limit')) throw error
-      const deployTxParams = { force: txParams.force, from: params.deployerIfFail || from }
-      const impl = await script.deployAndVerify(params.contract, params.args, deployTxParams, instanceName)
+      const deployerIfFail = params.deployerIfFail || from
+      const impl = await script.deployAndVerify(params.contract, params.args, deployerIfFail, instanceName)
       tx = await script.callContract(registry, 'register', [params.name, impl.address, params.stateless], from)
     }
 

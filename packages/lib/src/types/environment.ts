@@ -1,32 +1,39 @@
 import { BigNumberish } from '@mimic-fi/v3-helpers'
-import { Contract } from 'ethers'
 
 import { Account } from './accounts'
 import { Dependency } from './dependencies'
+import { PermissionChange } from './permissions'
 import { StandardTaskConfig } from './tasks'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export type AuthorizerParams = {
+  from: Account
   name: string
   version: Dependency
   owners: string[]
 }
 
 export type PriceOracleParams = {
+  from: Account
   name: string
   version: Dependency
+  authorizer: Dependency
   signer: string
   pivot: string
   feeds: { base: string; quote: string; feed: string }[]
 }
 
 export type SmartVaultParams = {
+  from: Account
   name: string
   version: Dependency
+  authorizer: Dependency
+  priceOracle: Dependency
 }
 
 export type TaskParams = {
+  from: Account
   name: string
   version: string | Dependency
   config: StandardTaskConfig
@@ -34,42 +41,9 @@ export type TaskParams = {
   initialize?: string
 }
 
-export type RevokePermission = {
-  who: string | Dependency
-  what: string
-}
-
-export type GrantPermission = {
-  who: string | Dependency
-  what: string
-  params: { op: number; value: string | BigNumberish | Dependency }[]
-}
-
-export type PermissionChange = {
-  where: Dependency
-  grants: GrantPermission[]
-  revokes: RevokePermission[]
-}
-
-export type ParsedRevokePermission = {
-  who: string
-  what: string
-}
-
-export type ParsedGrantPermission = {
-  who: string
-  what: string
-  params: { op: number; value: string | BigNumberish | Dependency }[]
-}
-
-export type ParsedPermissionChange = {
-  where: string
-  grants: ParsedGrantPermission[]
-  revokes: ParsedRevokePermission[]
-}
-
-export type PermissionChanges = {
+export type PermissionsUpdate = {
   from: Account
+  authorizer: Dependency
   changes: PermissionChange[]
 }
 
@@ -89,32 +63,25 @@ export type SmartVaultRelayerSettings = {
 }
 
 export type SmartVaultAdminSettings = {
+  smartVault: Dependency
   fee: SmartVaultFeeSettings
   relayer?: SmartVaultRelayerSettings
 }
 
-export type DeployEnvironmentParams = {
+export type EnvironmentDeployment = {
+  deployer: Dependency
   namespace: string
   authorizer: AuthorizerParams
   priceOracle: PriceOracleParams
   smartVault: SmartVaultParams
   tasks: TaskParams[]
-  permissions: PermissionChanges
+  permissions: PermissionsUpdate
   settings: SmartVaultAdminSettings
 }
 
-export type UpdateEnvironmentParams = {
+export type EnvironmentUpdate = {
+  deployer: Dependency
   namespace: string
-  authorizer: Dependency
   tasks: TaskParams[]
-  permissions: PermissionChanges
-}
-
-export type Environment = {
-  namespace: string
-  deployer: Contract
-  authorizer?: Contract
-  priceOracle?: Contract
-  smartVault?: Contract
-  tasks?: Contract[]
+  permissions: PermissionsUpdate
 }

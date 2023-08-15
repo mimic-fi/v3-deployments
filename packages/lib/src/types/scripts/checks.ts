@@ -1,10 +1,6 @@
-import {
-  ContractDeployment,
-  EnvironmentDeployment,
-  EnvironmentUpdate,
-  RegistryImplementationDeployment,
-  ScriptInput,
-} from './types'
+import { EnvironmentDeployment, EnvironmentUpdate } from '../environment'
+import { ContractDeployment, RegistryImplementationDeployment } from '../registry'
+import { ScriptInput } from './types'
 
 export function isContractDeployment(input: ScriptInput): input is ContractDeployment {
   const contractDeployment = input as ContractDeployment
@@ -23,5 +19,5 @@ export function isEnvironmentDeployment(input: ScriptInput): input is Environmen
 
 export function isEnvironmentUpdate(input: ScriptInput): input is EnvironmentUpdate {
   const environmentUpdate = input as EnvironmentUpdate
-  return !!environmentUpdate.authorizer && !isEnvironmentDeployment(input)
+  return !!environmentUpdate.permissions && !isEnvironmentDeployment(input)
 }

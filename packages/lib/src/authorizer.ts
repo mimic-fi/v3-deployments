@@ -3,25 +3,22 @@ import { Contract } from 'ethers'
 import logger from './logger'
 import { Script } from './script'
 import {
-  Account,
   GrantPermission,
   isDependency,
   ParsedPermissionChange,
   PermissionChange,
+  PermissionsUpdate,
   RevokePermission,
 } from './types'
 
-export async function executePermissionChanges(
-  script: Script,
-  authorizer: Contract,
-  changes: PermissionChange[],
-  from: Account
-): Promise<void> {
-  logger.info(`Executing ${changes.length} permission changes requests on authorizer ${authorizer.address}...`)
-  const parsedChanges = await parsePermissionChanges(script, changes)
+export async function executePermissionChanges(script: Script, permissions: PermissionsUpdate): Promise<void> {
+  const authorizer = await script.dependencyInstance(permissions.authorizer)
+
+  logger.info(`Executing ${permissions.changes.length} permission changes on authorizer ${authorizer.address}...`)
+  const parsedChanges = await parsePermissionChanges(script, permissions.changes)
   const filteredChanges = await removeDuplicatedPermissions(authorizer, parsedChanges)
 
-  await script.callContract(authorizer, 'changePermissions', [filteredChanges], from)
+  await script.callContract(authorizer, 'changePermissions', [filteredChanges], permissions.from)
   logger.success(`Executed permission changes requests on manager ${authorizer.address} successfully`)
 }
 
