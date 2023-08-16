@@ -13,11 +13,13 @@ export const DEPLOYER: EOA = {
 export const PROTOCOL_ADMIN: SafeSigner = {
   safe: '0x6c0542DAeE8Cc6866529D4a68163eb157Fb78999',
   signer: DEPLOYER.address,
+  wait: true,
 }
 
 export const USERS_ADMIN: SafeSigner = {
   safe: '0x26A0c29261d18C49e6Cf0Cee175018274D58f90C',
   signer: DEPLOYER.address,
+  wait: true,
 }
 
 export const MIMIC_V2_BOT: EOA = {
