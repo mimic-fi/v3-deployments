@@ -1,24 +1,28 @@
 import { assertEvent, ZERO_BYTES32 } from '@mimic-fi/v3-helpers'
 import { Contract } from 'ethers'
 
+import { executeFeeSettings, executeRelayerSettings } from './admin'
 import { executePermissionChanges } from './authorizer'
 import logger from './logger'
 import { Script } from './script'
 import {
   AuthorizerParams,
   Dependency,
-  Environment,
   EnvironmentDeployment,
   EnvironmentUpdate,
   isDependency,
+  isEnvironmentSettingUpdate,
   isEOA,
+  isFeeSetting,
+  isPermissionsUpdate,
+  isRelayerSetting,
+  isTaskParams,
   OptionalTaskConfig,
   PriceOracleParams,
-  SmartVaultAdminSettings,
+  RegistryInstanceParams,
   SmartVaultParams,
   StandardTaskConfig,
   TaskParams,
-  TxParams,
 } from './types'
 import {
   isBridgeTaskConfig,
@@ -39,133 +43,136 @@ import {
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
-export async function deployEnvironment(
-  script: Script,
-  params: EnvironmentDeployment,
-  txParams: TxParams
-): Promise<Environment> {
-  const deployer = await script.dependencyInstance(params.deployer)
-  const env: Environment = { namespace: params.namespace, deployer }
-
-  env.authorizer = await deployAuthorizer(script, env, params.authorizer, txParams)
-  env.priceOracle = await deployPriceOracle(script, env, params.priceOracle, txParams)
-  env.smartVault = await deploySmartVault(script, env, params.smartVault, txParams)
-
-  for (const taskParams of params.tasks) {
-    const task = await deployTask(script, env, taskParams, txParams)
-    env.tasks = env.tasks?.concat(task)
-  }
-
-  await executePermissionChanges(script, env.authorizer, params.permissions.changes, params.permissions.from)
-  await executeAdminSettings(script, env.smartVault, params.settings)
-  return env
+export async function deployEnvironment(script: Script, params: EnvironmentDeployment): Promise<void> {
+  await deployAuthorizer(script, params.deployer, params.namespace, params.authorizer)
+  await deployPriceOracle(script, params.deployer, params.namespace, params.priceOracle)
+  await deploySmartVault(script, params.deployer, params.namespace, params.smartVault)
+  for (const taskParams of params.tasks) await deployTask(script, params.deployer, params.namespace, taskParams)
+  await executePermissionChanges(script, params.permissions)
+  await executeFeeSettings(script, params.feeSettings)
+  if (params.relayerSettings) await executeRelayerSettings(script, params.relayerSettings)
 }
 
-export async function updateEnvironment(
-  script: Script,
-  params: EnvironmentUpdate,
-  txParams: TxParams
-): Promise<Environment> {
-  const deployer = await script.dependencyInstance(params.deployer)
-  const env: Environment = { namespace: params.namespace, deployer }
-
-  env.authorizer = await script.dependencyInstance(params.authorizer)
-
-  for (const taskParams of params.tasks) {
-    const task = await deployTask(script, env, taskParams, txParams)
-    env.tasks = env.tasks?.concat(task)
+export async function updateEnvironment(script: Script, params: EnvironmentUpdate): Promise<void> {
+  for (const step of params.steps) {
+    if (isEnvironmentSettingUpdate(step)) {
+      const target = await script.dependencyInstance(step.target)
+      await script.callContract(target, step.method, step.args, step.from)
+    } else if (isPermissionsUpdate(step)) {
+      await executePermissionChanges(script, step)
+    } else if (isTaskParams(step)) {
+      await deployTask(script, params.deployer, params.namespace, step)
+    } else if (isFeeSetting(step)) {
+      await executeFeeSettings(script, step)
+    } else if (isRelayerSetting(step)) {
+      await executeRelayerSettings(script, step)
+    } else {
+      logger.warn(`Unknown environment update step ${JSON.stringify(step)}`)
+    }
   }
-
-  await executePermissionChanges(script, env.authorizer, params.permissions.changes, params.permissions.from)
-  return env
 }
 
 export async function deployAuthorizer(
   script: Script,
-  env: Environment,
-  params: AuthorizerParams,
-  txParams: TxParams
+  deployer: Dependency,
+  namespace: string,
+  params: AuthorizerParams
 ): Promise<Contract> {
-  const deployParams = {
-    owners: params.owners,
-    impl: script.dependencyAddress(params.version),
-  }
-
-  return deploy('Authorizer', script, env, params.name, params.version, deployParams, txParams)
+  return deploy('Authorizer', script, {
+    deployer,
+    namespace,
+    name: params.name,
+    from: params.from,
+    version: params.version,
+    initializeParams: {
+      owners: params.owners,
+      impl: script.dependencyAddress(params.version),
+    },
+  })
 }
 
 export async function deployPriceOracle(
   script: Script,
-  env: Environment,
-  params: PriceOracleParams,
-  txParams: TxParams
+  deployer: Dependency,
+  namespace: string,
+  params: PriceOracleParams
 ): Promise<Contract> {
-  const deployParams = {
-    authorizer: env.authorizer?.address,
-    signer: params.signer,
-    pivot: params.pivot,
-    feeds: params.feeds,
-    impl: script.dependencyAddress(params.version),
-  }
-
-  return deploy('PriceOracle', script, env, params.name, params.version, deployParams, txParams)
+  return deploy('PriceOracle', script, {
+    deployer,
+    namespace,
+    name: params.name,
+    from: params.from,
+    version: params.version,
+    initializeParams: {
+      authorizer: script.dependencyAddress(params.authorizer),
+      signer: params.signer,
+      pivot: params.pivot,
+      feeds: params.feeds,
+      impl: script.dependencyAddress(params.version),
+    },
+  })
 }
 
 export async function deploySmartVault(
   script: Script,
-  env: Environment,
-  params: SmartVaultParams,
-  txParams: TxParams
+  deployer: Dependency,
+  namespace: string,
+  params: SmartVaultParams
 ): Promise<Contract> {
-  const deployParams = {
-    authorizer: env.authorizer?.address,
-    priceOracle: env.priceOracle?.address,
-    impl: script.dependencyAddress(params.version),
-  }
-
-  return deploy('SmartVault', script, env, params.name, params.version, deployParams, txParams)
+  return deploy('SmartVault', script, {
+    deployer,
+    namespace,
+    name: params.name,
+    from: params.from,
+    version: params.version,
+    initializeParams: {
+      authorizer: script.dependencyAddress(params.authorizer),
+      priceOracle: script.dependencyAddress(params.priceOracle),
+      impl: script.dependencyAddress(params.version),
+    },
+  })
 }
 
 export async function deployTask(
   script: Script,
-  env: Environment,
-  params: TaskParams,
-  txParams: TxParams
+  deployer: Dependency,
+  namespace: string,
+  params: TaskParams
 ): Promise<Contract> {
   const isCustomTask = typeof params.version === 'string'
   const version: Dependency = isCustomTask ? { id: params.version as string } : (params.version as Dependency)
 
   const implementation = isCustomTask
-    ? await script.deployAndVerify(params.version as string, [], txParams)
+    ? await script.deployAndVerify(params.version as string, [], params.from)
     : await script.dependencyInstance(params.version as Dependency)
 
   const customArgs = (params.args || []).map((arg) => (isDependency(arg) ? script.dependencyAddress(arg) : arg))
   const args = [solveStandardTaskConfig(script, params.config), ...customArgs]
-  const deployParams = {
-    impl: implementation.address,
-    custom: isCustomTask,
-    initializeData: implementation.interface.encodeFunctionData(params.initialize || 'initialize', args),
-  }
 
-  return deploy('Task', script, env, params.name, version, deployParams, txParams)
+  return deploy('Task', script, {
+    deployer,
+    namespace,
+    name: params.name,
+    from: params.from,
+    version,
+    initializeParams: {
+      impl: implementation.address,
+      custom: isCustomTask,
+      initializeData: implementation.interface.encodeFunctionData(params.initialize || 'initialize', args),
+    },
+  })
 }
 
-async function deploy(
-  component: string,
-  script: Script,
-  env: Environment,
-  name: string,
-  version: Dependency,
-  params: any,
-  txParams: TxParams
-): Promise<Contract> {
-  if (!isEOA(txParams.from)) throw Error('Cannot deploy environment from other account type than EOA')
+async function deploy(component: string, script: Script, params: RegistryInstanceParams): Promise<Contract> {
+  const { namespace, name, from, version } = params
+  if (!isEOA(from)) throw Error('Cannot deploy environment from other account type than EOA')
   const output = script.output({ ensure: false })[name]
 
-  if (txParams.force || !output) {
+  if (!output) {
     logger.info(`Deploying ${name}...`)
     const method = `deploy${component}`
-    const tx = await script.callContract(env.deployer, method, [env.namespace, name, params], txParams.from)
+    const deployer = await script.dependencyInstance(params.deployer)
+    const tx = await script.callContract(deployer, method, [namespace, name, params], from)
     if (!tx) throw Error(`Could not fetch transaction receipt after creating a new ${component} instance`)
     const event = await assertEvent(tx, `${component}Deployed`)
     logger.success(`New ${name} instance at ${event.args.instance}`)
@@ -226,54 +233,5 @@ function solveOptionalTaskConfig(script: Script, config: OptionalTaskConfig): vo
 function solveConnectorDependency(script: Script, baseConfig: { connector: string | Dependency }): void {
   if (typeof baseConfig.connector !== 'string') {
     baseConfig.connector = script.dependencyAddress(baseConfig.connector)
-  }
-}
-
-async function executeAdminSettings(
-  script: Script,
-  smartVault: Contract,
-  settings: SmartVaultAdminSettings
-): Promise<void> {
-  const { fee: feeSettings } = settings
-  const feeController = await script.dependencyInstance(feeSettings.feeController)
-
-  const { maxFeePct } = feeSettings
-  logger.info(`Setting max fee pct to ${maxFeePct}...`)
-  await script.callContract(feeController, 'setMaxFeePercentage', [smartVault.address, maxFeePct], feeSettings.from)
-  logger.success(`Max fee pct set to ${maxFeePct}`)
-
-  if (feeSettings.feePct) {
-    const { feePct, from } = feeSettings
-    logger.info(`Setting fee pct to ${feePct}...`)
-    await script.callContract(feeController, 'setFeePercentage', [smartVault.address, feePct], from)
-    logger.success(`Fee pct set to ${maxFeePct}`)
-  }
-
-  if (feeSettings.feeCollector) {
-    const { feeCollector, from } = feeSettings
-    const address = typeof feeCollector === 'string' ? feeCollector : script.dependencyAddress(feeCollector)
-    logger.info(`Setting fee collector to ${address}...`)
-    await script.callContract(feeController, 'setFeeCollector', [smartVault.address, address], from)
-    logger.success(`Fee collector set to ${address}`)
-  }
-
-  if (settings.relayer) {
-    const { relayer: relayerSettings } = settings
-    const relayer = await script.dependencyInstance(relayerSettings.relayer)
-
-    if (relayerSettings.quota) {
-      const { quota, from } = relayerSettings
-      logger.info(`Setting relayer max quota to ${quota}...`)
-      await script.callContract(relayer, 'setSmartVaultMaxQuota', [smartVault.address, quota], from)
-      logger.success(`Relayer max quota set to ${quota}`)
-    }
-
-    if (relayerSettings.collector) {
-      const { collector, from } = relayerSettings
-      const address = typeof collector === 'string' ? collector : script.dependencyAddress(collector)
-      logger.info(`Setting relayer collector to ${address}...`)
-      await script.callContract(relayer, 'setSmartVaultCollector', [smartVault.address, address], from)
-      logger.success(`Relayer collector set to ${address}`)
-    }
   }
 }

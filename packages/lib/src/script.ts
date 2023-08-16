@@ -42,7 +42,6 @@ import {
   ReadOutputParams,
   RegistryImplementationDeployment,
   ScriptInput,
-  TxParams,
 } from './types'
 import Verifier from './verifier'
 
@@ -120,28 +119,26 @@ export class Script {
     return typeof output === 'string' ? output : output.address
   }
 
-  async run({ from, force }: { from?: string; force?: boolean }): Promise<void> {
+  async run(): Promise<void> {
     const input = this.input() as ScriptInput
-    const account = from ? { address: from } : input.from
-    const txParams = { from: account, force: !!force }
 
     if (isEnvironmentDeployment(input)) {
       logger.info('Deploying environment...')
-      await deployEnvironment(this, input as EnvironmentDeployment, txParams)
+      await deployEnvironment(this, input as EnvironmentDeployment)
     } else if (isEnvironmentUpdate(input)) {
       logger.info('Updating environment...')
-      await updateEnvironment(this, input as EnvironmentUpdate, txParams)
+      await updateEnvironment(this, input as EnvironmentUpdate)
     } else if (isRegistryImplementationDeployment(input)) {
       logger.info('Registering new implementation...')
-      await createRegistryImplementation(this, input as RegistryImplementationDeployment, txParams)
+      await createRegistryImplementation(this, input as RegistryImplementationDeployment)
     } else if (isContractDeployment(input)) {
       logger.info('Deploying stand alone contract...')
-      await this.deployAndVerify(input.contract, input.args, txParams, input.instanceName)
+      await this.deployAndVerify(input.contract, input.args, input.from, input.instanceName)
     } else {
       logger.info('Running custom script...')
       const scriptPath = this._fileAt(this.dir(), 'index.ts')
       const script = require(scriptPath).default
-      await script(this, txParams)
+      await script(this)
     }
   }
 
@@ -161,20 +158,20 @@ export class Script {
   async deployAndVerify(
     contractName: string,
     args: Array<any>,
-    txParams: TxParams,
+    from: Account,
     instanceName = contractName
   ): Promise<Contract> {
     const output = this.output({ ensure: false })[instanceName]
 
-    if (txParams.force || !output) {
-      const instance = await this._deploy(contractName, args, txParams)
+    if (!output) {
+      const instance = await this._deploy(contractName, args, from)
       this.save({ [instanceName]: instance.address })
-      await this._verify(contractName, instance.address, args, txParams.libs)
+      await this._verify(contractName, instance.address, args)
       return instance
     } else {
       const address = typeof output === 'string' ? output : output.address
       logger.info(`${contractName} already deployed at ${address}`)
-      await this._verify(contractName, address, args, txParams.libs)
+      await this._verify(contractName, address, args)
       return this.instanceAt(contractName, address)
     }
   }
@@ -300,19 +297,19 @@ export class Script {
     return tx
   }
 
-  private async _deploy(contractName: string, args: Array<any>, txParams: TxParams): Promise<Contract> {
+  private async _deploy(contractName: string, args: Array<any>, from: Account): Promise<Contract> {
     const artifactLike = this.artifactLike(contractName)
-    if (!isEOA(txParams.from)) throw Error('Cannot deploy contract from other account type than EOA')
-    const signer = await this.getSigner(txParams.from.address)
-    const instance = await deploy(artifactLike, args, signer, txParams.libs)
+    if (!isEOA(from)) throw Error('Cannot deploy contract from other account type than EOA')
+    const signer = await this.getSigner(from.address)
+    const instance = await deploy(artifactLike, args, signer)
     logger.success(`Deployed ${contractName} at ${instance.address}`)
     return instance
   }
 
-  private async _verify(contractName: string, address: string, args: unknown, libs?: Libraries): Promise<void> {
+  private async _verify(contractName: string, address: string, args: unknown): Promise<void> {
     try {
       if (!this._verifier) return logger.warn('Skipping contract verification, no verifier defined')
-      const url = await this._verifier.call(this, contractName, address, args, libs)
+      const url = await this._verifier.call(this, contractName, address, args)
       logger.success(`Verified contract ${contractName} at ${url}`)
     } catch (error) {
       logger.error(`Failed trying to verify ${contractName} at ${address}: ${error}`)

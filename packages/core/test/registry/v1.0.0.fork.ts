@@ -9,7 +9,7 @@ describe(script.id, () => {
   let registry: Contract
 
   before('run script', async () => {
-    await script.run({ force: true })
+    await script.run()
     registry = await script.deployedInstance('Registry')
   })
 

@@ -10,12 +10,12 @@ describe(script.id, () => {
 
   before('deploy registry', async () => {
     const registryScript = Script.forForkedNetwork('registry/v1.0.0', hre)
-    await registryScript.run({ force: true })
+    await registryScript.run()
     registry = await registryScript.deployedInstance('Registry')
   })
 
   before('run script', async () => {
-    await script.run({ force: true })
+    await script.run()
     unwrapper = await script.deployedInstance('Unwrapper')
   })
 

@@ -11,18 +11,18 @@ describe(script.id, () => {
 
   before('deploy registry', async () => {
     const registryScript = Script.forForkedNetwork('registry/v1.0.0', hre)
-    await registryScript.run({ force: true })
+    await registryScript.run()
     registry = await registryScript.deployedInstance('Registry')
   })
 
   before('deploy fee collector', async () => {
     const feeControllerScript = Script.forForkedNetwork('fee-controller/v1.0.0', hre)
-    await feeControllerScript.run({ force: true })
+    await feeControllerScript.run()
     feeController = await feeControllerScript.deployedInstance('FeeController')
   })
 
   before('run script', async () => {
-    await script.run({ force: true })
+    await script.run()
     smartVault = await script.deployedInstance('SmartVault')
   })
 
