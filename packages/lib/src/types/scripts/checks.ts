@@ -4,6 +4,8 @@ import {
   EnvironmentUpdate,
   EnvironmentUpdateStep,
   PermissionsUpdate,
+  SmartVaultFeeSettings,
+  SmartVaultRelayerSettings,
   TaskParams,
 } from '../environment'
 import { ContractDeployment, RegistryImplementationDeployment } from '../registry'
@@ -42,4 +44,14 @@ export function isPermissionsUpdate(input: EnvironmentUpdateStep): input is Perm
 export function isTaskParams(input: EnvironmentUpdateStep): input is TaskParams {
   const taskParams = input as TaskParams
   return !!taskParams.config
+}
+
+export function isFeeSetting(input: EnvironmentUpdateStep): input is SmartVaultFeeSettings {
+  const feeSettings = input as SmartVaultFeeSettings
+  return !!feeSettings.feeController
+}
+
+export function isRelayerSetting(input: EnvironmentUpdateStep): input is SmartVaultRelayerSettings {
+  const relayerSettings = input as SmartVaultRelayerSettings
+  return !!relayerSettings.relayer
 }

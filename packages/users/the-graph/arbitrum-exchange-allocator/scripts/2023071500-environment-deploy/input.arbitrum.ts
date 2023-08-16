@@ -235,19 +235,18 @@ const deployment: EnvironmentDeployment = {
       },
     ],
   },
-  settings: {
+  feeSettings: {
+    from: PROTOCOL_ADMIN,
     smartVault: dependency('smart-vault'),
-    fee: {
-      from: PROTOCOL_ADMIN,
-      feeController: dependency('core/fee-controller/v1.0.0-beta'),
-      maxFeePct: fp(0.02),
-      feePct: fp(0.0001),
-    },
-    relayer: {
-      from: PROTOCOL_ADMIN,
-      relayer: dependency('core/relayer/v1.0.0-beta'),
-      quota: fp(0.01),
-    },
+    feeController: dependency('core/fee-controller/v1.0.0-beta'),
+    maxFeePct: fp(0.02),
+    feePct: fp(0.0001),
+  },
+  relayerSettings: {
+    from: PROTOCOL_ADMIN,
+    smartVault: dependency('smart-vault'),
+    relayer: dependency('core/relayer/v1.0.0-beta'),
+    quota: fp(0.01),
   },
 }
 

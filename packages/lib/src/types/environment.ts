@@ -49,6 +49,7 @@ export type PermissionsUpdate = {
 
 export type SmartVaultFeeSettings = {
   from: Account
+  smartVault: Dependency
   feeController: Dependency
   maxFeePct: BigNumberish
   feePct?: BigNumberish
@@ -57,15 +58,10 @@ export type SmartVaultFeeSettings = {
 
 export type SmartVaultRelayerSettings = {
   from: Account
+  smartVault: Dependency
   relayer: Dependency
   quota?: BigNumberish
   collector?: string | Dependency
-}
-
-export type SmartVaultAdminSettings = {
-  smartVault: Dependency
-  fee: SmartVaultFeeSettings
-  relayer?: SmartVaultRelayerSettings
 }
 
 export type EnvironmentDeployment = {
@@ -76,7 +72,8 @@ export type EnvironmentDeployment = {
   smartVault: SmartVaultParams
   tasks: TaskParams[]
   permissions: PermissionsUpdate
-  settings: SmartVaultAdminSettings
+  feeSettings: SmartVaultFeeSettings
+  relayerSettings?: SmartVaultRelayerSettings
 }
 
 export type EnvironmentUpdate = {
@@ -92,4 +89,9 @@ export type EnvironmentSettingUpdate = {
   args: any[]
 }
 
-export type EnvironmentUpdateStep = TaskParams | EnvironmentSettingUpdate | PermissionsUpdate
+export type EnvironmentUpdateStep =
+  | TaskParams
+  | PermissionsUpdate
+  | SmartVaultFeeSettings
+  | SmartVaultRelayerSettings
+  | EnvironmentSettingUpdate

@@ -1,7 +1,7 @@
 import { assertEvent, ZERO_BYTES32 } from '@mimic-fi/v3-helpers'
 import { Contract } from 'ethers'
 
-import { executeAdminSettings } from './admin'
+import { executeFeeSettings, executeRelayerSettings } from './admin'
 import { executePermissionChanges } from './authorizer'
 import logger from './logger'
 import { Script } from './script'
@@ -13,15 +13,17 @@ import {
   isDependency,
   isEnvironmentSettingUpdate,
   isEOA,
+  isFeeSetting,
   isPermissionsUpdate,
+  isRelayerSetting,
   isTaskParams,
   OptionalTaskConfig,
   PriceOracleParams,
+  RegistryInstanceParams,
   SmartVaultParams,
   StandardTaskConfig,
   TaskParams,
 } from './types'
-import { RegistryInstanceParams } from './types/registry'
 import {
   isBridgeTaskConfig,
   isConvexTaskConfig,
@@ -47,7 +49,8 @@ export async function deployEnvironment(script: Script, params: EnvironmentDeplo
   await deploySmartVault(script, params.deployer, params.namespace, params.smartVault)
   for (const taskParams of params.tasks) await deployTask(script, params.deployer, params.namespace, taskParams)
   await executePermissionChanges(script, params.permissions)
-  await executeAdminSettings(script, params.settings)
+  await executeFeeSettings(script, params.feeSettings)
+  if (params.relayerSettings) await executeRelayerSettings(script, params.relayerSettings)
 }
 
 export async function updateEnvironment(script: Script, params: EnvironmentUpdate): Promise<void> {
@@ -59,6 +62,10 @@ export async function updateEnvironment(script: Script, params: EnvironmentUpdat
       await executePermissionChanges(script, step)
     } else if (isTaskParams(step)) {
       await deployTask(script, params.deployer, params.namespace, step)
+    } else if (isFeeSetting(step)) {
+      await executeFeeSettings(script, step)
+    } else if (isRelayerSetting(step)) {
+      await executeRelayerSettings(script, step)
     } else {
       logger.warn(`Unknown environment update step ${JSON.stringify(step)}`)
     }
