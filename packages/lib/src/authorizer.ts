@@ -1,4 +1,4 @@
-import { Contract } from 'ethers'
+import { BigNumber, Contract } from 'ethers'
 
 import logger from './logger'
 import { Script } from './script'
@@ -18,8 +18,12 @@ export async function executePermissionChanges(script: Script, permissions: Perm
   const parsedChanges = await parsePermissionChanges(script, permissions.changes)
   const filteredChanges = await removeDuplicatedPermissions(authorizer, parsedChanges)
 
-  await script.callContract(authorizer, 'changePermissions', [filteredChanges], permissions.from)
-  logger.success(`Executed permission changes requests on manager ${authorizer.address} successfully`)
+  if (filteredChanges.length > 0) {
+    await script.callContract(authorizer, 'changePermissions', [filteredChanges], permissions.from)
+    logger.success(`Executed permission changes requests on manager ${authorizer.address} successfully`)
+  } else {
+    logger.warn(`No permission changes requests on manager ${authorizer.address} to execute`)
+  }
 }
 
 async function parsePermissionChanges(script: Script, changes: PermissionChange[]): Promise<ParsedPermissionChange[]> {
@@ -59,7 +63,16 @@ async function removeDuplicatedPermissions(
 
     for (const grant of change.grants) {
       const isAuthorized = await authorizer.isAuthorized(grant.who, change.where, grant.what, [])
-      if (!isAuthorized) filteredChange.grants.push(grant)
+      if (!isAuthorized) {
+        const grantedParams = await authorizer.getPermissionParams(grant.who, change.where, grant.what)
+        const sameParamsLength = grantedParams.length === grant.params.length
+        const includesAllParams = grant.params.every((param, i) => {
+          const grantedParam = grantedParams[i]
+          return grantedParam.op == param.op && grantedParam.value.toString() == BigNumber.from(param.value).toString()
+        })
+        const sameParams = sameParamsLength && includesAllParams
+        if (!sameParams) filteredChange.grants.push(grant)
+      }
     }
 
     for (const revoke of change.revokes) {
