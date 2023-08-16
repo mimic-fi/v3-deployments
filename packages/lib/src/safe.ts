@@ -22,7 +22,7 @@ export async function sendSafeTransaction(
   const safeService = new SafeApiKit({ txServiceUrl, ethAdapter })
 
   const data = contract.interface.encodeFunctionData(method, args)
-  const safeTransactionData = { to: contract.address, value: '0', data }
+  const safeTransactionData = { to: ethers.utils.getAddress(contract.address), value: '0', data }
   const safeTransaction = await safe.createTransaction({ safeTransactionData })
   const safeTransactionHash = await safe.getTransactionHash(safeTransaction)
   const senderSignature = await safe.signTransactionHash(safeTransactionHash)
