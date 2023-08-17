@@ -56,8 +56,10 @@ export async function deployEnvironment(script: Script, params: EnvironmentDeplo
 export async function updateEnvironment(script: Script, params: EnvironmentUpdate): Promise<void> {
   for (const step of params.steps) {
     if (isEnvironmentSettingUpdate(step)) {
+      logger.info(`Calling ${step.method} on ${step.target} with args [${JSON.stringify(step.args)}]...`)
       const target = await script.dependencyInstance(step.target)
       await script.callContract(target, step.method, step.args, step.from)
+      logger.success(`Called ${step.method} on ${step.target} successfully`)
     } else if (isPermissionsUpdate(step)) {
       await executePermissionChanges(script, step)
     } else if (isTaskParams(step)) {
