@@ -9,6 +9,7 @@ import {
   AuthorizerParams,
   Dependency,
   EnvironmentDeployment,
+  EnvironmentSettingUpdate,
   EnvironmentUpdate,
   isDependency,
   isEnvironmentSettingUpdate,
@@ -56,10 +57,7 @@ export async function deployEnvironment(script: Script, params: EnvironmentDeplo
 export async function updateEnvironment(script: Script, params: EnvironmentUpdate): Promise<void> {
   for (const step of params.steps) {
     if (isEnvironmentSettingUpdate(step)) {
-      logger.info(`Calling ${step.method} on ${step.target} with args [${JSON.stringify(step.args)}]...`)
-      const target = await script.dependencyInstance(step.target)
-      await script.callContract(target, step.method, step.args, step.from)
-      logger.success(`Called ${step.method} on ${step.target} successfully`)
+      await updateEnvironmentSetting(script, step)
     } else if (isPermissionsUpdate(step)) {
       await executePermissionChanges(script, step)
     } else if (isTaskParams(step)) {
@@ -72,6 +70,14 @@ export async function updateEnvironment(script: Script, params: EnvironmentUpdat
       logger.warn(`Unknown environment update step ${JSON.stringify(step)}`)
     }
   }
+}
+
+async function updateEnvironmentSetting(script: Script, step: EnvironmentSettingUpdate): Promise<void> {
+  logger.info(`Calling ${step.method} on ${step.target} with args [${JSON.stringify(step.args)}]...`)
+  const target = await script.dependencyInstance(step.target)
+  const args = step.args.map((arg: any) => (isDependency(arg) ? script.dependencyAddress(arg) : arg))
+  await script.callContract(target, step.method, args, step.from)
+  logger.success(`Called ${step.method} on ${step.target} successfully`)
 }
 
 export async function deployAuthorizer(
