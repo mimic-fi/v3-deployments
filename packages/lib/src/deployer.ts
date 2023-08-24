@@ -73,11 +73,11 @@ export async function updateEnvironment(script: Script, params: EnvironmentUpdat
 }
 
 async function updateEnvironmentSetting(script: Script, step: EnvironmentSettingUpdate): Promise<void> {
-  logger.info(`Calling ${step.method} on ${step.target} with args [${JSON.stringify(step.args)}]...`)
-  const target = await script.dependencyInstance(step.target)
   const args = step.args.map((arg: any) => (isDependency(arg) ? script.dependencyAddress(arg) : arg))
+  const target = await script.dependencyInstance(step.target)
+  logger.info(`Calling ${step.method} on ${target.address} with args [${JSON.stringify(args)}]...`)
   await script.callContract(target, step.method, args, step.from)
-  logger.success(`Called ${step.method} on ${step.target} successfully`)
+  logger.success(`Called ${step.method} on ${target.address} successfully`)
 }
 
 export async function deployAuthorizer(
