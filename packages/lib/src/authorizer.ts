@@ -14,11 +14,12 @@ import {
 export async function executePermissionChanges(script: Script, permissions: PermissionsUpdate): Promise<void> {
   const authorizer = await script.dependencyInstance(permissions.authorizer)
 
-  logger.info(`Executing ${permissions.changes.length} permission changes on authorizer ${authorizer.address}...`)
+  logger.info(`Analyzing ${permissions.changes.length} permission changes...`)
   const parsedChanges = await parsePermissionChanges(script, permissions.changes)
   const filteredChanges = await removeDuplicatedPermissions(authorizer, parsedChanges)
 
   if (filteredChanges.length > 0) {
+    logger.info(`Executing ${permissions.changes.length} permission changes on authorizer ${authorizer.address}...`)
     await script.callContract(authorizer, 'changePermissions', [filteredChanges], permissions.from)
     logger.success(`Executed permission changes requests on manager ${authorizer.address} successfully`)
   } else {
@@ -65,13 +66,19 @@ async function removeDuplicatedPermissions(
       const isAuthorized = await authorizer.isAuthorized(grant.who, change.where, grant.what, [])
       if (!isAuthorized) {
         const grantedParams = await authorizer.getPermissionParams(grant.who, change.where, grant.what)
-        const sameParamsLength = grantedParams.length === grant.params.length
-        const includesAllParams = grant.params.every((param, i) => {
-          const grantedParam = grantedParams[i]
-          return grantedParam.op == param.op && grantedParam.value.toString() == BigNumber.from(param.value).toString()
-        })
-        const sameParams = sameParamsLength && includesAllParams
-        if (!sameParams) filteredChange.grants.push(grant)
+        if (grantedParams.length == 0) filteredChange.grants.push(grant)
+        else {
+          const includesAllParams = grant.params.every((param, i) => {
+            const grantedParam = grantedParams[i]
+            return (
+              grantedParam.op == param.op && grantedParam.value.toString() == BigNumber.from(param.value).toString()
+            )
+          })
+
+          const sameParamsLength = grantedParams.length === grant.params.length
+          const sameParams = sameParamsLength && includesAllParams
+          if (!sameParams) filteredChange.grants.push(grant)
+        }
       }
     }
 

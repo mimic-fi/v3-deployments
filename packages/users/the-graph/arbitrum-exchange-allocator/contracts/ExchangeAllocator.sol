@@ -33,7 +33,7 @@ contract ExchangeAllocator is IExchangeAllocator, Collector {
      * @dev Disables the default collector initializer
      */
     function initialize(CollectConfig memory) external pure override {
-        revert('COLLECTOR_INITIALIZER_DISABLED');
+        revert TaskInitializerDisabled();
     }
 
     /**
@@ -79,7 +79,7 @@ contract ExchangeAllocator is IExchangeAllocator, Collector {
      * @dev Tells the amount in `token` to be funded
      * @param token Address of the token to be used for funding
      */
-    function getTaskAmount(address token) public view virtual override(IBaseTask, BaseTask) returns (uint256) {
+    function getTaskAmount(address token) public view virtual override(Collector, IBaseTask) returns (uint256) {
         Threshold memory threshold = TokenThresholdTask.getTokenThreshold(token);
         if (threshold.token == address(0)) return 0;
 
@@ -97,12 +97,22 @@ contract ExchangeAllocator is IExchangeAllocator, Collector {
      */
     function _beforeTokenThresholdTask(address token, uint256 amount) internal virtual override {
         Threshold memory threshold = TokenThresholdTask.getTokenThreshold(token);
-        require(threshold.token != address(0), 'TASK_TOKEN_THRESHOLD_NOT_SET');
+        if (threshold.token == address(0)) revert TaskTokenThresholdNotSet(token);
 
         uint256 price = _getPrice(threshold.token, token);
         uint256 currentBalance = IERC20(token).balanceOf(allocationExchange);
-        require(currentBalance < threshold.min.mulUp(price), 'TASK_TOKEN_THRESHOLD_NOT_MET');
-        require(currentBalance + amount <= threshold.max.mulUp(price), 'TASK_TOKEN_THRESHOLD_NOT_MET');
+
+        uint256 minThresholdInToken = threshold.min.mulUp(price);
+        bool isCurrentBalanceAboveMin = currentBalance >= minThresholdInToken;
+        if (isCurrentBalanceAboveMin) revert TaskAllocationBalanceAboveMin(currentBalance, minThresholdInToken);
+
+        uint256 newBalance = currentBalance + amount;
+        bool isNewBalanceBelowMin = newBalance < minThresholdInToken;
+        if (isNewBalanceBelowMin) revert TaskNewAllocationBalanceBelowMin(newBalance, minThresholdInToken);
+
+        uint256 maxThresholdInToken = threshold.max.mulUp(price);
+        bool isNewBalanceAboveMax = newBalance > maxThresholdInToken;
+        if (isNewBalanceAboveMax) revert TaskNewAllocationBalanceAboveMax(newBalance, maxThresholdInToken);
     }
 
     /**
@@ -110,7 +120,7 @@ contract ExchangeAllocator is IExchangeAllocator, Collector {
      * @param newAllocationExchange Address of the allocation exchange to be set
      */
     function _setAllocationExchange(address newAllocationExchange) internal {
-        require(newAllocationExchange != address(0), 'TASK_ALLOCATION_EXCHANGE_ZERO');
+        if (newAllocationExchange == address(0)) revert TaskAllocationExchangeZero();
         allocationExchange = newAllocationExchange;
         emit AllocationExchangeSet(newAllocationExchange);
     }

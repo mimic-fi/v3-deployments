@@ -1,39 +1,39 @@
 {
   "authorizer": {
-    "version": "core/authorizer/v1.0.0-beta",
-    "address": "0x4A867cBE06eADb969d8FF9cFeA1e904716F599ED"
+    "version": "core/authorizer/v1.0.0",
+    "address": "0x5f008A86Cfd8De612d09C71576DBaCbc787CEf4E"
   },
   "price-oracle": {
-    "version": "core/price-oracle/v1.0.0-beta",
-    "address": "0x79cD17eF28D0F27A953A0a6Ea03B956B69Af6C5F"
+    "version": "core/price-oracle/v1.0.0",
+    "address": "0xEb2566BE22c6783015774B7c22C35f378964BFF4"
   },
   "smart-vault": {
-    "version": "core/smart-vault/v1.0.0-beta",
-    "address": "0xFdEa2778C830A9DD6c20c037014D1fB65daCc5AB"
+    "version": "core/smart-vault/v1.0.0",
+    "address": "0x360Ca1559d0105376817248d9D06DCA5b7E16106"
   },
-  "ExchangeAllocator": "0x1Ae265BB183Bb5661Ab50C41EA44Da5a4b285f3f",
+  "ExchangeAllocator": "0xc8B1e924065207e602c1D3c2d13918bBEA31e02c",
   "collector-exchange-allocator": {
     "version": "ExchangeAllocator",
-    "address": "0xFFDa086bf13363CC8e518a0e437fd95EB093C390"
+    "address": "0xDC4B989448bdD6997824c3a38a18bAE3E978daC3"
   },
   "exchange-allocator-withdrawer": {
-    "version": "core/tasks/primitives/withdrawer/v1.0.0-beta",
-    "address": "0x657fAe2CB8d0457ef242A20fA4EB1d52a5675d1B"
+    "version": "core/tasks/primitives/withdrawer/v1.0.0",
+    "address": "0xe61bFD7FDD7C741225619e58a54b8CF8A55D8969"
   },
   "collector-relayer-funder": {
-    "version": "core/tasks/relayer/collector/v1.0.0-beta",
-    "address": "0xB52ea981FdFD783e3417cE66366c9ED625c154e6"
+    "version": "core/tasks/relayer/collector/v1.0.0",
+    "address": "0x05512D0bbfBa40F14De01520A13a746aC3E92bac"
   },
   "relayer-funder-swapper": {
-    "version": "core/tasks/swap/1inch-v5/v1.0.0-beta",
-    "address": "0x574B2877AD9D70d8680C20CC0F945321D4875EEb"
+    "version": "core/tasks/swap/1inch-v5/v1.0.0",
+    "address": "0x46763abe916bFF916581d335c132351Fb3F2b85E"
   },
   "relayer-funder-unwrapper": {
-    "version": "core/tasks/primitives/unwrapper/v1.0.0-beta",
-    "address": "0x03889623BfBc2d4638A040CA74205B49F281eBA0"
+    "version": "core/tasks/primitives/unwrapper/v1.0.0",
+    "address": "0x05E458d6E76FDA93308656489bf5B2D2c238D439"
   },
   "relayer-depositor": {
-    "version": "core/tasks/relayer/depositor/v1.1.0-beta",
-    "address": "0xb4982b87Ba256293DD54Cf0FCC66519b0D88Da74"
+    "version": "core/tasks/relayer/depositor/v1.0.0",
+    "address": "0x04a20e63278117E0Bf29F35Ec072666eBbe72704"
   }
 }
