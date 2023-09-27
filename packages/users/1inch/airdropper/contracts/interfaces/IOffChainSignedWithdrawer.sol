@@ -41,6 +41,11 @@ interface IOffChainSignedWithdrawer is ITask {
     error TaskSignerZero();
 
     /**
+     * @dev The signed withdrawals URL is empty
+     */
+    error TaskSignedWithdrawalsUrlEmpty();
+
+    /**
      * @dev The receovered signer is not the expected one
      */
     error TaskInvalidOffChainSignedWithdrawer(address actual, address expected);
@@ -56,9 +61,19 @@ interface IOffChainSignedWithdrawer is ITask {
     event SignerSet(address indexed signer);
 
     /**
+     * @dev Emitted every time the signed withdrawals URL is set
+     */
+    event SignedWithdrawalsUrlSet(string signedWithdrawalsUrl);
+
+    /**
      * @dev Tells the address of the trusted signer
      */
     function signer() external view returns (address);
+
+    /**
+     * @dev Tells the URL containing the file with all the signed withdrawals
+     */
+    function signedWithdrawalsUrl() external view returns (string memory);
 
     /**
      * @dev Sets the signer address

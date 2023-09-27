@@ -30,11 +30,15 @@ contract OffChainSignedWithdrawer is Task, IOffChainSignedWithdrawer {
     // Address signing the withdraw information
     address public override signer;
 
+    // URL containing the file with all the signed withdrawals
+    string public override signedWithdrawalsUrl;
+
     /**
      * @dev Off-chain signed withdraw config. Only used in the initializer.
      */
     struct OffChainSignedWithdrawerConfig {
         address signer;
+        string signedWithdrawalsUrl;
         TaskConfig taskConfig;
     }
 
@@ -64,6 +68,7 @@ contract OffChainSignedWithdrawer is Task, IOffChainSignedWithdrawer {
         onlyInitializing
     {
         _setSigner(config.signer);
+        _setSignedWithdrawalsUrl(config.signedWithdrawalsUrl);
     }
 
     /**
@@ -107,10 +112,12 @@ contract OffChainSignedWithdrawer is Task, IOffChainSignedWithdrawer {
     /**
      * @dev After off-chain signed withdrawer hook
      */
-    function _afterOffChainSignedWithdrawer(address token, uint256 amount, address recipient, bytes memory signature)
-        internal
-        virtual
-    {
+    function _afterOffChainSignedWithdrawer(
+        address token,
+        uint256 amount,
+        address, /* recipient */
+        bytes memory /* signature */
+    ) internal virtual {
         _afterTask(token, amount);
     }
 
@@ -122,6 +129,16 @@ contract OffChainSignedWithdrawer is Task, IOffChainSignedWithdrawer {
         if (newSigner == address(0)) revert TaskSignerZero();
         signer = newSigner;
         emit SignerSet(newSigner);
+    }
+
+    /**
+     * @dev Sets the signed withdrawals URL
+     * @param newSignedWithdrawalsUrl URL containing the file with all the signed withdrawals
+     */
+    function _setSignedWithdrawalsUrl(string memory newSignedWithdrawalsUrl) internal {
+        if (bytes(newSignedWithdrawalsUrl).length == 0) revert TaskSignedWithdrawalsUrlEmpty();
+        signedWithdrawalsUrl = newSignedWithdrawalsUrl;
+        emit SignedWithdrawalsUrlSet(newSignedWithdrawalsUrl);
     }
 
     /**

@@ -36,10 +36,21 @@ describe('OffChainSignedWithdrawer', () => {
       [
         {
           signer: signer.address,
+          signedWithdrawalsUrl: 'ipfs:foo/bar',
           taskConfig: buildEmptyTaskConfig(owner, smartVault),
         },
       ]
     )
+  })
+
+  describe('initialize', () => {
+    it('sets the signer properly', async () => {
+      expect(await task['signer()']()).to.be.equal(signer.address)
+    })
+
+    it('sets the signed withdrawals URL properly', async () => {
+      expect(await task.signedWithdrawalsUrl()).to.be.equal('ipfs:foo/bar')
+    })
   })
 
   describe('execution type', () => {
