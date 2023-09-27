@@ -1,0 +1,70 @@
+name: Users CI
+
+env:
+  CI: true
+
+on:
+  push:
+    branches: "*"
+    paths:
+      - packages/users/**
+  pull_request:
+    branches: "*"
+    paths:
+      - packages/users/**
+
+jobs:
+  find-changed-packages:
+    runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.write-output.outputs.packages }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Find changed packages
+        id: changed-packages
+        uses: tj-actions/changed-files@v39
+        with:
+          files: packages/users/**
+          dir_names: true
+      - name: Write output
+        id: write-output
+        run: |
+          PACKAGES=$(echo ${{ steps.changed-packages.outputs.all_changed_files }} | tr -s ' '  '\n' | grep -oP '(?<=packages/users/)([\w-]*/[\w-]*)' | sort --unique | paste -sd ' ' | sed 's/\//-/g')
+          LIST="[\"$(echo ${PACKAGES// /\", \"})\"]"
+          echo "List: $LIST"
+          echo "packages={\"package\":$LIST}" >> "$GITHUB_OUTPUT"
+
+  lint:
+    runs-on: ubuntu-latest
+    if: ${{ needs.find-changed-packages.outputs.packages != '' }}
+    strategy:
+      matrix: ${{fromJson(needs.find-changed-packages.outputs.packages)}}
+    needs:
+      - find-changed-packages
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up environment
+        uses: ./.github/actions/setup
+      - name: Build
+        run: yarn build
+      - name: Lint
+        run: yarn workspace @mimic-fi/v3-deployments-${{ matrix.package }} lint
+
+  test:
+    runs-on: ubuntu-latest
+    if: ${{ needs.find-changed-packages.outputs.packages != '' }}
+    strategy:
+      matrix: ${{fromJson(needs.find-changed-packages.outputs.packages)}}
+    needs:
+      - find-changed-packages
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up environment
+        uses: ./.github/actions/setup
+      - name: Build
+        run: yarn build
+      - name: Test
+        run: yarn workspace @mimic-fi/v3-deployments-${{ matrix.package }} test
