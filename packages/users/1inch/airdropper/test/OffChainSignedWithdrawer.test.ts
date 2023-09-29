@@ -33,13 +33,7 @@ describe('OffChainSignedWithdrawer', () => {
     task = await deployProxy(
       'OffChainSignedWithdrawer',
       [],
-      [
-        {
-          signer: signer.address,
-          signedWithdrawalsUrl: 'ipfs:foo/bar',
-          taskConfig: buildEmptyTaskConfig(owner, smartVault),
-        },
-      ]
+      [buildEmptyTaskConfig(owner, smartVault), signer.address, 'ipfs:foo/bar']
     )
   })
 

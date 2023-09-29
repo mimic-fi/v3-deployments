@@ -34,41 +34,45 @@ contract OffChainSignedWithdrawer is Task, IOffChainSignedWithdrawer {
     string public override signedWithdrawalsUrl;
 
     /**
-     * @dev Off-chain signed withdraw config. Only used in the initializer.
-     */
-    struct OffChainSignedWithdrawerConfig {
-        address signer;
-        string signedWithdrawalsUrl;
-        TaskConfig taskConfig;
-    }
-
-    /**
      * @dev Initializes the off-chain signed withdrawer
-     * @param config Off-chain signed withdraw config
+     * @param taskConfig Task config
+     * @param initialSigner Address of the new signer to be set
+     * @param initialSignedWithdrawalsUrl URL containing the file with all the signed withdrawals
      */
-    function initialize(OffChainSignedWithdrawerConfig memory config) external virtual initializer {
-        __OffChainSignedWithdrawer_init(config);
+    function initialize(TaskConfig memory taskConfig, address initialSigner, string memory initialSignedWithdrawalsUrl)
+        external
+        initializer
+    {
+        __OffChainSignedWithdrawer_init(taskConfig, initialSigner, initialSignedWithdrawalsUrl);
     }
 
     /**
      * @dev Initializes the off-chain signed withdrawer. It does call upper contracts initializers.
-     * @param config Off-chain signed withdraw config
+     * @param taskConfig Task config
+     * @param initialSigner Address of the new signer to be set
+     * @param initialSignedWithdrawalsUrl URL containing the file with all the signed withdrawals
      */
-    function __OffChainSignedWithdrawer_init(OffChainSignedWithdrawerConfig memory config) internal onlyInitializing {
-        __Task_init(config.taskConfig);
-        __OffChainSignedWithdrawer_init_unchained(config);
+    function __OffChainSignedWithdrawer_init(
+        TaskConfig memory taskConfig,
+        address initialSigner,
+        string memory initialSignedWithdrawalsUrl
+    ) internal onlyInitializing {
+        __Task_init(taskConfig);
+        __OffChainSignedWithdrawer_init_unchained(taskConfig, initialSigner, initialSignedWithdrawalsUrl);
     }
 
     /**
      * @dev Initializes the off-chain signed withdrawer. It does not call upper contracts initializers.
-     * @param config Off-chain signed withdraw config
+     * @param initialSigner Address of the new signer to be set
+     * @param initialSignedWithdrawalsUrl URL containing the file with all the signed withdrawals
      */
-    function __OffChainSignedWithdrawer_init_unchained(OffChainSignedWithdrawerConfig memory config)
-        internal
-        onlyInitializing
-    {
-        _setSigner(config.signer);
-        _setSignedWithdrawalsUrl(config.signedWithdrawalsUrl);
+    function __OffChainSignedWithdrawer_init_unchained(
+        TaskConfig memory,
+        address initialSigner,
+        string memory initialSignedWithdrawalsUrl
+    ) internal onlyInitializing {
+        _setSigner(initialSigner);
+        _setSignedWithdrawalsUrl(initialSignedWithdrawalsUrl);
     }
 
     /**
