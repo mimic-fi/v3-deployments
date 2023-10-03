@@ -46,7 +46,12 @@ interface IOffChainSignedWithdrawer is ITask {
     error TaskSignedWithdrawalsUrlEmpty();
 
     /**
-     * @dev The receovered signer is not the expected one
+     * @dev The off-chain signed withdrawal was already executed
+     */
+    error TaskWithdrawalAlreadyExecuted(address token, uint256 amount, address recipient);
+
+    /**
+     * @dev The recovered signer is not the expected one
      */
     error TaskInvalidOffChainSignedWithdrawer(address actual, address expected);
 
@@ -76,10 +81,26 @@ interface IOffChainSignedWithdrawer is ITask {
     function signedWithdrawalsUrl() external view returns (string memory);
 
     /**
+     * @dev Tells whether a withdrawal was executed
+     */
+    function wasExecuted(bytes32 id) external view returns (bool);
+
+    /**
+     * @dev Tells the ID for a withdrawal
+     */
+    function getWithdrawalId(address token, uint256 amount, address recipient) external view returns (bytes32);
+
+    /**
      * @dev Sets the signer address
      * @param signer Address of the new signer to be set
      */
     function setSigner(address signer) external;
+
+    /**
+     * @dev Sets the signed withdrawals URL. Sender must be authorized.
+     * @param newSignedWithdrawalsUrl URL containing the file with all the signed withdrawals
+     */
+    function setSignedWithdrawalsUrl(string memory newSignedWithdrawalsUrl) external;
 
     /**
      * @dev Executes the off-chain signed withdrawer task

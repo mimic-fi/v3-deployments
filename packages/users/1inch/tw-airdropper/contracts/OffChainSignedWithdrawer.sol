@@ -33,6 +33,9 @@ contract OffChainSignedWithdrawer is Task, IOffChainSignedWithdrawer {
     // URL containing the file with all the signed withdrawals
     string public override signedWithdrawalsUrl;
 
+    // Whether a specific withdrawal was executed or not
+    mapping (bytes32 => bool) public override wasExecuted;
+
     /**
      * @dev Initializes the off-chain signed withdrawer
      * @param taskConfig Task config
@@ -76,11 +79,26 @@ contract OffChainSignedWithdrawer is Task, IOffChainSignedWithdrawer {
     }
 
     /**
+     * @dev Tells the ID for a withdrawal
+     */
+    function getWithdrawalId(address token, uint256 amount, address recipient) public view override returns (bytes32) {
+        return keccak256(abi.encodePacked(block.chainid, address(this), token, amount, recipient));
+    }
+
+    /**
      * @dev Sets the signer address. Sender must be authorized.
      * @param newSigner Address of the new signer to be set
      */
     function setSigner(address newSigner) external override authP(authParams(newSigner)) {
         _setSigner(newSigner);
+    }
+
+    /**
+     * @dev Sets the signed withdrawals URL. Sender must be authorized.
+     * @param newSignedWithdrawalsUrl URL containing the file with all the signed withdrawals
+     */
+    function setSignedWithdrawalsUrl(string memory newSignedWithdrawalsUrl) external override auth {
+        _setSignedWithdrawalsUrl(newSignedWithdrawalsUrl);
     }
 
     /**
@@ -108,8 +126,11 @@ contract OffChainSignedWithdrawer is Task, IOffChainSignedWithdrawer {
         if (token == address(0)) revert TaskTokenZero();
         if (amount == 0) revert TaskAmountZero();
         if (recipient == address(0)) revert TaskRecipientZero();
-        bytes32 message = keccak256(abi.encodePacked(token, amount, recipient));
-        address recoveredSigner = ECDSA.recover(ECDSA.toEthSignedMessageHash(message), signature);
+
+        bytes32 withdrawalId = getWithdrawalId(token, amount, recipient);
+        if (wasExecuted[withdrawalId]) revert TaskWithdrawalAlreadyExecuted(token, amount, recipient);
+
+        address recoveredSigner = ECDSA.recover(ECDSA.toEthSignedMessageHash(withdrawalId), signature);
         if (signer != recoveredSigner) revert TaskInvalidOffChainSignedWithdrawer(recoveredSigner, signer);
     }
 
@@ -119,9 +140,10 @@ contract OffChainSignedWithdrawer is Task, IOffChainSignedWithdrawer {
     function _afterOffChainSignedWithdrawer(
         address token,
         uint256 amount,
-        address, /* recipient */
+        address recipient,
         bytes memory /* signature */
     ) internal virtual {
+        wasExecuted[getWithdrawalId(token, amount, recipient)] = true;
         _afterTask(token, amount);
     }
 

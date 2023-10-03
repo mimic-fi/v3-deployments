@@ -1,8 +1,6 @@
 import {
   assertEvent,
   assertIndirectEvent,
-  assertNoEvent,
-  BigNumberish,
   deployProxy,
   deployTokenMock,
   fp,
@@ -148,6 +146,34 @@ describe('OffChainSignedWithdrawer', () => {
     })
   })
 
+  describe('setSignedWithdrawalsUrl', () => {
+    const url = 'ipfs:foo'
+
+    context('when the sender is authorized', async () => {
+      beforeEach('set sender', async () => {
+        const setSignedWithdrawalsUrlRole = task.interface.getSighash('setSignedWithdrawalsUrl')
+        await authorizer.connect(owner).authorize(owner.address, task.address, setSignedWithdrawalsUrlRole, [])
+        task = task.connect(owner)
+      })
+
+      it('sets the url', async () => {
+        await task.setSignedWithdrawalsUrl(url)
+        expect(await task.signedWithdrawalsUrl()).to.be.equal(url)
+      })
+
+      it('emits an event', async () => {
+        const tx = await task.setSignedWithdrawalsUrl(url)
+        await assertEvent(tx, 'SignedWithdrawalsUrlSet', { signedWithdrawalsUrl: url })
+      })
+    })
+
+    context('when the sender is not authorized', () => {
+      it('reverts', async () => {
+        await expect(task.setSignedWithdrawalsUrl(url)).to.be.revertedWith('AuthSenderNotAllowed')
+      })
+    })
+  })
+
   describe('call', () => {
     let token: Contract
     const amount = fp(10)
@@ -173,85 +199,47 @@ describe('OffChainSignedWithdrawer', () => {
         let signature: string
 
         beforeEach('sign message', async () => {
-          signature = await signer.signMessage(
-            ethers.utils.arrayify(
-              ethers.utils.solidityKeccak256(
-                ['address', 'uint256', 'address'],
-                [token.address, amount, recipient.address]
-              )
-            )
+          const withdrawalId = await task.getWithdrawalId(token.address, amount, recipient.address)
+          signature = await signer.signMessage(ethers.utils.arrayify(withdrawalId))
+        })
+
+        it('calls the withdraw primitive', async () => {
+          const previousFeeCollectorBalance = await token.balanceOf(mimic.feeCollector.address)
+
+          const tx = await task.call(token.address, amount, recipient.address, signature)
+
+          const currentFeeCollectorBalance = await token.balanceOf(mimic.feeCollector.address)
+          const chargedFees = currentFeeCollectorBalance.sub(previousFeeCollectorBalance)
+
+          await assertIndirectEvent(tx, smartVault.interface, 'Withdrawn', {
+            token,
+            recipient,
+            amount: amount.sub(chargedFees),
+            fee: chargedFees,
+          })
+        })
+
+        it('emits an Executed event', async () => {
+          const tx = await task.call(token.address, amount, recipient.address, signature)
+
+          await assertEvent(tx, 'Executed')
+        })
+
+        it('cannot be executed twice', async () => {
+          await task.call(token.address, amount, recipient.address, signature)
+
+          await expect(task.call(token.address, amount, recipient.address, signature)).to.be.revertedWith(
+            'TaskWithdrawalAlreadyExecuted'
           )
         })
 
-        const itExecutesTheTaskProperly = (requestedAmount: BigNumberish) => {
-          it('calls the withdraw primitive', async () => {
-            const previousFeeCollectorBalance = await token.balanceOf(mimic.feeCollector.address)
+        it('marks the withdrawal as executed', async () => {
+          const withdrawalId = await task.getWithdrawalId(token.address, amount, recipient.address)
+          expect(await task.wasExecuted(withdrawalId)).to.be.false
 
-            const tx = await task.call(token.address, requestedAmount, recipient.address, signature)
+          await task.call(token.address, amount, recipient.address, signature)
 
-            const currentFeeCollectorBalance = await token.balanceOf(mimic.feeCollector.address)
-            const chargedFees = currentFeeCollectorBalance.sub(previousFeeCollectorBalance)
-
-            await assertIndirectEvent(tx, smartVault.interface, 'Withdrawn', {
-              token,
-              recipient,
-              amount: amount.sub(chargedFees),
-              fee: chargedFees,
-            })
-          })
-
-          it('emits an Executed event', async () => {
-            const tx = await task.call(token.address, requestedAmount, recipient.address, signature)
-
-            await assertEvent(tx, 'Executed')
-          })
-        }
-
-        context('without balance connectors', () => {
-          const requestedAmount = amount
-
-          itExecutesTheTaskProperly(requestedAmount)
-
-          it('does not update any balance connectors', async () => {
-            const tx = await task.call(token.address, requestedAmount, recipient.address, signature)
-
-            await assertNoEvent(tx, 'BalanceConnectorUpdated')
-          })
-        })
-
-        context('with balance connectors', () => {
-          const requestedAmount = 0
-          const prevConnectorId = '0x0000000000000000000000000000000000000000000000000000000000000001'
-
-          beforeEach('set balance connectors', async () => {
-            const setBalanceConnectorsRole = task.interface.getSighash('setBalanceConnectors')
-            await authorizer.connect(owner).authorize(owner.address, task.address, setBalanceConnectorsRole, [])
-            await task.connect(owner).setBalanceConnectors(prevConnectorId, ZERO_BYTES32)
-          })
-
-          beforeEach('authorize task to update balance connectors', async () => {
-            const updateBalanceConnectorRole = smartVault.interface.getSighash('updateBalanceConnector')
-            await authorizer.connect(owner).authorize(task.address, smartVault.address, updateBalanceConnectorRole, [])
-          })
-
-          beforeEach('assign amount in to previous balance connector', async () => {
-            const updateBalanceConnectorRole = smartVault.interface.getSighash('updateBalanceConnector')
-            await authorizer.connect(owner).authorize(owner.address, smartVault.address, updateBalanceConnectorRole, [])
-            await smartVault.connect(owner).updateBalanceConnector(prevConnectorId, token.address, amount, true)
-          })
-
-          itExecutesTheTaskProperly(requestedAmount)
-
-          it('updates the balance connectors properly', async () => {
-            const tx = await task.call(token.address, requestedAmount, recipient.address, signature)
-
-            await assertIndirectEvent(tx, smartVault.interface, 'BalanceConnectorUpdated', {
-              id: prevConnectorId,
-              token,
-              amount,
-              added: false,
-            })
-          })
+          expect(await task.wasExecuted(withdrawalId)).to.be.true
         })
       })
 
@@ -262,8 +250,8 @@ describe('OffChainSignedWithdrawer', () => {
           signature = await owner.signMessage(
             ethers.utils.arrayify(
               ethers.utils.solidityKeccak256(
-                ['address', 'uint256', 'address'],
-                [token.address, amount, recipient.address]
+                ['uint256', 'address', 'address', 'uint256', 'address'],
+                [31337, task.address, token.address, amount, recipient.address]
               )
             )
           )
