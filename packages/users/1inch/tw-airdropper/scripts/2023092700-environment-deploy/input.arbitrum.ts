@@ -1,4 +1,3 @@
-import { OP } from '@mimic-fi/v3-authorizer'
 import {
   balanceConnectorId,
   dependency,
@@ -8,14 +7,14 @@ import {
   PROTOCOL_ADMIN,
   USERS_ADMIN,
 } from '@mimic-fi/v3-deployments-lib'
-import { chainlink, fp, NATIVE_TOKEN_ADDRESS, tokens } from '@mimic-fi/v3-helpers'
+import { chainlink } from '@mimic-fi/v3-helpers'
 
 /* eslint-disable no-secrets/no-secrets */
 
 const TOKEN = 'TBD'
 const ONE_INCH_OWNER = 'TBD'
 const SIGNER = 'TBD'
-const INITIAL_SIGNED_WITHDRAWALS_URL = 'TBD'
+const SIGNED_WITHDRAWALS_URL = 'TBD'
 
 const deployment: EnvironmentDeployment = {
   deployer: dependency('core/deployer/v1.0.0'),
@@ -68,7 +67,7 @@ const deployment: EnvironmentDeployment = {
       name: 'withdrawer',
       version: 'OffChainSignedWithdrawer',
       initialize: 'initialize',
-      args: [SIGNER, INITIAL_SIGNED_WITHDRAWALS_URL],
+      args: [SIGNER, SIGNED_WITHDRAWALS_URL],
       config: {
         taskConfig: {
           baseConfig: {
