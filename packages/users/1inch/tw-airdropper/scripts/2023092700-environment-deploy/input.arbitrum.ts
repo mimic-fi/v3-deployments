@@ -14,7 +14,7 @@ import { chainlink, tokens } from '@mimic-fi/v3-helpers'
 const TOKEN = tokens.arbitrum.USDC
 const ONE_INCH_OWNER = '0x979991695832F3321ad014564f1143A060cECE01'
 const SIGNER = '0x979991695832F3321ad014564f1143A060cECE01'
-const SIGNED_WITHDRAWALS_URL = 'https://gist.githubusercontent.com/dmf7z/f05eab8b4ffe74c374cc7a0947412ba9/raw/airdrop.json'
+const WITHDRAWALS_URL = 'https://gist.githubusercontent.com/dmf7z/f05eab8b4ffe74c374cc7a0947412ba9/raw/airdrop.json'
 
 const deployment: EnvironmentDeployment = {
   deployer: dependency('core/deployer/v1.0.0'),
@@ -67,7 +67,7 @@ const deployment: EnvironmentDeployment = {
       name: 'withdrawer',
       version: 'OffChainSignedWithdrawer',
       initialize: 'initialize',
-      args: [SIGNER, SIGNED_WITHDRAWALS_URL],
+      args: [SIGNER, WITHDRAWALS_URL],
       config: {
         taskConfig: {
           baseConfig: {
