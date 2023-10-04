@@ -1,5 +1,7 @@
 import { dependency, DEPLOYER, EnvironmentUpdate, USERS_ADMIN } from '@mimic-fi/v3-deployments-lib'
 
+/* eslint-disable no-secrets/no-secrets */
+
 const update: EnvironmentUpdate = {
   deployer: dependency('core/deployer/v1.0.0'),
   namespace: 'the-graph',
