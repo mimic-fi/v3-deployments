@@ -1,5 +1,6 @@
 import {
-  balanceConnectorId, counterfactualDependency,
+  balanceConnectorId,
+  counterfactualDependency,
   dependency,
   DEPLOYER,
   EnvironmentDeployment,
