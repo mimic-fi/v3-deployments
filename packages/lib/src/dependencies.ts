@@ -1,10 +1,14 @@
 import path from 'path'
 
 import { DEFAULT_SCRIPTS_DIRECTORY_NAME, Script } from './script'
-import { Dependency, SolvedDependency } from './types'
+import { CounterFactualDependency, Dependency, SolvedDependency } from './types'
 
 export function dependency(id: string, key?: string): Dependency {
   return { id, key }
+}
+
+export function counterfactualDependency(id: string, key?: string): CounterFactualDependency {
+  return { id, key, counterfactual: true }
 }
 
 export function solveDependency(currentScript: Script, dependency: Dependency): SolvedDependency {

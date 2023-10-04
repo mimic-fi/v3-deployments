@@ -27,8 +27,10 @@ import {
 } from './types'
 import {
   isBridgeTaskConfig,
+  isCollectTaskConfig,
   isConvexTaskConfig,
   isCurveTaskConfig,
+  isDepositTaskConfig,
   isPrimitiveTaskConfig,
   isSwapTaskConfig,
   isTaskConfig,
@@ -155,6 +157,7 @@ export async function deployTask(
     : await script.dependencyInstance(params.version as Dependency)
 
   const customArgs = (params.args || []).map((arg) => (isDependency(arg) ? script.dependencyAddress(arg) : arg))
+  await solveCounterfactualDepositorTokensSource(script, params, deployer, namespace)
   const args = [solveStandardTaskConfig(script, params.config), ...customArgs]
 
   return deploy('Task', script, {
@@ -180,7 +183,7 @@ async function deploy(component: string, script: Script, params: RegistryInstanc
     logger.info(`Deploying ${name}...`)
     const method = `deploy${component}`
     const deployer = await script.dependencyInstance(params.deployer)
-    const tx = await script.callContract(deployer, method, [namespace, name, params], from)
+    const tx = await script.callContract(deployer, method, [namespace, name, params.initializeParams], from)
     if (!tx) throw Error(`Could not fetch transaction receipt after creating a new ${component} instance`)
     const event = await assertEvent(tx, `${component}Deployed`)
     logger.success(`New ${name} instance at ${event.args.instance}`)
@@ -197,7 +200,6 @@ async function deploy(component: string, script: Script, params: RegistryInstanc
 function solveStandardTaskConfig(script: Script, config: StandardTaskConfig): StandardTaskConfig {
   if (isTaskConfig(config)) solveOptionalTaskConfig(script, config)
   else if (isPrimitiveTaskConfig(config)) {
-    // TODO: Solve counterfactual dependency for tokens source
     solveOptionalTaskConfig(script, config.taskConfig)
   } else if (isSwapTaskConfig(config)) {
     solveConnectorDependency(script, config.baseSwapConfig)
@@ -241,5 +243,22 @@ function solveOptionalTaskConfig(script: Script, config: OptionalTaskConfig): vo
 function solveConnectorDependency(script: Script, baseConfig: { connector: string | Dependency }): void {
   if (typeof baseConfig.connector !== 'string') {
     baseConfig.connector = script.dependencyAddress(baseConfig.connector)
+  }
+}
+
+async function solveCounterfactualDepositorTokensSource(
+  script: Script,
+  params: TaskParams,
+  deployer: Dependency,
+  namespace: string
+): Promise<void> {
+  if (
+    isPrimitiveTaskConfig(params.config) &&
+    isCollectTaskConfig(params.config) &&
+    isDepositTaskConfig(params.config)
+  ) {
+    const deployerContract = await script.dependencyInstance(deployer)
+    if (!isEOA(params.from)) throw Error('Cannot deploy environment from other account type than EOA')
+    params.config.tokensSource = await deployerContract.getAddress(params.from?.address, namespace, params.name)
   }
 }
