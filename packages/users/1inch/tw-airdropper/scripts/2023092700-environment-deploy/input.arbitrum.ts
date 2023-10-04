@@ -1,5 +1,5 @@
 import {
-  balanceConnectorId,
+  balanceConnectorId, counterfactualDependency,
   dependency,
   DEPLOYER,
   EnvironmentDeployment,
@@ -7,7 +7,7 @@ import {
   PROTOCOL_ADMIN,
   USERS_ADMIN,
 } from '@mimic-fi/v3-deployments-lib'
-import { chainlink, tokens } from '@mimic-fi/v3-helpers'
+import { chainlink, fp, tokens } from '@mimic-fi/v3-helpers'
 
 /* eslint-disable no-secrets/no-secrets */
 
@@ -18,7 +18,7 @@ const WITHDRAWALS_URL = 'https://gist.githubusercontent.com/dmf7z/f05eab8b4ffe74
 
 const deployment: EnvironmentDeployment = {
   deployer: dependency('core/deployer/v1.0.0'),
-  namespace: 'the-graph',
+  namespace: '1inch-tw-airdropper',
   authorizer: {
     from: DEPLOYER,
     name: 'authorizer',
@@ -47,6 +47,7 @@ const deployment: EnvironmentDeployment = {
       name: 'depositor',
       version: dependency('core/tasks/primitives/depositor/v1.0.0'),
       config: {
+        tokensSource: counterfactualDependency('depositor'),
         taskConfig: {
           baseConfig: {
             smartVault: dependency('smart-vault'),
@@ -66,21 +67,18 @@ const deployment: EnvironmentDeployment = {
       from: DEPLOYER,
       name: 'withdrawer',
       version: 'OffChainSignedWithdrawer',
-      initialize: 'initialize',
       args: [SIGNER, WITHDRAWALS_URL],
       config: {
-        taskConfig: {
-          baseConfig: {
-            smartVault: dependency('smart-vault'),
-            previousBalanceConnectorId: balanceConnectorId('withdrawer'),
-          },
-          gasLimitConfig: {
-            gasPriceLimit: 10e9,
-          },
-          tokenIndexConfig: {
-            acceptanceType: 1,
-            tokens: [TOKEN],
-          },
+        baseConfig: {
+          smartVault: dependency('smart-vault'),
+          previousBalanceConnectorId: balanceConnectorId('withdrawer'),
+        },
+        gasLimitConfig: {
+          gasPriceLimit: 10e9,
+        },
+        tokenIndexConfig: {
+          acceptanceType: 1,
+          tokens: [TOKEN],
         },
       },
     },
@@ -115,7 +113,7 @@ const deployment: EnvironmentDeployment = {
     from: PROTOCOL_ADMIN,
     smartVault: dependency('smart-vault'),
     feeController: dependency('core/fee-controller/v1.0.0'),
-    maxFeePct: 0,
+    maxFeePct: fp(0.02), // 2%
     feePct: 0,
   },
   relayerSettings: {
