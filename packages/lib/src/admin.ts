@@ -1,3 +1,5 @@
+import { bn, ZERO_ADDRESS } from '@mimic-fi/v3-helpers'
+
 import logger from './logger'
 import { Script } from './script'
 import { SmartVaultFeeSettings, SmartVaultRelayerSettings } from './types'
@@ -5,7 +7,13 @@ import { SmartVaultFeeSettings, SmartVaultRelayerSettings } from './types'
 export async function executeFeeSettings(script: Script, settings: SmartVaultFeeSettings): Promise<void> {
   const smartVault = script.dependencyAddress(settings.smartVault)
   const feeController = await script.dependencyInstance(settings.feeController)
-  const currentFeeData = await feeController.getFee(smartVault)
+
+  let currentFeeData = { max: bn(0), pct: bn(0), collector: ZERO_ADDRESS }
+  try {
+    currentFeeData = await feeController.getFee(smartVault)
+  } catch (error) {
+    // Get fee reverts in case there is no fee set (it's a safe-guard for withdrawals)
+  }
 
   const { maxFeePct } = settings
   if (!currentFeeData.max.eq(maxFeePct)) {
