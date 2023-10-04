@@ -1,0 +1,23 @@
+{
+  "authorizer": {
+    "version": "core/authorizer/v1.0.0",
+    "address": "0xA81C95A3f60455E2eEAd9C43B1672A2470FB38f9"
+  },
+  "price-oracle": {
+    "version": "core/price-oracle/v1.0.0",
+    "address": "0x83cF3792eb8e07DCc66D13Ed701208b214cf6d57"
+  },
+  "smart-vault": {
+    "version": "core/smart-vault/v1.0.0",
+    "address": "0xBA3543D7bb9e127bEA5BC754FDeC783a3816CBF5"
+  },
+  "depositor": {
+    "version": "core/tasks/primitives/depositor/v1.0.0",
+    "address": "0x1C0023E6734760f0A88ce77807f44F2Ea7E5df4b"
+  },
+  "OffChainSignedWithdrawer": "0x68ED78f0ab74aCC40EdFB3d2Be22f010203E39c6",
+  "withdrawer": {
+    "version": "OffChainSignedWithdrawer",
+    "address": "0xE48942De775eCB48809075684e46f4A2eF5D5485"
+  }
+}
