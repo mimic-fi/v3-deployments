@@ -102,12 +102,12 @@ const deployment: EnvironmentDeployment = {
       {
         where: dependency('depositor'),
         revokes: [],
-        grants: [{ who: dependency('core/relayer/v1.0.0'), what: 'call', params: [] }],
+        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
         where: dependency('withdrawer'),
         revokes: [],
-        grants: [{ who: dependency('core/relayer/v1.0.0'), what: 'call', params: [] }],
+        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
     ],
   },
@@ -121,7 +121,7 @@ const deployment: EnvironmentDeployment = {
   relayerSettings: {
     from: PROTOCOL_ADMIN,
     smartVault: dependency('smart-vault'),
-    relayer: dependency('core/relayer/v1.0.0'),
+    relayer: dependency('core/relayer/v1.1.0'),
     quota: 0,
   },
 }
