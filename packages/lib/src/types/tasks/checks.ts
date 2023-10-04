@@ -1,7 +1,9 @@
 import {
   BridgeTaskConfig,
+  CollectConfig,
   ConvexTaskConfig,
   CurveTaskConfig,
+  DepositConfig,
   PrimitiveTaskConfig,
   StandardTaskConfig,
   SwapTaskConfig,
@@ -22,6 +24,15 @@ export function isSwapTaskConfig(config: StandardTaskConfig): config is SwapTask
 
 export function isPrimitiveTaskConfig(config: StandardTaskConfig): config is PrimitiveTaskConfig {
   return !!(config as PrimitiveTaskConfig).taskConfig
+}
+
+export function isCollectTaskConfig(config: PrimitiveTaskConfig): config is CollectConfig {
+  return !!(config as CollectConfig).tokensSource
+}
+
+export function isDepositTaskConfig(config: CollectConfig): config is DepositConfig {
+  const tokensSource = (config as DepositConfig).tokensSource
+  return typeof tokensSource == 'object' && !!tokensSource.counterfactual
 }
 
 export function isCurveTaskConfig(config: StandardTaskConfig): config is CurveTaskConfig {

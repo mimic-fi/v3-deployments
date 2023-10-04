@@ -3,7 +3,7 @@ import { OptionalTaskConfig } from './base'
 
 export type DepositConfig = {
   taskConfig: OptionalTaskConfig
-  tokensSource: CounterFactualDependency
+  tokensSource: string | CounterFactualDependency
 }
 
 export type CollectConfig = {
