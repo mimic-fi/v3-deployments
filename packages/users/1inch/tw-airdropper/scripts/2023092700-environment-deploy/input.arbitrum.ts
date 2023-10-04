@@ -7,13 +7,13 @@ import {
   PROTOCOL_ADMIN,
   USERS_ADMIN,
 } from '@mimic-fi/v3-deployments-lib'
-import { chainlink } from '@mimic-fi/v3-helpers'
+import { chainlink, tokens } from '@mimic-fi/v3-helpers'
 
 /* eslint-disable no-secrets/no-secrets */
 
-const TOKEN = 'TBD'
-const ONE_INCH_OWNER = 'TBD'
-const SIGNER = 'TBD'
+const TOKEN = tokens.arbitrum.USDC
+const ONE_INCH_OWNER = '0x979991695832F3321ad014564f1143A060cECE01'
+const SIGNER = '0x979991695832F3321ad014564f1143A060cECE01'
 const SIGNED_WITHDRAWALS_URL = 'TBD'
 
 const deployment: EnvironmentDeployment = {
