@@ -12,7 +12,7 @@ export async function executeFeeSettings(script: Script, settings: SmartVaultFee
   try {
     currentFeeData = await feeController.getFee(smartVault)
   } catch (error) {
-    // Get fee reverts in case there is no fee set (it's a safe-guard for withdrawals)
+    // Get fee reverts in case there is no fee set (it's a safe guard for withdrawals)
   }
 
   const { maxFeePct } = settings
@@ -24,7 +24,9 @@ export async function executeFeeSettings(script: Script, settings: SmartVaultFee
     logger.warn(`Max fee pct already set to ${maxFeePct}`)
   }
 
-  if (settings.feePct) {
+  if (settings.feePct !== undefined) {
+    // We need to load the current fee data cause setting the max fee changes the fee percentage as well
+    currentFeeData = await feeController.getFee(smartVault)
     const { feePct, from } = settings
     if (!currentFeeData.pct.eq(feePct)) {
       logger.info(`Setting fee pct to ${feePct}...`)
