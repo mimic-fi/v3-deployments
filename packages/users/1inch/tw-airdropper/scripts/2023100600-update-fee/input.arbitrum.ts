@@ -1,5 +1,4 @@
 import { dependency, EnvironmentUpdate, PROTOCOL_ADMIN } from '@mimic-fi/v3-deployments-lib'
-import { fp } from '@mimic-fi/v3-helpers'
 
 const update: EnvironmentUpdate = {
   deployer: dependency('core/deployer/v1.0.0'),
