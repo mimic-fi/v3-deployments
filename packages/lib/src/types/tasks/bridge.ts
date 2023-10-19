@@ -8,8 +8,10 @@ export type BaseBridgeConfig = {
   recipient: string
   destinationChain: BigNumberish
   maxSlippage: BigNumberish
+  maxFee: { token: string; amount: BigNumberish }
   customDestinationChains: { token: string; destinationChain: BigNumberish }[]
   customMaxSlippages: { token: string; maxSlippage: BigNumberish }[]
+  customMaxFees: { token: string; maxFeePct: BigNumberish }[]
   taskConfig: OptionalTaskConfig
 }
 
@@ -19,16 +21,12 @@ export type AxelarBridgeConfig = {
 
 export type ConnextBridgeConfig = {
   baseBridgeConfig: BaseBridgeConfig
-  maxFeePct: BigNumberish
-  customMaxFeePcts: { token: string; maxFeePct: BigNumberish }[]
 }
 
 export type HopBridgeConfig = {
   baseBridgeConfig: BaseBridgeConfig
   relayer: string
-  maxFeePct: BigNumberish
   maxDeadline: BigNumberish
-  customMaxFeePcts: { token: string; maxFeePct: BigNumberish }[]
   tokenHopEntrypoints: { token: string; entrypoint: string }[]
 }
 

@@ -8,9 +8,10 @@ export const DEFAULT_GAS_LIMIT_CONFIG = {
 }
 
 export const DEFAULT_TIME_LOCK_CONFIG = {
-  delay: 0,
-  nextExecutionTimestamp: 0,
-  executionPeriod: 0,
+  mode: 0,
+  frequency: 0,
+  allowedAt: 0,
+  window: 0,
 }
 
 export const DEFAULT_TOKEN_INDEX_CONFIG = {
