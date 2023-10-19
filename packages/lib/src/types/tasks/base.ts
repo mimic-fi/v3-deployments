@@ -15,9 +15,10 @@ export type TaskConfig = {
     txCostLimitPct: BigNumberish
   }
   timeLockConfig: {
-    delay: BigNumberish
-    nextExecutionTimestamp: BigNumberish
-    executionPeriod: BigNumberish
+    mode: BigNumberish
+    frequency: BigNumberish
+    allowedAt: BigNumberish
+    window: BigNumberish
   }
   tokenIndexConfig: {
     acceptanceType: BigNumberish
@@ -65,9 +66,10 @@ export type OptionalTaskConfig = {
     txCostLimitPct?: BigNumberish
   }
   timeLockConfig?: {
-    delay: BigNumberish
-    nextExecutionTimestamp: BigNumberish
-    executionPeriod: BigNumberish
+    mode: BigNumberish
+    frequency: BigNumberish
+    allowedAt: BigNumberish
+    window: BigNumberish
   }
   tokenIndexConfig?: {
     acceptanceType: BigNumberish
