@@ -120,6 +120,7 @@ export class Script {
   }
 
   async run(): Promise<void> {
+    if (this.isDevelopment) this.delete()
     const input = this.input() as ScriptInput
 
     if (isEnvironmentDeployment(input)) {
@@ -274,9 +275,9 @@ export class Script {
   }
 
   delete(): void {
-    const scriptOutputDir = this._dirAt(this.dir(), 'output')
-    const scriptOutputFile = this._fileAt(scriptOutputDir, this.outputFile)
-    fs.unlinkSync(scriptOutputFile)
+    const scriptOutputDir = this._dirAt(this.dir(), 'output', false)
+    const scriptOutputFile = this._fileAt(scriptOutputDir, this.outputFile, false)
+    if (this._existsFile(scriptOutputFile)) fs.unlinkSync(scriptOutputFile)
   }
 
   private _parseRawInput(rawNetworkInput: Input): Input {
