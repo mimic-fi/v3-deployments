@@ -956,10 +956,10 @@
     "@mimic-fi/v3-helpers" "0.1.0"
     "@openzeppelin/contracts" "4.7.0"
 
-"@mimic-fi/v3-helpers@0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@mimic-fi/v3-helpers/-/v3-helpers-0.0.7.tgz#4dda63fb6f4a3e1616a8108fffdf1a23d76822c2"
-  integrity sha512-uARXCmBJFw9dHZY/pOqrw0u+8+BAHeHHwHPNidLvkRqo8Bji/v4R99YwiXKnM9CVsStL1S6fXWckmE27BqRJ+A==
+"@mimic-fi/v3-helpers@0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@mimic-fi/v3-helpers/-/v3-helpers-0.1.0.tgz#e64ace8cf1d5893ec351301c4b3538e96993dd4d"
+  integrity sha512-Ro2Y8bKS6M3NTGcS4sV+Be/dXN9ITGHvuUawI0p2f/hmW3bs/KVUsurQZdac9N2CycUw4JJZqt/C8WvRIhXC7A==
   dependencies:
     "@nomiclabs/hardhat-ethers" "^2.2.3"
     "@nomiclabs/hardhat-waffle" "2.0.3"
@@ -972,10 +972,10 @@
     hardhat "^2.14.1"
     mocha "^6.2.3"
 
-"@mimic-fi/v3-helpers@0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@mimic-fi/v3-helpers/-/v3-helpers-0.1.0.tgz#e64ace8cf1d5893ec351301c4b3538e96993dd4d"
-  integrity sha512-Ro2Y8bKS6M3NTGcS4sV+Be/dXN9ITGHvuUawI0p2f/hmW3bs/KVUsurQZdac9N2CycUw4JJZqt/C8WvRIhXC7A==
+"@mimic-fi/v3-helpers@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@mimic-fi/v3-helpers/-/v3-helpers-0.1.1.tgz#c63fb9b8e214bdcd640062444aef815822c4ab10"
+  integrity sha512-eymF5VBlmDY7VZbceZAasTDiT6HliJrfShdz/iD56708tUT2/lLRH6qELS+Itp4jsmjvSTDHKPSWXghHSnpm2w==
   dependencies:
     "@nomiclabs/hardhat-ethers" "^2.2.3"
     "@nomiclabs/hardhat-waffle" "2.0.3"
