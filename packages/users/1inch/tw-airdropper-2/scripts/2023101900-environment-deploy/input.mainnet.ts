@@ -19,7 +19,7 @@ const WITHDRAWALS_URL = 'https://gist.githubusercontent.com/dmf7z/39b6a8582dfddf
 
 const deployment: EnvironmentDeployment = {
   deployer: dependency('core/deployer/v1.0.0'),
-  namespace: '1inch-tw-airdropper-2',
+  namespace: '1inch-tw-airdropper-v2',
   authorizer: {
     from: DEPLOYER,
     name: 'authorizer',
