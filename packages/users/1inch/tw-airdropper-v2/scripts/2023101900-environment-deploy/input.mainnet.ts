@@ -15,7 +15,7 @@ import { chainlink, fp, tokens } from '@mimic-fi/v3-helpers'
 const TOKEN = tokens.mainnet.USDC
 const ONE_INCH_OWNER = '0x979991695832F3321ad014564f1143A060cECE01'
 const SIGNER = '0x979991695832F3321ad014564f1143A060cECE01'
-const WITHDRAWALS_URL = 'https://gist.githubusercontent.com/dmf7z/39b6a8582dfddf119af9447634dca470/raw/airdrop.json'
+const WITHDRAWALS_URL = 'https://www.jsonkeeper.com/b/V7D4'
 
 const deployment: EnvironmentDeployment = {
   deployer: dependency('core/deployer/v1.0.0'),
