@@ -15,5 +15,9 @@
     "version": "core/tasks/primitives/depositor/v2.0.0",
     "address": "0xA37a0EC4a521FC49A505A6eeEFD7642789af4778"
   },
-  "OffChainSignedWithdrawer": "0xe2239c284d9cC7e41DbE050f6d8dAB433711D8bC"
+  "OffChainSignedWithdrawer": "0x186c37ACD7521cE295e59cd0dA97C3fAFE3946D3",
+  "withdrawer": {
+    "version": "OffChainSignedWithdrawer",
+    "address": "0x3590819dB27781FDa2711131938a426f0e67e73C"
+  }
 }
