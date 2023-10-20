@@ -1,4 +1,4 @@
-import { dependency, EnvironmentUpdate, USERS_ADMIN } from '@mimic-fi/v3-deployments-lib'
+import { dependency, EnvironmentUpdate, USERS_ADMIN, DEPLOYER } from '@mimic-fi/v3-deployments-lib'
 
 const WITHDRAWALS_URL = 'https://www.jsonkeeper.com/b/V7D4'
 
@@ -8,9 +8,31 @@ const update: EnvironmentUpdate = {
   steps: [
     {
       from: USERS_ADMIN,
-      target: dependency('withdrawer'),
+      authorizer: dependency('2023101900-environment-deploy', 'authorizer'),
+      changes: [
+        {
+          where: dependency('2023101900-environment-deploy', 'withdrawer'),
+          grants: [{ who: DEPLOYER.address, what: 'setSignedWithdrawalsUrl', params: [] }],
+          revokes: [],
+        },
+      ],
+    },
+    {
+      from: DEPLOYER,
+      target: dependency('2023101900-environment-deploy', 'withdrawer'),
       method: 'setSignedWithdrawalsUrl',
       args: [WITHDRAWALS_URL],
+    },
+    {
+      from: USERS_ADMIN,
+      authorizer: dependency('2023101900-environment-deploy', 'authorizer'),
+      changes: [
+        {
+          where: dependency('2023101900-environment-deploy', 'withdrawer'),
+          revokes: [{ who: DEPLOYER.address, what: 'setSignedWithdrawalsUrl' }],
+          grants: [],
+        },
+      ],
     },
   ],
 }
