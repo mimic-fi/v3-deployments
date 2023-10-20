@@ -17,7 +17,7 @@ const ONE_INCH_OWNER = '0x979991695832F3321ad014564f1143A060cECE01'
 const SIGNER = '0x979991695832F3321ad014564f1143A060cECE01'
 const WITHDRAWALS_URL = 'https://gist.githubusercontent.com/dmf7z/f05eab8b4ffe74c374cc7a0947412ba9/raw/airdrop.json'
 
-const deployment: EnvironmentDeployment = {
+const deploygiment: EnvironmentDeployment = {
   deployer: dependency('core/deployer/v1.0.0'),
   namespace: '1inch-tw-airdropper',
   authorizer: {
