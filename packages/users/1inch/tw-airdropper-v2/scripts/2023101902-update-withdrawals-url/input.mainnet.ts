@@ -1,4 +1,4 @@
-import { dependency, EnvironmentUpdate, USERS_ADMIN, DEPLOYER } from '@mimic-fi/v3-deployments-lib'
+import { dependency, DEPLOYER, EnvironmentUpdate, USERS_ADMIN } from '@mimic-fi/v3-deployments-lib'
 
 const WITHDRAWALS_URL = 'https://www.jsonkeeper.com/b/Q1I4'
 
