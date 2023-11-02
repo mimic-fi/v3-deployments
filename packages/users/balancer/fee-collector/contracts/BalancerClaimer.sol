@@ -15,6 +15,7 @@
 pragma solidity ^0.8.0;
 
 import '@mimic-fi/v3-tasks/contracts/Task.sol';
+import '@mimic-fi/v3-helpers/contracts/utils/ERC20Helpers.sol';
 
 import './interfaces/IBalancerClaimer.sol';
 import './interfaces/IProtocolFeeWithdrawer.sol';
@@ -62,6 +63,21 @@ contract BalancerClaimer is IBalancerClaimer, Task {
     }
 
     /**
+     * @dev Tells the address from where the token amounts to execute this task are fetched
+     */
+    function getTokensSource() external view virtual override(IBaseTask, BaseTask) returns (address) {
+        return protocolFeeWithdrawer;
+    }
+
+    /**
+     * @dev Tells the balance of the depositor for a given token
+     * @param token Address of the token being queried
+     */
+    function getTaskAmount(address token) public view virtual override(IBaseTask, BaseTask) returns (uint256) {
+        return ERC20Helpers.balanceOf(token, protocolFeeWithdrawer);
+    }
+
+    /**
      * @dev Sets the protocol fee withdrawer address. Sender must be authorized.
      * @param newProtocolFeeWithdrawer Address of the protocol fee withdrawer to be set
      */
@@ -77,6 +93,7 @@ contract BalancerClaimer is IBalancerClaimer, Task {
      * @dev Executes the Balancer claimer task
      */
     function call(address token, uint256 amount) external override authP(authParams(token, amount)) {
+        if (amount == 0) amount = getTaskAmount(token);
         _beforeBalancerClaimer(token, amount);
         // solhint-disable-next-line avoid-low-level-calls
         ISmartVault(smartVault).call(protocolFeeWithdrawer, _buildBalancerClaimerData(token, amount), 0);
@@ -120,5 +137,15 @@ contract BalancerClaimer is IBalancerClaimer, Task {
         if (newProtocolFeeWithdrawer == address(0)) revert TaskProtocolFeeWithdrawerZero();
         protocolFeeWithdrawer = newProtocolFeeWithdrawer;
         emit ProtocolFeeWithdrawerSet(newProtocolFeeWithdrawer);
+    }
+
+    /**
+     * @dev Sets the balance connectors. Previous balance connector must be unset.
+     * @param previous Balance connector id of the previous task in the workflow
+     * @param next Balance connector id of the next task in the workflow
+     */
+    function _setBalanceConnectors(bytes32 previous, bytes32 next) internal virtual override {
+        if (previous != bytes32(0)) revert TaskPreviousConnectorNotZero(previous);
+        super._setBalanceConnectors(previous, next);
     }
 }

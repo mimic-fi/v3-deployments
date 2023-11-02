@@ -38,6 +38,11 @@ interface IBalancerClaimer is ITask {
     error TaskProtocolFeeWithdrawerZero();
 
     /**
+     * @dev The previous balance connector is not zero
+     */
+    error TaskPreviousConnectorNotZero(bytes32 id);
+
+    /**
      * @dev Emitted every time the protocol fee withdrawer is set
      */
     event ProtocolFeeWithdrawerSet(address indexed protocolFeeWithdrawer);
