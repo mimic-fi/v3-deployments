@@ -17,6 +17,7 @@ import {
 
 /* eslint-disable no-secrets/no-secrets */
 const USDC = tokens.avalanche.USDC;
+const WETH = tokens.avalanche.WETH;
 const OWNER = "0x326A7778DB9B741Cb2acA0DE07b9402C7685dAc6";
 const PROTOCOL_FEE_WITHDRAWER = "0x8F42aDBbA1B16EaAE3BB5754915E0D06059aDd75";
 const BALANCER_VAULT = "0xBA12222222228d8Ba445958a75a0704d566BF2C8";
@@ -53,7 +54,7 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: "depositor",
-      version: dependency("core/tasks/primitives/depositor/v1.0.0"),
+      version: dependency("core/tasks/primitives/depositor/v2.0.0"),
       config: {
         tokensSource: counterfactualDependency("depositor"),
         taskConfig: {
@@ -99,7 +100,7 @@ const deployment: EnvironmentDeployment = {
           tokenThresholdConfig: {
             defaultThreshold: {
               token: USDC,
-              min: fp(100),
+              min: fp(10),
               max: 0,
             },
           },
@@ -111,7 +112,7 @@ const deployment: EnvironmentDeployment = {
       from: DEPLOYER,
       name: "bpt-exiter",
       version: dependency(
-        "core/tasks/liquidity/balancer/balancer-bpt-exiter/v1.0.0"
+        "core/tasks/liquidity/balancer/bpt-exiter/v2.0.0"
       ),
       config: {
         balancerVault: BALANCER_VAULT,
@@ -130,12 +131,12 @@ const deployment: EnvironmentDeployment = {
           },
           tokenIndexConfig: {
             acceptanceType: 0, //Deny list
-            tokens: [],
+            tokens: [USDC],
           },
           tokenThresholdConfig: {
             defaultThreshold: {
               token: USDC,
-              min: fp(100),
+              min: fp(10),
               max: 0,
             },
           },
@@ -146,7 +147,7 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: "bpt-handle-over",
-      version: dependency("core/tasks/primitives/handle-over/v1.0.0"),
+      version: dependency("core/tasks/primitives/handle-over/v2.0.0"),
       config: {
         baseConfig: {
           smartVault: dependency("smart-vault"),
@@ -163,7 +164,7 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: "1inch-swapper",
-      version: dependency("core/tasks/swap/1inch-v5/v1.0.0"),
+      version: dependency("core/tasks/swap/1inch-v5/v2.0.0"),
       config: {
         baseSwapConfig: {
           connector: dependency("core/connectors/1inch-v5/v1.0.0"),
@@ -189,7 +190,7 @@ const deployment: EnvironmentDeployment = {
             tokenThresholdConfig: {
               defaultThreshold: {
                 token: USDC,
-                min: fp(100),
+                min: fp(10),
                 max: 0,
               },
             },
@@ -201,15 +202,15 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: "usdc-handle-over",
-      version: dependency("core/tasks/primitives/handle-over/v1.0.0"),
+      version: dependency("core/tasks/primitives/handle-over/v2.0.0"),
       config: {
         baseConfig: {
           smartVault: dependency("smart-vault"),
           previousBalanceConnectorId: balanceConnectorId(
-            "bpt-handle-over-connection"
+            "swapper-connection"
           ),
           nextBalanceConnectorId: balanceConnectorId(
-            "swapper-connection"
+            "bridger-connection"
           ),
         },
         tokenIndexConfig: {
@@ -222,10 +223,10 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: "cctp-bridger",
-      version: dependency("core/tasks/bridge/cctp-bridger/v1.0.0"),
+      version: dependency("core/tasks/bridge/wormhole/v2.0.0"),
       config: {
         baseBridgeConfig: {
-          connector: dependency("core/connectors/bridger/v1.0.0"),
+          connector: dependency("core/connectors/wormhole/v1.0.0"),
           recipient: MAINNET_DEPOSITOR_TASK,
           destinationChain: 1, // mainnet
           maxSlippage: fp(0.02), //2%
@@ -260,12 +261,12 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: "relayer-funder-swapper",
-      version: dependency("core/tasks/swap/1inch-v5/v1.0.0"),
+      version: dependency("core/tasks/swap/1inch-v5-swapper/v2.0.0"),
       config: {
         baseSwapConfig: {
           connector: dependency("core/connectors/1inch-v5/v1.0.0"),
-          tokenOut: tokens.arbitrum.WETH,
-          maxSlippage: fp(0.002),
+          tokenOut: WETH,
+          maxSlippage: fp(0.02),
           customTokensOut: [],
           customMaxSlippages: [],
           taskConfig: {
@@ -286,7 +287,7 @@ const deployment: EnvironmentDeployment = {
             },
             tokenThresholdConfig: {
               defaultThreshold: {
-                token: tokens.arbitrum.WETH,
+                token: WETH,
                 min: fp(0.005),
                 max: fp(0.01),
               },
@@ -299,7 +300,7 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: "relayer-funder-unwrapper",
-      version: dependency("core/tasks/primitives/unwrapper/v1.0.0"),
+      version: dependency("core/tasks/primitives/unwrapper/v2.0.0"),
       config: {
         taskConfig: {
           baseConfig: {
@@ -314,7 +315,7 @@ const deployment: EnvironmentDeployment = {
           },
           tokenIndexConfig: {
             acceptanceType: 1,
-            tokens: [USDC],
+            tokens: [WETH],
           },
         },
       },
@@ -323,7 +324,7 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: "relayer-depositor",
-      version: dependency("core/tasks/relayer/depositor/v1.0.0"),
+      version: dependency("core/tasks/relayer/depositor/v2.0.0"),
       args: [dependency("core/relayer/v1.0.0")],
       config: {
         baseConfig: {
