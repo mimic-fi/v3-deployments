@@ -1004,6 +1004,22 @@
     hardhat "^2.14.1"
     mocha "^6.2.3"
 
+"@mimic-fi/v3-helpers@0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@mimic-fi/v3-helpers/-/v3-helpers-0.1.4.tgz#22c14dfc6fa67422186bca4ff91a0803a56514bb"
+  integrity sha512-3XO8fcbqf4NzStZfOVhLV7G+YEy7chnk/hm5GaYpJ+578ObGNF7+b4BWLf308sEe5Q5XfbRMLbCyB0LwfgG3ow==
+  dependencies:
+    "@nomiclabs/hardhat-ethers" "^2.2.3"
+    "@nomiclabs/hardhat-waffle" "2.0.3"
+    "@types/chai" "^4.3.5"
+    "@types/mocha" "^10.0.1"
+    "@types/sinon-chai" "^3.2.3"
+    chai "^4.3.7"
+    decimal.js "~10.4.3"
+    ethers "~5.6.0"
+    hardhat "^2.14.1"
+    mocha "^6.2.3"
+
 "@mimic-fi/v3-helpers@0.1.5":
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/@mimic-fi/v3-helpers/-/v3-helpers-0.1.5.tgz#5e8611140a0b15e593f6821f4b9eb4b1f38f2b0b"
@@ -1067,6 +1083,19 @@
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@mimic-fi/v3-tasks/-/v3-tasks-0.2.0.tgz#5c037bdd3d15bdebdb62583a101271f80468eca4"
   integrity sha512-23elbQSjxgnukrgx7G0yavjJoLss1AeMU0kPhCL//P0lFDhzRVlcP7o9Hwoi4QE175phbEaWGSSEYB71GLiz2A==
+  dependencies:
+    "@mimic-fi/v3-authorizer" "0.1.1"
+    "@mimic-fi/v3-connectors" "0.1.1"
+    "@mimic-fi/v3-helpers" "0.1.0"
+    "@mimic-fi/v3-price-oracle" "0.1.0"
+    "@mimic-fi/v3-smart-vault" "0.1.0"
+    "@openzeppelin/contracts" "4.9.3"
+    "@quant-finance/solidity-datetime" "2.2.0"
+
+"@mimic-fi/v3-tasks@0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@mimic-fi/v3-tasks/-/v3-tasks-0.2.1.tgz#f55f189b59e8505bab2fd682d760e6fa63617d6b"
+  integrity sha512-QOUqULB7Xsq6kkygp0dessIaVzDG8HdTCuKkhmmc6ESWJzoQ7q/Q7Dx0pmDfLiQ/keNhTqDXquRURRO6D5xgmg==
   dependencies:
     "@mimic-fi/v3-authorizer" "0.1.1"
     "@mimic-fi/v3-connectors" "0.1.1"
@@ -1312,7 +1341,7 @@
   resolved "https://registry.yarnpkg.com/@nomiclabs/hardhat-ethers/-/hardhat-ethers-2.2.3.tgz#b41053e360c31a32c2640c9a45ee981a7e603fe0"
   integrity sha512-YhzPdzb612X591FOe68q+qXVXGG2ANZRvDo0RRUtimev85rCrAlv/TLMEZw5c+kq9AbzocLTVX/h2jVIFPL9Xg==
 
-"@nomiclabs/hardhat-etherscan@^3.1.5":
+"@nomiclabs/hardhat-etherscan@^3.1.7":
   version "3.1.7"
   resolved "https://registry.yarnpkg.com/@nomiclabs/hardhat-etherscan/-/hardhat-etherscan-3.1.7.tgz#72e3d5bd5d0ceb695e097a7f6f5ff6fcbf062b9a"
   integrity sha512-tZ3TvSgpvsQ6B6OGmo1/Au6u8BrAkvs1mIC/eURA3xgIfznUZBhmpne8hv7BXUzw9xNL3fXdpOYgOQlVMTcoHQ==
@@ -1625,6 +1654,11 @@
   version "4.3.5"
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.3.5.tgz#ae69bcbb1bebb68c4ac0b11e9d8ed04526b3562b"
   integrity sha512-mEo1sAde+UCE6b2hxn332f1g1E8WfYRu6p5SvTKr2ZKC1f7gFJXk4h5PyGP9Dt6gCaG8y8XhwnXWC6Iy2cmBng==
+
+"@types/cli-table@^0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@types/cli-table/-/cli-table-0.3.3.tgz#4edf5498af4fa39685504e17342b9346535a76e1"
+  integrity sha512-GJPxeQ/McVnizfipKsCuJg3tEXg6GZvoFjLlohJpWHjDcSIwSAjbCJNuHDVQyrHiRiINXspzrFc/Tt9ztvZCoA==
 
 "@types/http-cache-semantics@*":
   version "4.0.1"
@@ -3378,6 +3412,13 @@ clean-stack@^2.0.0:
   resolved "https://registry.yarnpkg.com/clean-stack/-/clean-stack-2.2.0.tgz#ee8472dbb129e727b31e8a10a427dee9dfe4008b"
   integrity sha512-4diC9HaTE+KRAMWhDhrGOECgWZxoevMc5TlkObMqNSsVU62PYzXZ/SMTjzyGAFF1YusgxGcSWTEXBhp0CPwQ1A==
 
+cli-table@^0.3.11:
+  version "0.3.11"
+  resolved "https://registry.yarnpkg.com/cli-table/-/cli-table-0.3.11.tgz#ac69cdecbe81dccdba4889b9a18b7da312a9d3ee"
+  integrity sha512-IqLQi4lO0nIB4tcdTpN4LCB9FI3uqrJZK7RC515EnhZ6qBaglkIgICb1wjeAqpdoOabm1+SuQtkXIPdYC93jhQ==
+  dependencies:
+    colors "1.0.3"
+
 cliui@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/cliui/-/cliui-3.2.0.tgz#120601537a916d29940f934da3b48d585a39213d"
@@ -3453,6 +3494,11 @@ color-name@~1.1.4:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.4.tgz#c2a09a87acbde69543de6f63fa3995c826c536a2"
   integrity sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==
+
+colors@1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/colors/-/colors-1.0.3.tgz#0433f44d809680fdeb60ed260f1b0c262e82a40b"
+  integrity sha512-pFGrxThWcWQ2MsAz6RtgeWe4NK2kUE1WfsrvvlctdII745EW9I0yflqhe7++M5LEc7bV2c/9/5zc8sFcpL0Drw==
 
 combined-stream@^1.0.6, combined-stream@^1.0.8, combined-stream@~1.0.6:
   version "1.0.8"

@@ -7,6 +7,8 @@ GNOSIS_URL="$5"
 AVALANCHE_URL="$6"
 BSC_URL="$7"
 FANTOM_URL="$8"
+BASE_URL="$9"
+ZKEVM_URL=${10}
 
 set -o errexit
 
@@ -22,7 +24,9 @@ echo "
     \"gnosis\": { \"url\": \"${GNOSIS_URL}\" },
     \"avalanche\": { \"url\": \"${AVALANCHE_URL}\" },
     \"bsc\": { \"url\": \"${BSC_URL}\" },
-    \"fantom\": { \"url\": \"${FANTOM_URL}\" }
+    \"fantom\": { \"url\": \"${FANTOM_URL}\" },
+    \"base\": { \"url\": \"${BASE_URL}\" },
+    \"zkevm\": { \"url\": \"${ZKEVM_URL}\" }
   }
 }
 " > $HOME/.hardhat/networks.mimic-v3.json
