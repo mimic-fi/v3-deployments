@@ -36,11 +36,7 @@ contract BalancerClaimer is IBalancerClaimer, Task {
      * @param config Task config
      * @param withdrawer Protocol fee withdrawer address
      */
-    function initializeBalancerClaimer(TaskConfig memory config, address withdrawer)
-        external
-        virtual
-        initializer
-    {
+    function initializeBalancerClaimer(TaskConfig memory config, address withdrawer) external virtual initializer {
         __BalancerClaimer_init(config, withdrawer);
     }
 
