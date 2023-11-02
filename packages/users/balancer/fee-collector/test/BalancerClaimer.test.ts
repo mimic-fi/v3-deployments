@@ -33,7 +33,7 @@ describe('BalancerClaimer', () => {
       'BalancerClaimer',
       [],
       [buildEmptyTaskConfig(owner, smartVault), protocolFeeWithdrawer.address],
-      'initializeProtocolFeeWithdrawer'
+      'initializeBalancerClaimer'
     )
   })
 

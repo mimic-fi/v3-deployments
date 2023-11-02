@@ -36,12 +36,12 @@ contract BalancerClaimer is IBalancerClaimer, Task {
      * @param config Task config
      * @param withdrawer Protocol fee withdrawer address
      */
-    function initializeProtocolFeeWithdrawer(TaskConfig memory config, address withdrawer)
+    function initializeBalancerClaimer(TaskConfig memory config, address withdrawer)
         external
         virtual
         initializer
     {
-        __ProtocolFeeWithdrawer_init(config, withdrawer);
+        __BalancerClaimer_init(config, withdrawer);
     }
 
     /**
@@ -49,16 +49,16 @@ contract BalancerClaimer is IBalancerClaimer, Task {
      * @param config Task config
      * @param withdrawer Protocol fee withdrawer address
      */
-    function __ProtocolFeeWithdrawer_init(TaskConfig memory config, address withdrawer) internal onlyInitializing {
+    function __BalancerClaimer_init(TaskConfig memory config, address withdrawer) internal onlyInitializing {
         __Task_init(config);
-        __ProtocolFeeWithdrawer_init_unchained(config, withdrawer);
+        __BalancerClaimer_init_unchained(config, withdrawer);
     }
 
     /**
      * @dev Initializes the balancer claimer. It does not call upper contracts initializers.
      * @param withdrawer Protocol fee withdrawer address
      */
-    function __ProtocolFeeWithdrawer_init_unchained(TaskConfig memory, address withdrawer) internal onlyInitializing {
+    function __BalancerClaimer_init_unchained(TaskConfig memory, address withdrawer) internal onlyInitializing {
         _setProtocolFeeWithdrawer(withdrawer);
     }
 
