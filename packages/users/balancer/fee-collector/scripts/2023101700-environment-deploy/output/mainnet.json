@@ -1,0 +1,63 @@
+{
+  "authorizer": {
+    "version": "core/authorizer/v1.0.0",
+    "address": "0x35c00767774cabFD8c108E9A156D25e440caBc10"
+  },
+  "price-oracle": {
+    "version": "core/price-oracle/v1.0.0",
+    "address": "0xFDb4B7683faaDfB2524066348383cC2811377b4a"
+  },
+  "smart-vault": {
+    "version": "core/smart-vault/v1.0.0",
+    "address": "0x9e5D6427D2cdaDC68870197b099C2Df535Ec3c97"
+  },
+  "avalanche-depositor": {
+    "version": "core/tasks/primitives/depositor/v2.0.0",
+    "address": "0xDFf6CF2Ea01685bF016Ce31C4CB25ca25B7B8Fdf"
+  },
+  "v2-depositor": {
+    "version": "core/tasks/primitives/depositor/v2.0.0",
+    "address": "0x726869B45b8d19cd35b095366CE2a1A23b622c49"
+  },
+  "depositor": {
+    "version": "core/tasks/primitives/depositor/v2.0.0",
+    "address": "0x68247248489fb0c1F55aeA1BBaC0aaE829D9BF77"
+  },
+  "BalancerClaimer": "0x2338287BA9C11D75f4017CE5Af007AB96B94bbA9",
+  "asset-collector": {
+    "version": "BalancerClaimer",
+    "address": "0xEAd9F0610a418f8BCC8dB21A3B57d82B16bb3070"
+  },
+  "bpt-exiter": {
+    "version": "core/tasks/liquidity/balancer/bpt-exiter/v2.0.0",
+    "address": "0x3D2c36867F704869DC107c826157c460c61183d2"
+  },
+  "1inch-swapper": {
+    "version": "core/tasks/swap/1inch-v5/v2.0.0",
+    "address": "0x7dCd63290d83916A9A95b2D2D1248f0E3bB1404B"
+  },
+  "bpt-handle-over": {
+    "version": "core/tasks/primitives/handle-over/v2.0.0",
+    "address": "0x72f4828bd8d8639dA3A3527e4E7b2288DFebe62e"
+  },
+  "usdc-handle-over": {
+    "version": "core/tasks/primitives/handle-over/v2.0.0",
+    "address": "0x5c4dac07e3DC029F7e79F1D619f928f2d61c2F3e"
+  },
+  "withdrawer": {
+    "version": "core/tasks/primitives/withdrawer/v2.0.0",
+    "address": "0x3c50C3D7DFd0fc0A988F07479f7f7B39A7FC4cF0"
+  },
+  "relayer-funder-swapper": {
+    "version": "core/tasks/swap/1inch-v5/v2.0.0",
+    "address": "0xECEDFD70bA72361c6724C58Cd526a6B8ed5b52Ac"
+  },
+  "relayer-funder-unwrapper": {
+    "version": "core/tasks/primitives/unwrapper/v2.0.0",
+    "address": "0x05Ec9DB2d48715F70ae04Db0D5b59c9EfDa5C91F"
+  },
+  "relayer-depositor": {
+    "version": "core/tasks/relayer/depositor/v2.0.0",
+    "address": "0xEdC1495dAd316535a277BD7c9D419D8245E1481c"
+  }
+}
