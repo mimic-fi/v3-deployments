@@ -49,4 +49,9 @@ const avalanche: RegistryImplementationDeployment = {
   args: [protocols.avalanche.ONE_INCH_V5_ROUTER],
 }
 
-export default { mainnet, polygon, arbitrum, optimism, gnosis, bsc, fantom, avalanche }
+const base: RegistryImplementationDeployment = {
+  ...shared,
+  args: [protocols.base.ONE_INCH_V5_ROUTER],
+}
+
+export default { mainnet, polygon, arbitrum, optimism, gnosis, bsc, fantom, avalanche, base }

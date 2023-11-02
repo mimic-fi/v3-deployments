@@ -58,6 +58,10 @@ export class Script {
   outputNetwork: Network
   _verifier?: Verifier
 
+  static forNetwork(id: string, network: string, verifier?: Verifier): Script {
+    return new this(id, SCRIPTS_DIRECTORY, network, network, verifier)
+  }
+
   static forForkedNetwork(id: string, hre: HardhatRuntimeEnvironment, verifier?: Verifier): Script {
     return new this(id, SCRIPTS_DIRECTORY, getForkedNetwork(hre), hre.network.name, verifier)
   }
@@ -79,6 +83,26 @@ export class Script {
 
   get isDevelopment(): boolean {
     return this.outputNetwork === 'hardhat' || this.outputNetwork === 'localhost'
+  }
+
+  get hasInput(): boolean {
+    return Object.keys(this.networkRawInput()).length > 0
+  }
+
+  get hasCustomScript(): boolean {
+    return this._existsFile(this.customScriptFile)
+  }
+
+  get customScriptFile(): string {
+    return path.join(this.dir(), 'index.ts')
+  }
+
+  get networkInputFile(): string {
+    return path.join(this.dir(), `input.${this.inputNetwork}.ts`)
+  }
+
+  get globalInputFile(): string {
+    return path.join(this.dir(), 'input.ts')
   }
 
   get outputFile(): string {
@@ -135,11 +159,13 @@ export class Script {
     } else if (isContractDeployment(input)) {
       logger.info('Deploying stand alone contract...')
       await this.deployAndVerify(input.contract, input.args, input.from, input.instanceName)
-    } else {
+    } else if (this.hasCustomScript) {
       logger.info('Running custom script...')
       const scriptPath = this._fileAt(this.dir(), 'index.ts')
       const script = require(scriptPath).default
       await script(this)
+    } else {
+      throw Error(`Could not find an input file for network ${this.inputNetwork}`)
     }
   }
 
@@ -252,10 +278,9 @@ export class Script {
   }
 
   rawInput(): Input {
-    const networkInputPath = path.join(this.dir(), `input.${this.inputNetwork}.ts`)
-    if (this._existsFile(networkInputPath)) return require(networkInputPath).default
-    const globalInputPath = this._fileAt(this.dir(), 'input.ts')
-    return require(globalInputPath).default
+    if (this._existsFile(this.networkInputFile)) return require(this.networkInputFile).default
+    if (this._existsFile(this.globalInputFile)) return require(this.globalInputFile).default
+    throw Error(`Could not find an input file for network ${this.inputNetwork}`)
   }
 
   output({ ensure = true }: ReadOutputParams = {}): Output {

@@ -5,8 +5,9 @@ import { Contract } from 'ethers'
 import hre from 'hardhat'
 
 const script = Script.forForkedNetwork('smart-vault/v1.0.0', hre)
+const test = script.hasInput ? describe : describe.skip
 
-describe(script.id, () => {
+test(script.id, () => {
   let smartVault: Contract, registry: Contract, feeController: Contract
 
   before('deploy registry', async () => {
@@ -50,6 +51,8 @@ describe(script.id, () => {
       if (network === 'polygon') return tokens.polygon.WMATIC
       if (network === 'fantom') return tokens.fantom.WFTM
       if (network === 'avalanche') return tokens.avalanche.WAVAX
+      if (network === 'base') return tokens.base.WETH
+      if (network === 'zkevm') return tokens.zkevm.WETH
     }
 
     expect(await smartVault.wrappedNativeToken()).to.be.equal(getWrappedNativeToken())

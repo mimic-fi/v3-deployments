@@ -4,8 +4,9 @@ import { Contract } from 'ethers'
 import hre from 'hardhat'
 
 const script = Script.forForkedNetwork('price-oracle/v1.0.0', hre)
+const test = script.hasInput ? describe : describe.skip
 
-describe(script.id, () => {
+test(script.id, () => {
   let priceOracle: Contract, registry: Contract
 
   before('deploy registry', async () => {
