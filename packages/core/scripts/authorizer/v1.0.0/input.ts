@@ -1,4 +1,9 @@
-import { dependency, PROTOCOL_ADMIN, RegistryImplementationDeployment } from '@mimic-fi/v3-deployments-lib'
+import {
+  dependency,
+  PROTOCOL_ADMIN,
+  PROTOCOL_ADMIN_AURORA,
+  RegistryImplementationDeployment,
+} from '@mimic-fi/v3-deployments-lib'
 
 const deployment: RegistryImplementationDeployment = {
   from: PROTOCOL_ADMIN,
@@ -9,4 +14,9 @@ const deployment: RegistryImplementationDeployment = {
   stateless: false,
 }
 
-export default deployment
+const aurora: RegistryImplementationDeployment = {
+  ...deployment,
+  from: PROTOCOL_ADMIN_AURORA,
+}
+
+export default { ...deployment, aurora }

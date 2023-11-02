@@ -11,12 +11,13 @@
     "test": "hardhat test",
     "test:base": "yarn test --fork base --block-number 5430067 --chain-id 8453",
     "test:zkevm": "yarn test --fork zkevm --block-number 6548989 --chain-id 1101",
+    "test:aurora": "yarn test --fork aurora --block-number 104854242 --chain-id 1313161554",
     "test:mainnet": "yarn test --fork mainnet --block-number 18380248 --chain-id 1",
     "test:arbitrum": "yarn test --fork arbitrum --block-number 117028691 --chain-id 42161",
     "prepare": "yarn build"
   },
   "dependencies": {
-    "@mimic-fi/v3-helpers": "0.1.5"
+    "@mimic-fi/v3-helpers": "0.1.7"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.2.3",

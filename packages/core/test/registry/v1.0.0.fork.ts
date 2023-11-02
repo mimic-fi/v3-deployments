@@ -1,4 +1,4 @@
-import { PROTOCOL_ADMIN, Script } from '@mimic-fi/v3-deployments-lib'
+import { PROTOCOL_ADMIN, PROTOCOL_ADMIN_AURORA, Script } from '@mimic-fi/v3-deployments-lib'
 import { expect } from 'chai'
 import { Contract } from 'ethers'
 import hre from 'hardhat'
@@ -15,6 +15,7 @@ test(script.id, () => {
   })
 
   it('sets the protocol multisig as the owner', async () => {
-    expect(await registry.owner()).to.be.equal(PROTOCOL_ADMIN.safe)
+    const owner = (script.inputNetwork == 'aurora' ? PROTOCOL_ADMIN_AURORA : PROTOCOL_ADMIN).safe
+    expect(await registry.owner()).to.be.equal(owner)
   })
 })
