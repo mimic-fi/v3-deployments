@@ -70,7 +70,7 @@ contract BalancerClaimer is IBalancerClaimer, Task {
     }
 
     /**
-     * @dev Tells the balance of the depositor for a given token
+     * @dev Tells the token balance in the protocol fee withdrawer available for the smart vault
      * @param token Address of the token being queried
      */
     function getTaskAmount(address token) public view virtual override(IBaseTask, BaseTask) returns (uint256) {
