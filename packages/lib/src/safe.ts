@@ -4,9 +4,15 @@ import { Contract, ContractTransaction, ethers } from 'ethers'
 
 import logger from './logger'
 import { Script } from './script'
-import { SafeSigner } from './types'
+import { NETWORKS, SafeSigner } from './types'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+function getTxServiceUrl(network: (typeof NETWORKS)[number]): string {
+  if (network == 'fantom') return 'http://safe-txservice.fantom.network'
+  const subdomain = network == 'gnosis' ? 'gnosis-chain' : network
+  return `https://safe-transaction-${subdomain}.safe.global`
+}
 
 export async function sendSafeTransaction(
   script: Script,
@@ -18,7 +24,7 @@ export async function sendSafeTransaction(
   const signer = await script.getSigner(from.signer)
   const ethAdapter = new EthersAdapter({ ethers, signerOrProvider: signer })
   const safe = await Safe.create({ ethAdapter, safeAddress: from.safe })
-  const txServiceUrl = `https://safe-transaction-${script.inputNetwork}.safe.global`
+  const txServiceUrl = getTxServiceUrl(script.inputNetwork)
   const safeService = new SafeApiKit({ txServiceUrl, ethAdapter })
 
   const data = contract.interface.encodeFunctionData(method, args)
