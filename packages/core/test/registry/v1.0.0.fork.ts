@@ -4,8 +4,9 @@ import { Contract } from 'ethers'
 import hre from 'hardhat'
 
 const script = Script.forForkedNetwork('registry/v1.0.0', hre)
+const test = script.hasInput ? describe : describe.skip
 
-describe(script.id, () => {
+test(script.id, () => {
   let registry: Contract
 
   before('run script', async () => {
