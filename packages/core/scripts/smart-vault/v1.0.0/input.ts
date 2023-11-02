@@ -49,4 +49,14 @@ const avalanche: RegistryImplementationDeployment = {
   args: [dependency('core/registry/v1.0.0'), dependency('core/fee-controller/v1.0.0'), tokens.avalanche.WAVAX],
 }
 
-export default { mainnet, polygon, arbitrum, optimism, gnosis, bsc, fantom, avalanche }
+const base: RegistryImplementationDeployment = {
+  ...shared,
+  args: [dependency('core/registry/v1.0.0'), dependency('core/fee-controller/v1.0.0'), tokens.base.WETH],
+}
+
+const zkevm: RegistryImplementationDeployment = {
+  ...shared,
+  args: [dependency('core/registry/v1.0.0'), dependency('core/fee-controller/v1.0.0'), tokens.zkevm.WETH],
+}
+
+export default { mainnet, polygon, arbitrum, optimism, gnosis, bsc, fantom, avalanche, base, zkevm }
