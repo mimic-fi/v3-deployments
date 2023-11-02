@@ -19,7 +19,7 @@ import '@mimic-fi/v3-tasks/contracts/interfaces/ITask.sol';
 /**
  * @title Balancer claimer interface
  */
-interface IParaswapClaimer {
+interface IParaswapClaimer is ITask {
     /**
      * @dev The token is zero
      */

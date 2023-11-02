@@ -53,7 +53,7 @@ describe('ParaswapClaimer', () => {
       })
 
       context('when the given address is not zero', () => {
-        it('sets the protocol fee withdrawer', async () => {
+        it('sets the fee claimer', async () => {
           await task.setFeeClaimer(other.address)
 
           expect(await task.feeClaimer()).to.be.equal(other.address)
@@ -159,7 +159,7 @@ describe('ParaswapClaimer', () => {
         context('when the amount is greater than zero', () => {
           const totalBalance = fp(100)
 
-          beforeEach('fund protocol fee withdrawer', async () => {
+          beforeEach('fund fee claimer', async () => {
             await token.mint(feeClaimer.address, totalBalance)
           })
 
@@ -182,17 +182,17 @@ describe('ParaswapClaimer', () => {
               })
             })
 
-            it('transfers the token in from the protocol fee withdrawer to the smart vault', async () => {
+            it('transfers the token in from the fee claimer to the smart vault', async () => {
               const previousSmartVaultBalance = await token.balanceOf(smartVault.address)
-              const previousFeeWithdrawerBalance = await token.balanceOf(feeClaimer.address)
+              const previousFeeClaimerBalance = await token.balanceOf(feeClaimer.address)
 
               await task.connect(owner).call(token.address, requestedAmount)
 
               const currentSmartVaultBalance = await token.balanceOf(smartVault.address)
               expect(currentSmartVaultBalance).to.be.eq(previousSmartVaultBalance.add(transactedAmount))
 
-              const currentFeeWithdrawerBalance = await token.balanceOf(feeClaimer.address)
-              expect(currentFeeWithdrawerBalance).to.be.eq(previousFeeWithdrawerBalance.sub(transactedAmount))
+              const currentFeeClaimerBalance = await token.balanceOf(feeClaimer.address)
+              expect(currentFeeClaimerBalance).to.be.eq(previousFeeClaimerBalance.sub(transactedAmount))
             })
 
             it('emits an Executed event', async () => {
