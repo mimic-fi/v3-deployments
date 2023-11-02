@@ -1004,6 +1004,22 @@
     hardhat "^2.14.1"
     mocha "^6.2.3"
 
+"@mimic-fi/v3-helpers@0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@mimic-fi/v3-helpers/-/v3-helpers-0.1.4.tgz#22c14dfc6fa67422186bca4ff91a0803a56514bb"
+  integrity sha512-3XO8fcbqf4NzStZfOVhLV7G+YEy7chnk/hm5GaYpJ+578ObGNF7+b4BWLf308sEe5Q5XfbRMLbCyB0LwfgG3ow==
+  dependencies:
+    "@nomiclabs/hardhat-ethers" "^2.2.3"
+    "@nomiclabs/hardhat-waffle" "2.0.3"
+    "@types/chai" "^4.3.5"
+    "@types/mocha" "^10.0.1"
+    "@types/sinon-chai" "^3.2.3"
+    chai "^4.3.7"
+    decimal.js "~10.4.3"
+    ethers "~5.6.0"
+    hardhat "^2.14.1"
+    mocha "^6.2.3"
+
 "@mimic-fi/v3-helpers@0.1.5":
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/@mimic-fi/v3-helpers/-/v3-helpers-0.1.5.tgz#5e8611140a0b15e593f6821f4b9eb4b1f38f2b0b"
@@ -1067,6 +1083,19 @@
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@mimic-fi/v3-tasks/-/v3-tasks-0.2.0.tgz#5c037bdd3d15bdebdb62583a101271f80468eca4"
   integrity sha512-23elbQSjxgnukrgx7G0yavjJoLss1AeMU0kPhCL//P0lFDhzRVlcP7o9Hwoi4QE175phbEaWGSSEYB71GLiz2A==
+  dependencies:
+    "@mimic-fi/v3-authorizer" "0.1.1"
+    "@mimic-fi/v3-connectors" "0.1.1"
+    "@mimic-fi/v3-helpers" "0.1.0"
+    "@mimic-fi/v3-price-oracle" "0.1.0"
+    "@mimic-fi/v3-smart-vault" "0.1.0"
+    "@openzeppelin/contracts" "4.9.3"
+    "@quant-finance/solidity-datetime" "2.2.0"
+
+"@mimic-fi/v3-tasks@0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@mimic-fi/v3-tasks/-/v3-tasks-0.2.1.tgz#f55f189b59e8505bab2fd682d760e6fa63617d6b"
+  integrity sha512-QOUqULB7Xsq6kkygp0dessIaVzDG8HdTCuKkhmmc6ESWJzoQ7q/Q7Dx0pmDfLiQ/keNhTqDXquRURRO6D5xgmg==
   dependencies:
     "@mimic-fi/v3-authorizer" "0.1.1"
     "@mimic-fi/v3-connectors" "0.1.1"
