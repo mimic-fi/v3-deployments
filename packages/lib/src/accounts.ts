@@ -16,6 +16,12 @@ export const PROTOCOL_ADMIN: SafeSigner = {
   wait: true,
 }
 
+export const PROTOCOL_ADMIN_AURORA: SafeSigner = {
+  safe: '0x6Dc7e9638d6d28D065e82cdA55Ed70768EB04AF4',
+  signer: DEPLOYER.address,
+  wait: true,
+}
+
 export const USERS_ADMIN: SafeSigner = {
   safe: '0x26A0c29261d18C49e6Cf0Cee175018274D58f90C',
   signer: DEPLOYER.address,

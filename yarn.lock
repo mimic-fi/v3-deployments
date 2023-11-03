@@ -1052,6 +1052,22 @@
     hardhat "^2.14.1"
     mocha "^6.2.3"
 
+"@mimic-fi/v3-helpers@0.1.7":
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/@mimic-fi/v3-helpers/-/v3-helpers-0.1.7.tgz#408a94b4ff45390e8d3d44604eefb5d48945d1fa"
+  integrity sha512-XfFQzRNQUktdXkmxm36szylMdFqWsaXXPCcBOXHDvFJC2jMWoZjE1cH2xPaMzRJU3jszIlVjfqzbEHTsbL2Qnw==
+  dependencies:
+    "@nomiclabs/hardhat-ethers" "^2.2.3"
+    "@nomiclabs/hardhat-waffle" "2.0.3"
+    "@types/chai" "^4.3.5"
+    "@types/mocha" "^10.0.1"
+    "@types/sinon-chai" "^3.2.3"
+    chai "^4.3.7"
+    decimal.js "~10.4.3"
+    ethers "~5.6.0"
+    hardhat "^2.14.1"
+    mocha "^6.2.3"
+
 "@mimic-fi/v3-price-oracle@0.1.0":
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@mimic-fi/v3-price-oracle/-/v3-price-oracle-0.1.0.tgz#0706a97c94a15697d6fc55a410b91c833de705b9"
