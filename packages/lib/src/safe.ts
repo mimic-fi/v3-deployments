@@ -8,12 +8,6 @@ import { NETWORKS, SafeSigner } from './types'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-function getTxServiceUrl(network: (typeof NETWORKS)[number]): string {
-  if (network == 'fantom') return 'http://safe-txservice.fantom.network'
-  const subdomain = network == 'gnosis' ? 'gnosis-chain' : network
-  return `https://safe-transaction-${subdomain}.safe.global`
-}
-
 export async function sendSafeTransaction(
   script: Script,
   contract: Contract,
