@@ -37,7 +37,7 @@ abstract contract BasePublicSwapTask is IBasePublicSwapTask, Task {
      * @param taskConfig Task config
      * @param initialConnector Connector address to be set
      */
-    function initialize(TaskConfig memory taskConfig, address initialConnector) external initializer {
+    function initializePublicSwapper(TaskConfig memory taskConfig, address initialConnector) external initializer {
         __PublicSwapper_init(taskConfig, initialConnector);
     }
 

@@ -38,7 +38,12 @@ describe('OneInchV5PublicSwapper', () => {
   })
 
   beforeEach('deploy task', async () => {
-    task = await deployProxy('OneInchV5PublicSwapper', [], [buildEmptyTaskConfig(owner, smartVault), connector.address])
+    task = await deployProxy(
+      'OneInchV5PublicSwapper',
+      [],
+      [buildEmptyTaskConfig(owner, smartVault), connector.address],
+      'initializePublicSwapper'
+    )
   })
 
   describe('execution type', () => {

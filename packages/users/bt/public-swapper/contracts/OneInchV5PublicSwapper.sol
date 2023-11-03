@@ -47,19 +47,18 @@ contract OneInchV5PublicSwapper is BasePublicSwapTask {
         _beforePublicSwapper(tokenIn, amountIn, tokenOut, minAmountOut);
 
         // Note that the swap should only be executed if this is not actually a wrap/unwrap only action
-        // In that case, the action is already covered by the wrap (above) or unwrap (below)
+        // In that case, the scenario is already covered by the before and after hooks
         uint256 amountOut;
         address swapTokenIn = _wrappedIfNative(tokenIn);
         address swapTokenOut = _wrappedIfNative(tokenOut);
-        uint256 swapAmountIn = IERC20(swapTokenIn).balanceOf(smartVault);
         if (swapTokenIn == swapTokenOut) {
-            amountOut = swapAmountIn;
+            amountOut = amountIn;
         } else {
             bytes memory connectorData = abi.encodeWithSelector(
                 IOneInchV5Connector.execute.selector,
                 swapTokenIn,
                 swapTokenOut,
-                swapAmountIn,
+                amountIn,
                 minAmountOut,
                 data
             );
