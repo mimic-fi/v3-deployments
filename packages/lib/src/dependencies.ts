@@ -29,7 +29,7 @@ function fetchDependencyScript(currentScript: Script, dependency: Dependency): S
 
   const requestedId = dependency.id.substring(dependency.id.indexOf('/') + 1)
   const requestedVersion = requestedId.substring(requestedId.lastIndexOf('/') + 1)
-  const id = requestedVersion == 'latest' ? findLatestVersionId(directory, requestedId): requestedId
+  const id = requestedVersion == 'latest' ? findLatestVersionId(directory, requestedId) : requestedId
   return new Script(id, directory, currentScript.inputNetwork, currentScript.outputNetwork)
 }
 
