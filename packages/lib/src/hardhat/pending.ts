@@ -35,9 +35,7 @@ function trackPendingDeployments(scriptPath: string, results: Result[]): void {
 
   const scriptId = scriptPath.substring(scriptPath.indexOf('/') + 1)
   const result = { scriptId, missingNetworks }
-  const scriptIdsWithoutVersion = results.map((result) =>
-    result.scriptId.substring(0, result.scriptId.lastIndexOf('/'))
-  )
+  const scriptIdsWithoutVersion = results.map((r) => r.scriptId.substring(0, r.scriptId.lastIndexOf('/')))
   const index = scriptIdsWithoutVersion.indexOf(scriptId.substring(0, scriptId.lastIndexOf('/')))
   index < 0 ? results.push(result) : (results[index] = result)
 }
