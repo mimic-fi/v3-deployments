@@ -13,7 +13,7 @@ import { chainlink, fp, NATIVE_TOKEN_ADDRESS, tokens } from '@mimic-fi/v3-helper
 
 /* eslint-disable no-secrets/no-secrets */
 const USDC = tokens.avalanche.USDC
-const WETH = tokens.avalanche.WETH
+const WAVAX = tokens.avalanche.WAVAX
 const OWNER = '0x326A7778DB9B741Cb2acA0DE07b9402C7685dAc6'
 const PROTOCOL_FEE_WITHDRAWER = '0x8F42aDBbA1B16EaAE3BB5754915E0D06059aDd75'
 const BALANCER_VAULT = '0xBA12222222228d8Ba445958a75a0704d566BF2C8'
@@ -245,7 +245,7 @@ const deployment: EnvironmentDeployment = {
       config: {
         baseSwapConfig: {
           connector: dependency('core/connectors/1inch-v5/v1.0.0'),
-          tokenOut: WETH,
+          tokenOut: WAVAX,
           maxSlippage: fp(0.02),
           customTokensOut: [],
           customMaxSlippages: [],
@@ -264,7 +264,7 @@ const deployment: EnvironmentDeployment = {
             },
             tokenThresholdConfig: {
               defaultThreshold: {
-                token: WETH,
+                token: WAVAX,
                 min: fp(0.005),
                 max: fp(0.01),
               },
@@ -290,7 +290,7 @@ const deployment: EnvironmentDeployment = {
           },
           tokenIndexConfig: {
             acceptanceType: 1,
-            tokens: [WETH],
+            tokens: [WAVAX],
           },
         },
       },

@@ -9,17 +9,16 @@ import {
   PROTOCOL_ADMIN,
   USERS_ADMIN,
 } from '@mimic-fi/v3-deployments-lib'
-import { chainlink, fp, NATIVE_TOKEN_ADDRESS, tokens } from '@mimic-fi/v3-helpers'
+import { chainlink, fp, NATIVE_TOKEN_ADDRESS, tokens, HOUR } from '@mimic-fi/v3-helpers'
 
 /* eslint-disable no-secrets/no-secrets */
-const USDC = tokens.mainnet.USDC
-const BAL = tokens.mainnet.BAL
-const WETH = tokens.mainnet.WETH
-const OWNER = '0xc38c5f97B34E175FFd35407fc91a937300E33860'
-const PROTOCOL_FEE_WITHDRAWER = '0x5ef4c5352882b10893b70DbcaA0C000965bd23c5'
+const USDC = tokens.base.USDC
+const WETH = tokens.base.WETH
+const OWNER = '0x65226673F3D202E0f897C862590d7e1A992B2048'
+const PROTOCOL_FEE_WITHDRAWER = '0xAcf05BE5134d64d150d153818F8C67EE36996650'
 const BALANCER_VAULT = '0xBA12222222228d8Ba445958a75a0704d566BF2C8'
-const WITHDRAWER_RECIPIENT = '0x7c68c42De679ffB0f16216154C996C354cF1161B'
-const STANDARD_GAS_PRICE_LIMIT = 100e9
+const MAINNET_DEPOSITOR_TASK = '0x85B45B363Ec0023885f86775DdFaf6D879643ED7'
+const STANDARD_GAS_PRICE_LIMIT = 200e9
 
 const deployment: EnvironmentDeployment = {
   deployer: dependency('core/deployer/v1.0.0'),
@@ -27,7 +26,7 @@ const deployment: EnvironmentDeployment = {
   authorizer: {
     from: DEPLOYER,
     name: 'authorizer',
-    version: dependency('core/authorizer/v1.0.0'),
+    version: dependency('core/authorizer/v1.1.0'),
     owners: [OWNER, USERS_ADMIN.safe],
   },
   priceOracle: {
@@ -47,63 +46,6 @@ const deployment: EnvironmentDeployment = {
     priceOracle: dependency('price-oracle'),
   },
   tasks: [
-    //Depositor: Avalanche
-    {
-      from: DEPLOYER,
-      name: 'avalanche-depositor',
-      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
-      config: {
-        tokensSource: counterfactualDependency('avalanche-depositor'),
-        taskConfig: {
-          baseConfig: {
-            smartVault: dependency('smart-vault'),
-            nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
-          },
-          tokenIndexConfig: {
-            acceptanceType: 1, //Allow list
-            tokens: [USDC],
-          },
-        },
-      },
-    },
-    //Depositor: Base
-    {
-      from: DEPLOYER,
-      name: 'base-depositor',
-      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
-      config: {
-        tokensSource: counterfactualDependency('avalanche-depositor'),
-        taskConfig: {
-          baseConfig: {
-            smartVault: dependency('smart-vault'),
-            nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
-          },
-          tokenIndexConfig: {
-            acceptanceType: 1, //Allow list
-            tokens: [USDC],
-          },
-        },
-      },
-    },
-    //Depositor: v2
-    {
-      from: DEPLOYER,
-      name: 'v2-depositor',
-      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
-      config: {
-        tokensSource: counterfactualDependency('v2-depositor'),
-        taskConfig: {
-          baseConfig: {
-            smartVault: dependency('smart-vault'),
-            nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
-          },
-          tokenIndexConfig: {
-            acceptanceType: 1, //Allow list
-            tokens: [USDC],
-          },
-        },
-      },
-    },
     //Depositor: for manual transfers and testing purposes
     {
       from: DEPLOYER,
@@ -219,7 +161,7 @@ const deployment: EnvironmentDeployment = {
             baseConfig: {
               smartVault: dependency('smart-vault'),
               previousBalanceConnectorId: balanceConnectorId('swapper-connection'),
-              nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
+              nextBalanceConnectorId: balanceConnectorId('bridger-connection'),
             },
             gasLimitConfig: {
               gasPriceLimit: STANDARD_GAS_PRICE_LIMIT,
@@ -231,7 +173,7 @@ const deployment: EnvironmentDeployment = {
             tokenThresholdConfig: {
               defaultThreshold: {
                 token: USDC,
-                min: fp(100),
+                min: fp(10),
                 max: 0,
               },
             },
@@ -239,7 +181,7 @@ const deployment: EnvironmentDeployment = {
         },
       },
     },
-    //Handle over: moves USDC and BAL to be bridged
+    //Handle over: moves USDC to be bridged
     {
       from: DEPLOYER,
       name: 'usdc-handle-over',
@@ -249,38 +191,59 @@ const deployment: EnvironmentDeployment = {
           baseConfig: {
             smartVault: dependency('smart-vault'),
             previousBalanceConnectorId: balanceConnectorId('swapper-connection'),
-            nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
+            nextBalanceConnectorId: balanceConnectorId('bridger-connection'),
           },
           tokenIndexConfig: {
             acceptanceType: 1, //Allow list
-            tokens: [USDC, BAL],
+            tokens: [USDC],
           },
         },
       },
     },
-    //Withdrawer USDC and BAL
+    //Bridger by time: makes sure that by the end of the period, it bridges everything
     {
       from: DEPLOYER,
-      name: 'withdrawer',
-      version: dependency('core/tasks/primitives/withdrawer/v2.0.0'),
+      name: 'cctp-bridger',
+      version: dependency('core/tasks/bridge/hop/v2.0.0'),
       config: {
-        recipient: WITHDRAWER_RECIPIENT,
-        taskConfig: {
-          baseConfig: {
-            smartVault: dependency('smart-vault'),
-            previousBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
+        baseBridgeConfig: {
+          connector: dependency('core/connectors/hop/v1.0.0'),
+          recipient: MAINNET_DEPOSITOR_TASK,
+          destinationChain: 1, // mainnet
+          maxSlippage: fp(0.02), //2%
+          maxFee: {
+            token: USDC,
+            amount: fp(0.02), //2%
           },
-          tokenIndexConfig: {
-            acceptanceType: 1,
-            tokens: [USDC, BAL],
-          },
-          timeLockConfig: {
-            mode: 1, //SECONDS
-            frequency: 14 * 60 * 60 * 24, //14 days
-            allowedAt: 1699534800, //Thursday, 9 November 2023 13:00:00
-            window: 2 * 60 * 60 * 24, //2 days
+          customDestinationChains: [],
+          customMaxSlippages: [],
+          customMaxFees: [],
+
+          taskConfig: {
+            baseConfig: {
+              smartVault: dependency('smart-vault'),
+              previousBalanceConnectorId: balanceConnectorId('bridger-connection'),
+            },
+            tokenIndexConfig: {
+              acceptanceType: 1,
+              tokens: [USDC],
+            },
+            timeLockConfig: {
+              mode: 1, //SECONDS
+              frequency: 14 * 60 * 60 * 24, //14 days
+              allowedAt: 1699524000, //9 Nov
+              window: 2 * 60 * 60 * 24, //2 days
+            },
           },
         },
+        relayer: MIMIC_V2_BOT.address,
+        maxDeadline: 2 * HOUR,
+        tokenHopEntrypoints: [
+          {
+            entrypoint: '0x7D269D3E0d61A05a0bA976b7DBF8805bF844AF3F',
+            token: '0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA',
+          },
+        ],
       },
     },
     //Relayer Funder Swapper: swaps assets into native wrapped token to fund the relayer
@@ -298,7 +261,7 @@ const deployment: EnvironmentDeployment = {
           taskConfig: {
             baseConfig: {
               smartVault: dependency('smart-vault'),
-              previousBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
+              previousBalanceConnectorId: balanceConnectorId('bridger-connection'),
               nextBalanceConnectorId: balanceConnectorId('relayer-funder-unwrapper'),
             },
             gasLimitConfig: {
@@ -311,8 +274,8 @@ const deployment: EnvironmentDeployment = {
             tokenThresholdConfig: {
               defaultThreshold: {
                 token: WETH,
-                min: fp(0.1),
-                max: fp(0.5),
+                min: fp(0.005),
+                max: fp(0.01),
               },
             },
           },
@@ -370,36 +333,6 @@ const deployment: EnvironmentDeployment = {
         where: dependency('smart-vault'),
         revokes: [],
         grants: [
-          {
-            who: dependency('avalanche-depositor'),
-            what: 'collect',
-            params: [],
-          },
-          {
-            who: dependency('avalanche-depositor'),
-            what: 'updateBalanceConnector',
-            params: [],
-          },
-          {
-            who: dependency('base-depositor'),
-            what: 'collect',
-            params: [],
-          },
-          {
-            who: dependency('base-depositor'),
-            what: 'updateBalanceConnector',
-            params: [],
-          },
-          {
-            who: dependency('v2-depositor'),
-            what: 'collect',
-            params: [],
-          },
-          {
-            who: dependency('v2-depositor'),
-            what: 'updateBalanceConnector',
-            params: [],
-          },
           { who: dependency('depositor'), what: 'collect', params: [] },
           {
             who: dependency('depositor'),
@@ -447,12 +380,12 @@ const deployment: EnvironmentDeployment = {
             params: [],
           },
           {
-            who: dependency('withdrawer'),
-            what: 'withdraw',
+            who: dependency('cctp-bridger'),
+            what: 'execute',
             params: [],
           },
           {
-            who: dependency('withdrawer'),
+            who: dependency('cctp-bridger'),
             what: 'updateBalanceConnector',
             params: [],
           },
@@ -490,21 +423,6 @@ const deployment: EnvironmentDeployment = {
         ],
       },
       {
-        where: dependency('avalanche-depositor'),
-        revokes: [],
-        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
-      },
-      {
-        where: dependency('base-depositor'),
-        revokes: [],
-        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
-      },
-      {
-        where: dependency('v2-depositor'),
-        revokes: [],
-        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
-      },
-      {
         where: dependency('depositor'),
         revokes: [],
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
@@ -535,7 +453,7 @@ const deployment: EnvironmentDeployment = {
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency('withdrawer'),
+        where: dependency('cctp-bridger'),
         revokes: [],
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },

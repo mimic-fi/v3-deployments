@@ -12,22 +12,21 @@ import {
 import { chainlink, fp, NATIVE_TOKEN_ADDRESS, tokens } from '@mimic-fi/v3-helpers'
 
 /* eslint-disable no-secrets/no-secrets */
-const USDC = tokens.mainnet.USDC
-const BAL = tokens.mainnet.BAL
-const WETH = tokens.mainnet.WETH
-const OWNER = '0xc38c5f97B34E175FFd35407fc91a937300E33860'
-const PROTOCOL_FEE_WITHDRAWER = '0x5ef4c5352882b10893b70DbcaA0C000965bd23c5'
-const BALANCER_VAULT = '0xBA12222222228d8Ba445958a75a0704d566BF2C8'
-const WITHDRAWER_RECIPIENT = '0x7c68c42De679ffB0f16216154C996C354cF1161B'
-const STANDARD_GAS_PRICE_LIMIT = 100e9
+const USDC = tokens.fantom.USDC
+const WETH = tokens.fantom.WETH
+const OWNER = '0xa1e849b1d6c2fd31c63eef7822e9e0632411ada7'
+const PROTOCOL_FEE_WITHDRAWER = '0xC6920d3a369E7c8BD1A22DbE385e11d1F7aF948F'
+const BALANCER_VAULT = '0x20dd72ed959b6147912c2e529f0a0c651c33c9ce'
+const WITHDRAWER_RECIPIENT = '0xa1e849b1d6c2fd31c63eef7822e9e0632411ada7'
+const STANDARD_GAS_PRICE_LIMIT = 200e9
 
 const deployment: EnvironmentDeployment = {
   deployer: dependency('core/deployer/v1.0.0'),
-  namespace: 'balancer-fee-collector',
+  namespace: 'beethoven-fee-collector',
   authorizer: {
     from: DEPLOYER,
     name: 'authorizer',
-    version: dependency('core/authorizer/v1.0.0'),
+    version: dependency('core/authorizer/v1.1.0'),
     owners: [OWNER, USERS_ADMIN.safe],
   },
   priceOracle: {
@@ -47,48 +46,10 @@ const deployment: EnvironmentDeployment = {
     priceOracle: dependency('price-oracle'),
   },
   tasks: [
-    //Depositor: Avalanche
-    {
-      from: DEPLOYER,
-      name: 'avalanche-depositor',
-      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
-      config: {
-        tokensSource: counterfactualDependency('avalanche-depositor'),
-        taskConfig: {
-          baseConfig: {
-            smartVault: dependency('smart-vault'),
-            nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
-          },
-          tokenIndexConfig: {
-            acceptanceType: 1, //Allow list
-            tokens: [USDC],
-          },
-        },
-      },
-    },
-    //Depositor: Base
-    {
-      from: DEPLOYER,
-      name: 'base-depositor',
-      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
-      config: {
-        tokensSource: counterfactualDependency('avalanche-depositor'),
-        taskConfig: {
-          baseConfig: {
-            smartVault: dependency('smart-vault'),
-            nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
-          },
-          tokenIndexConfig: {
-            acceptanceType: 1, //Allow list
-            tokens: [USDC],
-          },
-        },
-      },
-    },
     //Depositor: v2
     {
       from: DEPLOYER,
-      name: 'v2-depositor',
+      name: 'depositor',
       version: dependency('core/tasks/primitives/depositor/v2.0.0'),
       config: {
         tokensSource: counterfactualDependency('v2-depositor'),
@@ -100,28 +61,6 @@ const deployment: EnvironmentDeployment = {
           tokenIndexConfig: {
             acceptanceType: 1, //Allow list
             tokens: [USDC],
-          },
-        },
-      },
-    },
-    //Depositor: for manual transfers and testing purposes
-    {
-      from: DEPLOYER,
-      name: 'depositor',
-      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
-      config: {
-        tokensSource: counterfactualDependency('depositor'),
-        taskConfig: {
-          baseConfig: {
-            smartVault: dependency('smart-vault'),
-            nextBalanceConnectorId: balanceConnectorId('swapper-connection'),
-          },
-          gasLimitConfig: {
-            gasPriceLimit: STANDARD_GAS_PRICE_LIMIT,
-          },
-          tokenIndexConfig: {
-            acceptanceType: 0, //Deny list
-            tokens: [],
           },
         },
       },
@@ -253,12 +192,12 @@ const deployment: EnvironmentDeployment = {
           },
           tokenIndexConfig: {
             acceptanceType: 1, //Allow list
-            tokens: [USDC, BAL],
+            tokens: [USDC],
           },
         },
       },
     },
-    //Withdrawer USDC and BAL
+    //Withdrawer USDC
     {
       from: DEPLOYER,
       name: 'withdrawer',
@@ -272,7 +211,7 @@ const deployment: EnvironmentDeployment = {
           },
           tokenIndexConfig: {
             acceptanceType: 1,
-            tokens: [USDC, BAL],
+            tokens: [USDC],
           },
           timeLockConfig: {
             mode: 1, //SECONDS
@@ -370,36 +309,6 @@ const deployment: EnvironmentDeployment = {
         where: dependency('smart-vault'),
         revokes: [],
         grants: [
-          {
-            who: dependency('avalanche-depositor'),
-            what: 'collect',
-            params: [],
-          },
-          {
-            who: dependency('avalanche-depositor'),
-            what: 'updateBalanceConnector',
-            params: [],
-          },
-          {
-            who: dependency('base-depositor'),
-            what: 'collect',
-            params: [],
-          },
-          {
-            who: dependency('base-depositor'),
-            what: 'updateBalanceConnector',
-            params: [],
-          },
-          {
-            who: dependency('v2-depositor'),
-            what: 'collect',
-            params: [],
-          },
-          {
-            who: dependency('v2-depositor'),
-            what: 'updateBalanceConnector',
-            params: [],
-          },
           { who: dependency('depositor'), what: 'collect', params: [] },
           {
             who: dependency('depositor'),
@@ -488,21 +397,6 @@ const deployment: EnvironmentDeployment = {
             params: [],
           },
         ],
-      },
-      {
-        where: dependency('avalanche-depositor'),
-        revokes: [],
-        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
-      },
-      {
-        where: dependency('base-depositor'),
-        revokes: [],
-        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
-      },
-      {
-        where: dependency('v2-depositor'),
-        revokes: [],
-        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
         where: dependency('depositor'),
