@@ -9,7 +9,7 @@ import {
   PROTOCOL_ADMIN,
   USERS_ADMIN,
 } from '@mimic-fi/v3-deployments-lib'
-import { chainlink, fp, NATIVE_TOKEN_ADDRESS, tokens } from '@mimic-fi/v3-helpers'
+import { chainlink, fp, bn, NATIVE_TOKEN_ADDRESS, tokens } from '@mimic-fi/v3-helpers'
 
 /* eslint-disable no-secrets/no-secrets */
 const USDC = tokens.avalanche.USDC
@@ -90,7 +90,7 @@ const deployment: EnvironmentDeployment = {
         tokenThresholdConfig: {
           defaultThreshold: {
             token: USDC,
-            min: fp(10),
+            min: bn(10000000),
             max: 0,
           },
         },
@@ -119,7 +119,7 @@ const deployment: EnvironmentDeployment = {
           tokenThresholdConfig: {
             defaultThreshold: {
               token: USDC,
-              min: fp(10),
+              min: bn(10000000),
               max: 0,
             },
           },
@@ -173,7 +173,7 @@ const deployment: EnvironmentDeployment = {
             tokenThresholdConfig: {
               defaultThreshold: {
                 token: USDC,
-                min: fp(10),
+                min: bn(10000000),
                 max: 0,
               },
             },
