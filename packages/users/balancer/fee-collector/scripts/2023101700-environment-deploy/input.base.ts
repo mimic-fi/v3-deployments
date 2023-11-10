@@ -485,7 +485,7 @@ const deployment: EnvironmentDeployment = {
     from: PROTOCOL_ADMIN,
     smartVault: dependency('smart-vault'),
     relayer: dependency('core/relayer/v1.1.0'),
-    quota: fp(0.01),
+    quota: fp(0.000134),
   },
 }
 
