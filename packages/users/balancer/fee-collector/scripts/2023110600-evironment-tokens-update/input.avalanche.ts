@@ -1,5 +1,5 @@
 import { dependency, DEPLOYER, EnvironmentUpdate, USERS_ADMIN } from '@mimic-fi/v3-deployments-lib'
-import { fp, bn, tokens } from '@mimic-fi/v3-helpers'
+import { bn, fp, tokens } from '@mimic-fi/v3-helpers'
 
 const USDC = tokens.avalanche.USDC
 const Token_Remove = tokens.avalanche.WETH
@@ -20,16 +20,12 @@ const update: EnvironmentUpdate = {
         },
         {
           where: dependency('2023101700-environment-deploy', 'bpt-exiter'),
-          grants: [
-            { who: DEPLOYER.address, what: 'setDefaultTokenThreshold', params: [] },
-          ],
+          grants: [{ who: DEPLOYER.address, what: 'setDefaultTokenThreshold', params: [] }],
           revokes: [],
         },
         {
           where: dependency('2023101700-environment-deploy', '1inch-swapper'),
-          grants: [
-            { who: DEPLOYER.address, what: 'setDefaultTokenThreshold', params: [] },
-          ],
+          grants: [{ who: DEPLOYER.address, what: 'setDefaultTokenThreshold', params: [] }],
           revokes: [],
         },
         {

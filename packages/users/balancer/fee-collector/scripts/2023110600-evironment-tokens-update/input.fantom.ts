@@ -135,7 +135,7 @@ const update: EnvironmentUpdate = {
           ],
           grants: [],
         },
-        {jej
+        {
           where: dependency('2023101700-environment-deploy', 'usdc-handle-over'),
           revokes: [{ who: DEPLOYER.address, what: 'setTokensAcceptanceList' }],
           grants: [],
