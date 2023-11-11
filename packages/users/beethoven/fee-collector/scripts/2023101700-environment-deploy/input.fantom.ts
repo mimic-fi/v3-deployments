@@ -38,7 +38,7 @@ const FEE_PCT = fp(0.02) // 0.2%
 
 const deployment: EnvironmentDeployment = {
   deployer: dependency('core/deployer/v1.0.0'),
-  namespace: 'beethoven-fee-collector',
+  namespace: 'beethoven-fee-collector-v3.0',
   authorizer: {
     from: DEPLOYER,
     name: 'authorizer',
