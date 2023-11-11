@@ -1,5 +1,5 @@
 import { dependency, DEPLOYER, EnvironmentUpdate, USERS_ADMIN } from '@mimic-fi/v3-deployments-lib'
-import { bn, fp, tokens } from '@mimic-fi/v3-helpers'
+import { bn, tokens } from '@mimic-fi/v3-helpers'
 
 const USDC = tokens.mainnet.USDC
 const USDC_THRESHOLD = bn(500000000) // 500 USDC

@@ -1,5 +1,5 @@
 import { dependency, DEPLOYER, EnvironmentUpdate, USERS_ADMIN } from '@mimic-fi/v3-deployments-lib'
-import { bn, fp, tokens } from '@mimic-fi/v3-helpers'
+import { fp, tokens } from '@mimic-fi/v3-helpers'
 
 const WRAPPED_NATIVE_TOKEN = tokens.avalanche.WAVAX
 const QUOTA = fp(0.148)
