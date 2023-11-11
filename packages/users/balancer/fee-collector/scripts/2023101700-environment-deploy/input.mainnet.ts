@@ -12,15 +12,30 @@ import {
 import { bn, chainlink, fp, NATIVE_TOKEN_ADDRESS, tokens } from '@mimic-fi/v3-helpers'
 
 /* eslint-disable no-secrets/no-secrets */
+
+//Config - Tokens
 const USDC = tokens.mainnet.USDC
 const BAL = tokens.mainnet.BAL
-const WETH = tokens.mainnet.WETH
+const WRAPPED_NATIVE_TOKEN = tokens.mainnet.WETH
+
+//Config - Addresses
 const OWNER = '0xc38c5f97B34E175FFd35407fc91a937300E33860'
 const PROTOCOL_FEE_WITHDRAWER = '0x5ef4c5352882b10893b70DbcaA0C000965bd23c5'
 const BALANCER_VAULT = '0xBA12222222228d8Ba445958a75a0704d566BF2C8'
 const WITHDRAWER_RECIPIENT = '0x7c68c42De679ffB0f16216154C996C354cF1161B'
+
+//Config - Threshold
+const USDC_THRESHOLD = bn(1000000000) // 1000 USDC
+
+//Config - Gas
 const STANDARD_GAS_PRICE_LIMIT = 100e9
 const TX_COST_LIMIT_PCT = fp(0.02) // 2%
+const QUOTA = fp(0.0796)
+const MIN_WINDOW_GAS = QUOTA
+const MAX_WINDOW_GAS = QUOTA.mul(7)
+
+//Config - Fee
+const FEE_PCT = fp(0.02) // 0.2%
 
 const deployment: EnvironmentDeployment = {
   deployer: dependency('core/deployer/v1.0.0'),
@@ -149,7 +164,7 @@ const deployment: EnvironmentDeployment = {
         tokenThresholdConfig: {
           defaultThreshold: {
             token: USDC,
-            min: bn(10000000),
+            min: USDC_THRESHOLD,
             max: 0,
           },
         },
@@ -178,7 +193,7 @@ const deployment: EnvironmentDeployment = {
           tokenThresholdConfig: {
             defaultThreshold: {
               token: USDC,
-              min: bn(10000000),
+              min: USDC_THRESHOLD,
               max: 0,
             },
           },
@@ -232,7 +247,7 @@ const deployment: EnvironmentDeployment = {
             tokenThresholdConfig: {
               defaultThreshold: {
                 token: USDC,
-                min: bn(100000000),
+                min: USDC_THRESHOLD,
                 max: 0,
               },
             },
@@ -268,7 +283,7 @@ const deployment: EnvironmentDeployment = {
             tokenThresholdConfig: {
               defaultThreshold: {
                 token: USDC,
-                min: bn(100000000),
+                min: USDC_THRESHOLD,
                 max: 0,
               },
             },
@@ -328,7 +343,7 @@ const deployment: EnvironmentDeployment = {
       config: {
         baseSwapConfig: {
           connector: dependency('core/connectors/1inch-v5/v1.0.0'),
-          tokenOut: WETH,
+          tokenOut: WRAPPED_NATIVE_TOKEN,
           maxSlippage: fp(0.02),
           customTokensOut: [],
           customMaxSlippages: [],
@@ -347,9 +362,9 @@ const deployment: EnvironmentDeployment = {
             },
             tokenThresholdConfig: {
               defaultThreshold: {
-                token: WETH,
-                min: fp(0.1),
-                max: fp(0.5),
+                token: WRAPPED_NATIVE_TOKEN,
+                min: MIN_WINDOW_GAS,
+                max: MAX_WINDOW_GAS,
               },
             },
           },
@@ -373,7 +388,7 @@ const deployment: EnvironmentDeployment = {
           },
           tokenIndexConfig: {
             acceptanceType: 1,
-            tokens: [WETH],
+            tokens: [WRAPPED_NATIVE_TOKEN],
           },
         },
       },
@@ -479,6 +494,16 @@ const deployment: EnvironmentDeployment = {
             params: [],
           },
           {
+            who: dependency('paraswap-swapper'),
+            what: 'execute',
+            params: [],
+          },
+          {
+            who: dependency('paraswap-swapper'),
+            what: 'updateBalanceConnector',
+            params: [],
+          },
+          {
             who: dependency('usdc-handle-over'),
             what: 'updateBalanceConnector',
             params: [],
@@ -567,6 +592,11 @@ const deployment: EnvironmentDeployment = {
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
+        where: dependency('paraswap-swapper'),
+        revokes: [],
+        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
+      },
+      {
         where: dependency('usdc-handle-over'),
         revokes: [],
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
@@ -598,13 +628,13 @@ const deployment: EnvironmentDeployment = {
     smartVault: dependency('smart-vault'),
     feeController: dependency('core/fee-controller/v1.0.0'),
     maxFeePct: fp(0.02), // 2%
-    feePct: fp(0.009), // 0.9%
+    feePct: FEE_PCT,
   },
   relayerSettings: {
     from: PROTOCOL_ADMIN,
     smartVault: dependency('smart-vault'),
     relayer: dependency('core/relayer/v1.1.0'),
-    quota: fp(0.056),
+    quota: QUOTA,
   },
 }
 

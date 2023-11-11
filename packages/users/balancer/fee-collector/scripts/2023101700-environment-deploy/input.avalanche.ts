@@ -12,14 +12,29 @@ import {
 import { bn, chainlink, fp, NATIVE_TOKEN_ADDRESS, tokens } from '@mimic-fi/v3-helpers'
 
 /* eslint-disable no-secrets/no-secrets */
+
+//Config - Tokens
 const USDC = tokens.avalanche.USDC
-const WAVAX = tokens.avalanche.WAVAX
+const WRAPPED_NATIVE_TOKEN = tokens.avalanche.WAVAX
+
+//Config - Addresses
 const OWNER = '0x326A7778DB9B741Cb2acA0DE07b9402C7685dAc6'
 const PROTOCOL_FEE_WITHDRAWER = '0x8F42aDBbA1B16EaAE3BB5754915E0D06059aDd75'
 const BALANCER_VAULT = '0xBA12222222228d8Ba445958a75a0704d566BF2C8'
 const MAINNET_DEPOSITOR_TASK = '0xDFf6CF2Ea01685bF016Ce31C4CB25ca25B7B8Fdf'
+
+//Config - Threshold
+const USDC_THRESHOLD = bn(100000000) // 100 USDC
+
+//Config - Gas
 const STANDARD_GAS_PRICE_LIMIT = 50e9
 const TX_COST_LIMIT_PCT = fp(0.02) // 2%
+const QUOTA = fp(0.148)
+const MIN_WINDOW_GAS = QUOTA
+const MAX_WINDOW_GAS = QUOTA.mul(10)
+
+//Config - Fee
+const FEE_PCT = fp(0.02) // 0.2%
 
 const deployment: EnvironmentDeployment = {
   deployer: dependency('core/deployer/v1.0.0'),
@@ -91,7 +106,7 @@ const deployment: EnvironmentDeployment = {
         tokenThresholdConfig: {
           defaultThreshold: {
             token: USDC,
-            min: bn(10000000),
+            min: USDC_THRESHOLD,
             max: 0,
           },
         },
@@ -120,7 +135,7 @@ const deployment: EnvironmentDeployment = {
           tokenThresholdConfig: {
             defaultThreshold: {
               token: USDC,
-              min: bn(10000000),
+              min: USDC_THRESHOLD,
               max: 0,
             },
           },
@@ -174,7 +189,7 @@ const deployment: EnvironmentDeployment = {
             tokenThresholdConfig: {
               defaultThreshold: {
                 token: USDC,
-                min: bn(10000000),
+                min: USDC_THRESHOLD,
                 max: 0,
               },
             },
@@ -210,7 +225,7 @@ const deployment: EnvironmentDeployment = {
             tokenThresholdConfig: {
               defaultThreshold: {
                 token: USDC,
-                min: bn(10000000),
+                min: USDC_THRESHOLD,
                 max: 0,
               },
             },
@@ -282,7 +297,7 @@ const deployment: EnvironmentDeployment = {
       config: {
         baseSwapConfig: {
           connector: dependency('core/connectors/1inch-v5/v1.0.0'),
-          tokenOut: WAVAX,
+          tokenOut: WRAPPED_NATIVE_TOKEN,
           maxSlippage: fp(0.02),
           customTokensOut: [],
           customMaxSlippages: [],
@@ -301,9 +316,9 @@ const deployment: EnvironmentDeployment = {
             },
             tokenThresholdConfig: {
               defaultThreshold: {
-                token: WAVAX,
-                min: fp(0.005),
-                max: fp(0.01),
+                token: WRAPPED_NATIVE_TOKEN,
+                min: MIN_WINDOW_GAS,
+                max: MAX_WINDOW_GAS,
               },
             },
           },
@@ -327,7 +342,7 @@ const deployment: EnvironmentDeployment = {
           },
           tokenIndexConfig: {
             acceptanceType: 1,
-            tokens: [WAVAX],
+            tokens: [WRAPPED_NATIVE_TOKEN],
           },
         },
       },
@@ -522,13 +537,13 @@ const deployment: EnvironmentDeployment = {
     smartVault: dependency('smart-vault'),
     feeController: dependency('core/fee-controller/v1.0.0'),
     maxFeePct: fp(0.02), // 2%
-    feePct: fp(0.009), // 0.9%
+    feePct: FEE_PCT,
   },
   relayerSettings: {
     from: PROTOCOL_ADMIN,
     smartVault: dependency('smart-vault'),
     relayer: dependency('core/relayer/v1.1.0'),
-    quota: fp(0.135),
+    quota: QUOTA,
   },
 }
 
