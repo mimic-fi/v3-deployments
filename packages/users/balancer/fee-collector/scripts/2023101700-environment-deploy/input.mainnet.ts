@@ -20,6 +20,7 @@ const PROTOCOL_FEE_WITHDRAWER = '0x5ef4c5352882b10893b70DbcaA0C000965bd23c5'
 const BALANCER_VAULT = '0xBA12222222228d8Ba445958a75a0704d566BF2C8'
 const WITHDRAWER_RECIPIENT = '0x7c68c42De679ffB0f16216154C996C354cF1161B'
 const STANDARD_GAS_PRICE_LIMIT = 100e9
+const TX_COST_LIMIT_PCT = fp(0.02) // 2%
 
 const deployment: EnvironmentDeployment = {
   deployer: dependency('core/deployer/v1.0.0'),
@@ -139,7 +140,7 @@ const deployment: EnvironmentDeployment = {
           nextBalanceConnectorId: balanceConnectorId('swapper-connection'),
         },
         gasLimitConfig: {
-          gasPriceLimit: STANDARD_GAS_PRICE_LIMIT,
+          txCostLimitPct: TX_COST_LIMIT_PCT,
         },
         tokenIndexConfig: {
           acceptanceType: 0, //Deny list
@@ -168,7 +169,7 @@ const deployment: EnvironmentDeployment = {
             nextBalanceConnectorId: balanceConnectorId('bpt-handle-over-connection'),
           },
           gasLimitConfig: {
-            gasPriceLimit: STANDARD_GAS_PRICE_LIMIT,
+            txCostLimitPct: TX_COST_LIMIT_PCT,
           },
           tokenIndexConfig: {
             acceptanceType: 0, //Deny list
@@ -222,7 +223,7 @@ const deployment: EnvironmentDeployment = {
               nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
             },
             gasLimitConfig: {
-              gasPriceLimit: STANDARD_GAS_PRICE_LIMIT,
+              txCostLimitPct: TX_COST_LIMIT_PCT,
             },
             tokenIndexConfig: {
               acceptanceType: 0,
