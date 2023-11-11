@@ -1,0 +1,59 @@
+{
+  "authorizer": {
+    "version": "core/authorizer/v1.1.0",
+    "address": "0xC95F3B5177019619Bc9F2B6d5fAD2052A0263c92"
+  },
+  "price-oracle": {
+    "version": "core/price-oracle/v1.0.0",
+    "address": "0x4f9d034B58725954270AF466F6dd570fa181ed13"
+  },
+  "smart-vault": {
+    "version": "core/smart-vault/v1.0.0",
+    "address": "0xA09BC385421f18D5d5072924f9d3709bB2B76281"
+  },
+  "depositor": {
+    "version": "core/tasks/primitives/depositor/v2.0.0",
+    "address": "0xb62A12aEBe21f7538a55A63D1809dCE8Bb5DceC5"
+  },
+  "BalancerClaimer": "0x18c363cC0161724390F854B4349D88ec41fe2219",
+  "asset-collector": {
+    "version": "BalancerClaimer",
+    "address": "0x429cfff5740A7bab8eD088E68faA8AE105F2af83"
+  },
+  "bpt-exiter": {
+    "version": "core/tasks/liquidity/balancer/bpt-exiter/v2.0.0",
+    "address": "0x76D2c6780389c9B15E292328735f31A0cA2F0D69"
+  },
+  "bpt-handle-over": {
+    "version": "core/tasks/primitives/handle-over/v2.0.0",
+    "address": "0xEcdfA4deF80B78BB68fa3989a620ee33415e2308"
+  },
+  "1inch-swapper": {
+    "version": "core/tasks/swap/1inch-v5/v2.0.0",
+    "address": "0xfe81Dde00881C212092532660F613c3eb9002D58"
+  },
+  "paraswap-swapper": {
+    "version": "core/tasks/swap/paraswap-v5/v2.0.0",
+    "address": "0x2Dd4a6956AEEF1eE4c601F2f1D48129Ac2863A31"
+  },
+  "usdc-handle-over": {
+    "version": "core/tasks/primitives/handle-over/v2.0.0",
+    "address": "0x75D8d876887b2Cd5032c835002dD447F278D72EB"
+  },
+  "withdrawer": {
+    "version": "core/tasks/primitives/withdrawer/v2.0.0",
+    "address": "0x564D5794446b8038B189A9a12682694FfAAe0d5a"
+  },
+  "relayer-funder-swapper": {
+    "version": "core/tasks/swap/1inch-v5/v2.0.0",
+    "address": "0x30094B5B189f24c3E37C4C26C69BA79c65133775"
+  },
+  "relayer-funder-unwrapper": {
+    "version": "core/tasks/primitives/unwrapper/v2.0.0",
+    "address": "0x94818e53BD73f689baef36a81c694aB6C48Dd890"
+  },
+  "relayer-depositor": {
+    "version": "core/tasks/relayer/depositor/v2.0.0",
+    "address": "0x25125b9E890C3f68Ed46d29875a104d2Ea1eD858"
+  }
+}

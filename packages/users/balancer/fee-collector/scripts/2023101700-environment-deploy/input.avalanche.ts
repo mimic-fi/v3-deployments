@@ -203,6 +203,7 @@ const deployment: EnvironmentDeployment = {
       name: 'paraswap-swapper',
       version: dependency('core/tasks/swap/paraswap-v5/v2.0.0'),
       config: {
+        quoteSigner: '0x6278c27cf5534f07fa8f1ab6188a155cb8750ffa',
         baseSwapConfig: {
           connector: dependency('core/connectors/paraswap-v5/v1.0.0'),
           tokenOut: USDC,

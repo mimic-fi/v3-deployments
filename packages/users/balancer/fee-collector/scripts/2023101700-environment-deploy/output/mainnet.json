@@ -63,5 +63,9 @@
   "base-depositor": {
     "version": "core/tasks/primitives/depositor/v2.0.0",
     "address": "0x85B45B363Ec0023885f86775DdFaf6D879643ED7"
+  },
+  "paraswap-swapper": {
+    "version": "core/tasks/swap/paraswap-v5/v2.0.0",
+    "address": "0xAD63A7AfBCE3f93CA40dDFeE6df148EC805D92ae"
   }
 }

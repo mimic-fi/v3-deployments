@@ -25,11 +25,11 @@ const BALANCER_VAULT = '0xBA12222222228d8Ba445958a75a0704d566BF2C8'
 const WITHDRAWER_RECIPIENT = '0x7c68c42De679ffB0f16216154C996C354cF1161B'
 
 //Config - Threshold
-const USDC_THRESHOLD = bn(1000000000) // 1000 USDC
+const USDC_THRESHOLD = bn(500000000) // 500 USDC
 
 //Config - Gas
 const STANDARD_GAS_PRICE_LIMIT = 100e9
-const TX_COST_LIMIT_PCT = fp(0.02) // 2%
+const TX_COST_LIMIT_PCT = fp(0.05) // 5%
 const QUOTA = fp(0.0796)
 const MIN_WINDOW_GAS = QUOTA
 const MAX_WINDOW_GAS = QUOTA.mul(7)
@@ -261,6 +261,7 @@ const deployment: EnvironmentDeployment = {
       name: 'paraswap-swapper',
       version: dependency('core/tasks/swap/paraswap-v5/v2.0.0'),
       config: {
+        quoteSigner: '0x6278c27cf5534f07fa8f1ab6188a155cb8750ffa',
         baseSwapConfig: {
           connector: dependency('core/connectors/paraswap-v5/v1.0.0'),
           tokenOut: USDC,
