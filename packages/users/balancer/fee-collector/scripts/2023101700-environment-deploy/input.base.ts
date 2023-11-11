@@ -182,6 +182,42 @@ const deployment: EnvironmentDeployment = {
         },
       },
     },
+    //Paraswap Swapper: swap assets using Paraswap dex aggregator
+    {
+      from: DEPLOYER,
+      name: 'paraswap-swapper',
+      version: dependency('core/tasks/swap/paraswap-v5/v2.0.0'),
+      config: {
+        baseSwapConfig: {
+          connector: dependency('core/connectors/paraswap-v5/v1.0.0'),
+          tokenOut: USDC,
+          maxSlippage: fp(0.02), //2%
+          customTokensOut: [],
+          customMaxSlippages: [],
+          taskConfig: {
+            baseConfig: {
+              smartVault: dependency('smart-vault'),
+              previousBalanceConnectorId: balanceConnectorId('swapper-connection'),
+              nextBalanceConnectorId: balanceConnectorId('bridger-connection'),
+            },
+            gasLimitConfig: {
+              txCostLimitPct: TX_COST_LIMIT_PCT,
+            },
+            tokenIndexConfig: {
+              acceptanceType: 0,
+              tokens: [USDC],
+            },
+            tokenThresholdConfig: {
+              defaultThreshold: {
+                token: USDC,
+                min: bn(10000000),
+                max: 0,
+              },
+            },
+          },
+        },
+      },
+    },
     //Handle over: moves USDC to be bridged
     {
       from: DEPLOYER,
