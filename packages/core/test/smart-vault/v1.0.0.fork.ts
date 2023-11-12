@@ -1,5 +1,5 @@
 import { Script } from '@mimic-fi/v3-deployments-lib'
-import { getForkedNetwork, tokens } from '@mimic-fi/v3-helpers'
+import { getForkedNetwork, tokens, ZERO_ADDRESS } from '@mimic-fi/v3-helpers'
 import { expect } from 'chai'
 import { Contract } from 'ethers'
 import hre from 'hardhat'
@@ -42,7 +42,7 @@ test(script.id, () => {
   })
 
   it('sets the wrapped native token address correctly', async () => {
-    const getWrappedNativeToken = () => {
+    const getWrappedNativeToken = (): string => {
       const network = getForkedNetwork(hre)
       if (network === 'mainnet') return tokens.mainnet.WETH
       if (network === 'optimism') return tokens.optimism.WETH
@@ -53,6 +53,8 @@ test(script.id, () => {
       if (network === 'avalanche') return tokens.avalanche.WAVAX
       if (network === 'base') return tokens.base.WETH
       if (network === 'zkevm') return tokens.zkevm.WETH
+      if (network === 'aurora') return tokens.aurora.WETH
+      return ZERO_ADDRESS
     }
 
     expect(await smartVault.wrappedNativeToken()).to.be.equal(getWrappedNativeToken())

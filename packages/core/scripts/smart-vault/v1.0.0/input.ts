@@ -1,4 +1,9 @@
-import { dependency, PROTOCOL_ADMIN, RegistryImplementationDeployment } from '@mimic-fi/v3-deployments-lib'
+import {
+  dependency,
+  PROTOCOL_ADMIN,
+  PROTOCOL_ADMIN_AURORA,
+  RegistryImplementationDeployment,
+} from '@mimic-fi/v3-deployments-lib'
 import { tokens } from '@mimic-fi/v3-helpers'
 
 const shared = {
@@ -59,4 +64,10 @@ const zkevm: RegistryImplementationDeployment = {
   args: [dependency('core/registry/v1.0.0'), dependency('core/fee-controller/v1.0.0'), tokens.zkevm.WETH],
 }
 
-export default { mainnet, polygon, arbitrum, optimism, gnosis, bsc, fantom, avalanche, base, zkevm }
+const aurora: RegistryImplementationDeployment = {
+  ...shared,
+  from: PROTOCOL_ADMIN_AURORA,
+  args: [dependency('core/registry/v1.0.0'), dependency('core/fee-controller/v1.0.0'), tokens.aurora.WETH],
+}
+
+export default { mainnet, polygon, arbitrum, optimism, gnosis, bsc, fantom, avalanche, base, zkevm, aurora }

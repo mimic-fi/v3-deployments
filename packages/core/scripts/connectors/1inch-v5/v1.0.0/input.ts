@@ -1,4 +1,9 @@
-import { dependency, PROTOCOL_ADMIN, RegistryImplementationDeployment } from '@mimic-fi/v3-deployments-lib'
+import {
+  dependency,
+  PROTOCOL_ADMIN,
+  PROTOCOL_ADMIN_AURORA,
+  RegistryImplementationDeployment,
+} from '@mimic-fi/v3-deployments-lib'
 import { protocols } from '@mimic-fi/v3-helpers'
 
 const shared = {
@@ -54,4 +59,10 @@ const base: RegistryImplementationDeployment = {
   args: [protocols.base.ONE_INCH_V5_ROUTER],
 }
 
-export default { mainnet, polygon, arbitrum, optimism, gnosis, bsc, fantom, avalanche, base }
+const aurora: RegistryImplementationDeployment = {
+  ...shared,
+  from: PROTOCOL_ADMIN_AURORA,
+  args: [protocols.aurora.ONE_INCH_V5_ROUTER],
+}
+
+export default { mainnet, polygon, arbitrum, optimism, gnosis, bsc, fantom, avalanche, base, aurora }

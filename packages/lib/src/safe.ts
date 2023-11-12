@@ -8,12 +8,6 @@ import { NETWORKS, SafeSigner } from './types'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-function getTxServiceUrl(network: (typeof NETWORKS)[number]): string {
-  if (network == 'fantom') return 'http://safe-txservice.fantom.network'
-  const subdomain = network == 'gnosis' ? 'gnosis-chain' : network
-  return `https://safe-transaction-${subdomain}.safe.global`
-}
-
 export async function sendSafeTransaction(
   script: Script,
   contract: Contract,
@@ -41,8 +35,8 @@ export async function sendSafeTransaction(
     senderAddress: signer.address,
     senderSignature: senderSignature.data,
   })
-  logger.success(`Safe transaction ${safeTransactionHash} proposed!`)
 
+  logger.success(`Safe transaction proposed! Check out ${getSafeQueueUrl(from.safe, script.inputNetwork)}`)
   const { safeTxHash } = await safeService.getTransaction(safeTransactionHash)
   const signature = await safe.signTransactionHash(safeTxHash)
   logger.info(`Confirming safe transaction ${safeTxHash}...`)
@@ -73,4 +67,24 @@ async function waitForExecution(safeService: SafeApiKit, safeTransactionHash: st
 
 async function sleep(seconds: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, seconds * 1000))
+}
+
+function getTxServiceUrl(network: (typeof NETWORKS)[number]): string {
+  if (network == 'fantom') return 'http://safe-txservice.fantom.network'
+  const subdomain = network == 'gnosis' ? 'gnosis-chain' : network
+  return `https://safe-transaction-${subdomain}.safe.global`
+}
+
+function getSafeQueueUrl(address: string, network: (typeof NETWORKS)[number]): string {
+  if (network == 'fantom') return `https://safe.fantom.network/home?safe=ftm:${address}`
+
+  let networkId = network
+  if (network === 'mainnet') networkId = 'eth'
+  if (network === 'polygon') networkId = 'matic'
+  if (network === 'avalanche') networkId = 'avax'
+  if (network === 'gnosis') networkId = 'gno'
+  if (network === 'arbitrum') networkId = 'arb1'
+  if (network === 'optimism') networkId = 'oeth'
+  if (network === 'bsc') networkId = 'bnb'
+  return `https://app.safe.global/transactions/queue?safe=${networkId}:${address}`
 }

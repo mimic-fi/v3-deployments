@@ -1,4 +1,4 @@
-import { MIMIC_V2_FEE_COLLECTOR, PROTOCOL_ADMIN, Script } from '@mimic-fi/v3-deployments-lib'
+import { MIMIC_V2_FEE_COLLECTOR, PROTOCOL_ADMIN, PROTOCOL_ADMIN_AURORA, Script } from '@mimic-fi/v3-deployments-lib'
 import { expect } from 'chai'
 import { Contract } from 'ethers'
 import hre from 'hardhat'
@@ -27,10 +27,12 @@ test(script.id, () => {
   })
 
   it('sets the default fee collector properly', async () => {
-    expect(await feeController.defaultFeeCollector()).to.be.equal(MIMIC_V2_FEE_COLLECTOR.sv)
+    const collector = script.inputNetwork == 'aurora' ? PROTOCOL_ADMIN_AURORA.safe : MIMIC_V2_FEE_COLLECTOR.sv
+    expect(await feeController.defaultFeeCollector()).to.be.equal(collector)
   })
 
   it('sets the protocol multisig as the owner', async () => {
-    expect(await feeController.owner()).to.be.equal(PROTOCOL_ADMIN.safe)
+    const owner = (script.inputNetwork == 'aurora' ? PROTOCOL_ADMIN_AURORA : PROTOCOL_ADMIN).safe
+    expect(await feeController.owner()).to.be.equal(owner)
   })
 })

@@ -3,6 +3,8 @@ artifacts
 cache
 build
 dist
+.certora_internal
+.certora_recent_jobs.json
 *.log
 
 test.json

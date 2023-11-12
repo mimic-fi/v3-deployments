@@ -1,4 +1,4 @@
-import { ContractDeployment, ORIGIN, PROTOCOL_ADMIN } from '@mimic-fi/v3-deployments-lib'
+import { ContractDeployment, ORIGIN, PROTOCOL_ADMIN, PROTOCOL_ADMIN_AURORA } from '@mimic-fi/v3-deployments-lib'
 
 const deployment: ContractDeployment = {
   from: ORIGIN,
@@ -6,4 +6,10 @@ const deployment: ContractDeployment = {
   args: [PROTOCOL_ADMIN.safe],
 }
 
-export default deployment
+const aurora: ContractDeployment = {
+  from: ORIGIN,
+  contract: 'Registry',
+  args: [PROTOCOL_ADMIN_AURORA.safe],
+}
+
+export default { ...deployment, aurora }
