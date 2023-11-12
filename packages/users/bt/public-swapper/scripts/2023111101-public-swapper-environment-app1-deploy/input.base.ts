@@ -7,9 +7,10 @@ import {
   PROTOCOL_ADMIN,
   USERS_ADMIN,
 } from '@mimic-fi/v3-deployments-lib'
-import { chainlink, fp } from '@mimic-fi/v3-helpers'
+import { chainlink, fp, ONES_ADDRESS } from '@mimic-fi/v3-helpers'
 
 /* eslint-disable no-secrets/no-secrets */
+const ANYONE = ONES_ADDRESS
 
 //Config - Gas
 const QUOTA = 0
@@ -98,7 +99,7 @@ const deployment: EnvironmentDeployment = {
       {
         where: dependency('depositor'),
         revokes: [],
-        grants: [{ who: ALL, what: 'call', params: [] }], //TODO: how to define everyone
+        grants: [{ who: ANYONE, what: 'call', params: [] }],
       },
     ],
   },

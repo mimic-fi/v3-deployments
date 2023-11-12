@@ -9,9 +9,15 @@ import {
   PROTOCOL_ADMIN,
   USERS_ADMIN,
 } from '@mimic-fi/v3-deployments-lib'
-import { bn, chainlink, fp, NATIVE_TOKEN_ADDRESS, tokens } from '@mimic-fi/v3-helpers'
+import { bn, chainlink, fp, NATIVE_TOKEN_ADDRESS, tokens, DAY } from '@mimic-fi/v3-helpers'
 
 /* eslint-disable no-secrets/no-secrets */
+const TIMELOCK_MODE = {
+  SECONDS: 0,
+  ON_DAY: 1,
+  ON_LAST_DAY: 2,
+  EVERY_X_MONTH: 3,
+}
 
 //Config - Tokens
 const USDC = tokens.base.USDC
@@ -289,11 +295,10 @@ const deployment: EnvironmentDeployment = {
               tokens: [USDC],
             },
             timeLockConfig: {
-              //TODO: CHANGE TO BE LAST DAY OF THE MONTH!!!!!!!!!!!!!!!!!!!!!!!!!!
-              mode: 1, //SECONDS
-              frequency: 14 * 60 * 60 * 24, //14 days
-              allowedAt: 1699524000, //9 Nov
-              window: 2 * 60 * 60 * 24, //2 days
+              mode: TIMELOCK_MODE.ON_LAST_DAY,
+              frequency: 1,
+              allowedAt: 1701363600, //17:00hs UTC
+              window: 2 * DAY, //2 days
             },
           },
         },
