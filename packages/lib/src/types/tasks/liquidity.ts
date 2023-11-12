@@ -3,6 +3,11 @@ import { BigNumberish } from '@mimic-fi/v3-helpers'
 import { Dependency } from '../dependencies'
 import { OptionalTaskConfig } from './base'
 
+export type BalancerBptExitConfig = {
+  taskConfig: OptionalTaskConfig
+  balancerVault: string
+}
+
 export type BaseCurveConfig = {
   taskConfig: OptionalTaskConfig
   connector: Dependency
@@ -37,4 +42,4 @@ export type ConvexExitConfig = {
 
 export type ConvexTaskConfig = ConvexJoinConfig | ConvexExitConfig
 
-export type LiquidityTaskConfig = CurveTaskConfig | ConvexTaskConfig
+export type LiquidityTaskConfig = CurveTaskConfig | ConvexTaskConfig | BalancerBptExitConfig
