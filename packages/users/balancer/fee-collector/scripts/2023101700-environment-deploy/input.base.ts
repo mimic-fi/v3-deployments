@@ -253,10 +253,10 @@ const deployment: EnvironmentDeployment = {
         },
       },
     },
-    //Bridger by time: makes sure that by the end of the period, it bridges everything
+    //Hop - Bridger by time: makes sure that by the end of the period, it bridges everything
     {
       from: DEPLOYER,
-      name: 'cctp-bridger',
+      name: 'cctp-bridger', //wrongly named, this is hop
       version: dependency('core/tasks/bridge/hop/v2.0.0'),
       config: {
         baseBridgeConfig: {
@@ -297,6 +297,43 @@ const deployment: EnvironmentDeployment = {
             token: '0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA',
           },
         ],
+      },
+    },
+    //Circle - Bridger by time: makes sure that by the end of the period, it bridges everything
+    {
+      from: DEPLOYER,
+      name: 'cctp-bridger-2',
+      version: dependency('core/tasks/bridge/wormhole/v2.0.0'),
+      config: {
+        baseBridgeConfig: {
+          connector: dependency('core/connectors/wormhole/v1.0.0'),
+          recipient: MAINNET_DEPOSITOR_TASK,
+          destinationChain: 1, // mainnet
+          maxSlippage: fp(0.02), //2%
+          maxFee: {
+            token: USDC,
+            amount: fp(0.02), //2%
+          },
+          customDestinationChains: [],
+          customMaxSlippages: [],
+          customMaxFees: [],
+          taskConfig: {
+            baseConfig: {
+              smartVault: dependency('smart-vault'),
+              previousBalanceConnectorId: balanceConnectorId('bridger-connection'),
+            },
+            tokenIndexConfig: {
+              acceptanceType: 1,
+              tokens: [USDC],
+            },
+            timeLockConfig: {
+              mode: 1, //SECONDS
+              frequency: 14 * 60 * 60 * 24, //14 days
+              allowedAt: 1699524000, //9 Nov
+              window: 2 * 60 * 60 * 24, //2 days
+            },
+          },
+        },
       },
     },
     //Relayer Funder Swapper: swaps assets into native wrapped token to fund the relayer
@@ -453,6 +490,16 @@ const deployment: EnvironmentDeployment = {
             params: [],
           },
           {
+            who: dependency('cctp-bridger-2'),
+            what: 'execute',
+            params: [],
+          },
+          {
+            who: dependency('cctp-bridger-2'),
+            what: 'updateBalanceConnector',
+            params: [],
+          },
+          {
             who: dependency('relayer-funder-swapper'),
             what: 'execute',
             params: [
@@ -522,6 +569,11 @@ const deployment: EnvironmentDeployment = {
       },
       {
         where: dependency('cctp-bridger'),
+        revokes: [],
+        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
+      },
+      {
+        where: dependency('cctp-bridger-2'),
         revokes: [],
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
