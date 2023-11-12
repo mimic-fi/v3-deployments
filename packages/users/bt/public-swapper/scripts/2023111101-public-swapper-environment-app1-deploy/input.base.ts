@@ -20,7 +20,7 @@ const BT_FEE_PCT = fp(0.007) // 0.7%
 
 const deployment: EnvironmentDeployment = {
   deployer: dependency('core/deployer/v1.0.0'),
-  namespace: 'balancer-fee-collector',
+  namespace: 'bt-public-swapper',
   authorizer: {
     from: DEPLOYER,
     name: 'authorizer',

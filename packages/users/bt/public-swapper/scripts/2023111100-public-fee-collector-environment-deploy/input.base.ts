@@ -9,7 +9,7 @@ import {
   PROTOCOL_ADMIN,
   USERS_ADMIN,
 } from '@mimic-fi/v3-deployments-lib'
-import { bn, chainlink, fp, NATIVE_TOKEN_ADDRESS, tokens, DAY } from '@mimic-fi/v3-helpers'
+import { bn, chainlink, DAY, fp, NATIVE_TOKEN_ADDRESS, tokens } from '@mimic-fi/v3-helpers'
 
 /* eslint-disable no-secrets/no-secrets */
 const TIMELOCK_MODE = {
@@ -43,7 +43,7 @@ const FEE_PCT = fp(0.099) // 9.9%
 
 const deployment: EnvironmentDeployment = {
   deployer: dependency('core/deployer/v1.0.0'),
-  namespace: 'balancer-fee-collector',
+  namespace: 'bt-fee-collector',
   authorizer: {
     from: DEPLOYER,
     name: 'authorizer',
