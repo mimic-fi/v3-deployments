@@ -35,7 +35,7 @@ const MIN_WINDOW_GAS = QUOTA
 const MAX_WINDOW_GAS = QUOTA.mul(7)
 
 //Config - Fee
-const FEE_PCT = fp(0.02) // 0.2%
+const FEE_PCT = fp(0.02) // 2%
 
 const deployment: EnvironmentDeployment = {
   deployer: dependency('core/deployer/v1.0.0'),
