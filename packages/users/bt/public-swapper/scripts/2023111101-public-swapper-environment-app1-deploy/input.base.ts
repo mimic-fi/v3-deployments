@@ -16,7 +16,7 @@ const ANYONE = ONES_ADDRESS
 const QUOTA = 0
 
 //Config - Fee
-const FEE_PCT = fp(0.099) // 9.9%
+const BT_FEE_PCT = fp(0.007) // 0.7%
 
 const deployment: EnvironmentDeployment = {
   deployer: dependency('core/deployer/v1.0.0'),
@@ -106,9 +106,9 @@ const deployment: EnvironmentDeployment = {
   feeSettings: {
     from: PROTOCOL_ADMIN,
     smartVault: dependency('smart-vault'),
-    feeController: dependency('core/fee-controller/v1.0.0'), //TODO: how to redirect fee controller
+    feeController: dependency('core/fee-controller/v1.0.0'),
     maxFeePct: fp(0.02), // 2%
-    feePct: FEE_PCT,
+    feePct: BT_FEE_PCT,
   },
   relayerSettings: {
     from: PROTOCOL_ADMIN,
