@@ -55,5 +55,9 @@
   "paraswap-swapper": {
     "version": "core/tasks/swap/paraswap-v5/v2.0.0",
     "address": "0xAD63A7AfBCE3f93CA40dDFeE6df148EC805D92ae"
+  },
+  "cctp-bridger-2": {
+    "version": "core/tasks/bridge/wormhole/v2.0.0",
+    "address": "0xD9626e32b4D8d1F745f05BbE01C259F345f19CF2"
   }
 }
