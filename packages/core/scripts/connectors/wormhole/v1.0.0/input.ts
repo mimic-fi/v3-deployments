@@ -29,4 +29,9 @@ const optimism: RegistryImplementationDeployment = {
   args: [protocols.optimism.WORMHOLE_CIRCLE_RELAYER],
 }
 
-export default { mainnet, arbitrum, avalanche, optimism }
+const base: RegistryImplementationDeployment = {
+  ...shared,
+  args: [protocols.base.WORMHOLE_CIRCLE_RELAYER],
+}
+
+export default { mainnet, arbitrum, avalanche, optimism, base }
