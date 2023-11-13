@@ -20,7 +20,7 @@ const BT_FEE_PCT = fp(0.007) // 0.7%
 
 const deployment: EnvironmentDeployment = {
   deployer: dependency('core/deployer/v1.0.0'),
-  namespace: 'bt-public-swapper',
+  namespace: '1inch-v5-public-swapper-ios-app',
   authorizer: {
     from: DEPLOYER,
     name: 'authorizer',
@@ -49,10 +49,10 @@ const deployment: EnvironmentDeployment = {
       from: DEPLOYER,
       name: '1inch-v5-public-swapper',
       version: 'OneInchV5PublicSwapper',
-      args: [], //TODO: need a connector????!!!!!!
+      args: [dependency('core/connectors/1inch-v5/v1.0.0')],
       config: {
         baseConfig: {
-          smartVault: dependency('smart-vault'), //TODO: does not have prev o next!!!!!!!!
+          smartVault: dependency('smart-vault'),
         },
         tokenIndexConfig: {
           acceptanceType: 0, //Deny list
@@ -91,13 +91,18 @@ const deployment: EnvironmentDeployment = {
           },
           {
             who: dependency('1inch-v5-public-swapper'),
+            what: 'unwrap',
+            params: [],
+          },
+          {
+            who: dependency('1inch-v5-public-swapper'),
             what: 'withdraw',
             params: [],
           },
         ],
       },
       {
-        where: dependency(''1inch-v5-public-swapper''),
+        where: dependency('1inch-v5-public-swapper'),
         revokes: [],
         grants: [{ who: ANYONE, what: 'call', params: [] }],
       },
