@@ -97,7 +97,7 @@ const deployment: EnvironmentDeployment = {
         ],
       },
       {
-        where: dependency('depositor'),
+        where: dependency(''1inch-v5-public-swapper''),
         revokes: [],
         grants: [{ who: ANYONE, what: 'call', params: [] }],
       },
