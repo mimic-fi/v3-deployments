@@ -2,7 +2,7 @@ import { dependency, EnvironmentUpdate, PROTOCOL_ADMIN } from '@mimic-fi/v3-depl
 
 const update: EnvironmentUpdate = {
   deployer: dependency('core/deployer/v1.0.0'),
-  namespace: '1inch-v5-public-swapper-ext-app',
+  namespace: 'bt-1inch-v5-public-swapper-ext-app',
   steps: [
     {
       from: PROTOCOL_ADMIN,
