@@ -5,7 +5,7 @@ const TX_COST_LIMIT_PCT = fp(0.05) // 5%
 
 const update: EnvironmentUpdate = {
   deployer: dependency('core/deployer/v1.0.0'),
-  namespace: 'balancer-fee-collectoh',
+  namespace: 'balancer-fee-collector',
   steps: [
     {
       from: USERS_ADMIN,
