@@ -1,5 +1,5 @@
 import { dependency, DEPLOYER, EnvironmentUpdate, USERS_ADMIN } from '@mimic-fi/v3-deployments-lib'
-import { bn, tokens, DAY } from '@mimic-fi/v3-helpers'
+import { DAY } from '@mimic-fi/v3-helpers'
 
 const MODE = 1 //SECONDS
 const FREQUENCY = 14 * DAY //14 days
