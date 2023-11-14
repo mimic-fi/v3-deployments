@@ -88,7 +88,7 @@ const deployment: EnvironmentDeployment = {
       name: 'base-depositor',
       version: dependency('core/tasks/primitives/depositor/v2.0.0'),
       config: {
-        tokensSource: counterfactualDependency('avalanche-depositor'),
+        tokensSource: counterfactualDependency('base-depositor'),
         taskConfig: {
           baseConfig: {
             smartVault: dependency('smart-vault'),
