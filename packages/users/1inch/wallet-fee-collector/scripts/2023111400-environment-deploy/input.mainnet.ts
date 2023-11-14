@@ -1,4 +1,4 @@
-import { OP } from "@mimic-fi/v3-authorizer";
+import { OP } from '@mimic-fi/v3-authorizer'
 import {
   balanceConnectorId,
   counterfactualDependency,
@@ -8,15 +8,8 @@ import {
   MIMIC_V2_BOT,
   PROTOCOL_ADMIN,
   USERS_ADMIN,
-} from "@mimic-fi/v3-deployments-lib";
-import {
-  bn,
-  chainlink,
-  fp,
-  NATIVE_TOKEN_ADDRESS,
-  tokens,
-  DAY,
-} from "@mimic-fi/v3-helpers";
+} from '@mimic-fi/v3-deployments-lib'
+import { bn, chainlink, DAY, fp, NATIVE_TOKEN_ADDRESS, tokens } from '@mimic-fi/v3-helpers'
 
 /* eslint-disable no-secrets/no-secrets */
 const TIMELOCK_MODE = {
@@ -24,72 +17,72 @@ const TIMELOCK_MODE = {
   ON_DAY: 1,
   ON_LAST_DAY: 2,
   EVERY_X_MONTH: 3,
-};
+}
 
 //Config - Tokens
-const USDC = tokens.mainnet.USDC;
-const WRAPPED_NATIVE_TOKEN = tokens.mainnet.WETH;
+const USDC = tokens.mainnet.USDC
+const WRAPPED_NATIVE_TOKEN = tokens.mainnet.WETH
 
 //Config - Addresses
-const OWNER = "";
-const WITHDRAWER_RECIPIENT = "";
+const OWNER = ''
+const WITHDRAWER_RECIPIENT = ''
 
 //Config - Threshold
-const USDC_CONVERT_THRESHOLD = bn(300000000); // 300 USDC
+const USDC_CONVERT_THRESHOLD = bn(300000000) // 300 USDC
 
 //Config - Gas
-const STANDARD_GAS_PRICE_LIMIT = 100e9;
-const TX_COST_LIMIT_PCT = fp(0.05); // 5%
-const QUOTA = fp(0.0796);
-const MIN_WINDOW_GAS = QUOTA;
-const MAX_WINDOW_GAS = QUOTA.mul(7);
+const STANDARD_GAS_PRICE_LIMIT = 100e9
+const TX_COST_LIMIT_PCT = fp(0.05) // 5%
+const QUOTA = fp(0.0796)
+const MIN_WINDOW_GAS = QUOTA
+const MAX_WINDOW_GAS = QUOTA.mul(7)
 
 //Config - Withdrawer Timelock
-const WITHDRAWER_TIMELOCK_MODE = TIMELOCK_MODE.ON_LAST_DAY; //SECONDS
-const WITHDRAWER_TIMELOCK_FREQUENCY = 1; //1 month
-const WITHDRAWER_TIMELOCK_ALLOWED_AT = 1701363600; //17:00hs UTC
-const WITHDRAWER_TIMELOCK_WINDOW = 2 * DAY; //2 days
+const WITHDRAWER_TIMELOCK_MODE = TIMELOCK_MODE.ON_LAST_DAY //SECONDS
+const WITHDRAWER_TIMELOCK_FREQUENCY = 1 //1 month
+const WITHDRAWER_TIMELOCK_ALLOWED_AT = 1701363600 //17:00hs UTC
+const WITHDRAWER_TIMELOCK_WINDOW = 2 * DAY //2 days
 
 //Config - Fee
-const FEE_PCT = fp(0.009); // 0.9%
+const FEE_PCT = fp(0.009) // 0.9%
 
 const deployment: EnvironmentDeployment = {
-  deployer: dependency("core/deployer/v1.0.0"),
-  namespace: "1inch-wallet-fee-collector",
+  deployer: dependency('core/deployer/v1.0.0'),
+  namespace: '1inch-wallet-fee-collector',
   authorizer: {
     from: DEPLOYER,
-    name: "authorizer",
-    version: dependency("core/authorizer/v1.1.0"),
+    name: 'authorizer',
+    version: dependency('core/authorizer/v1.1.0'),
     owners: [OWNER, USERS_ADMIN.safe],
   },
   priceOracle: {
     from: DEPLOYER,
-    name: "price-oracle",
-    version: dependency("core/price-oracle/v1.0.0"),
-    authorizer: dependency("authorizer"),
+    name: 'price-oracle',
+    version: dependency('core/price-oracle/v1.0.0'),
+    authorizer: dependency('authorizer'),
     signer: MIMIC_V2_BOT.address,
     pivot: chainlink.denominations.USD,
     feeds: [],
   },
   smartVault: {
     from: DEPLOYER,
-    name: "smart-vault",
-    version: dependency("core/smart-vault/v1.0.0"),
-    authorizer: dependency("authorizer"),
-    priceOracle: dependency("price-oracle"),
+    name: 'smart-vault',
+    version: dependency('core/smart-vault/v1.0.0'),
+    authorizer: dependency('authorizer'),
+    priceOracle: dependency('price-oracle'),
   },
   tasks: [
     //Depositor: Arbitrum
     {
       from: DEPLOYER,
-      name: "arbitrum-depositor",
-      version: dependency("core/tasks/primitives/depositor/v2.0.0"),
+      name: 'arbitrum-depositor',
+      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
       config: {
-        tokensSource: counterfactualDependency("arbitrum-depositor"),
+        tokensSource: counterfactualDependency('arbitrum-depositor'),
         taskConfig: {
           baseConfig: {
-            smartVault: dependency("smart-vault"),
-            nextBalanceConnectorId: balanceConnectorId("withdrawer-connection"),
+            smartVault: dependency('smart-vault'),
+            nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
           },
           tokenIndexConfig: {
             acceptanceType: 1, //Allow list
@@ -101,14 +94,14 @@ const deployment: EnvironmentDeployment = {
     //Depositor: Avalanche
     {
       from: DEPLOYER,
-      name: "avalanche-depositor",
-      version: dependency("core/tasks/primitives/depositor/v2.0.0"),
+      name: 'avalanche-depositor',
+      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
       config: {
-        tokensSource: counterfactualDependency("avalanche-depositor"),
+        tokensSource: counterfactualDependency('avalanche-depositor'),
         taskConfig: {
           baseConfig: {
-            smartVault: dependency("smart-vault"),
-            nextBalanceConnectorId: balanceConnectorId("withdrawer-connection"),
+            smartVault: dependency('smart-vault'),
+            nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
           },
           tokenIndexConfig: {
             acceptanceType: 1, //Allow list
@@ -120,14 +113,14 @@ const deployment: EnvironmentDeployment = {
     //Depositor: Base
     {
       from: DEPLOYER,
-      name: "base-depositor",
-      version: dependency("core/tasks/primitives/depositor/v2.0.0"),
+      name: 'base-depositor',
+      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
       config: {
-        tokensSource: counterfactualDependency("base-depositor"),
+        tokensSource: counterfactualDependency('base-depositor'),
         taskConfig: {
           baseConfig: {
-            smartVault: dependency("smart-vault"),
-            nextBalanceConnectorId: balanceConnectorId("withdrawer-connection"),
+            smartVault: dependency('smart-vault'),
+            nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
           },
           tokenIndexConfig: {
             acceptanceType: 1, //Allow list
@@ -139,14 +132,14 @@ const deployment: EnvironmentDeployment = {
     //Depositor: BNB
     {
       from: DEPLOYER,
-      name: "bnb-depositor",
-      version: dependency("core/tasks/primitives/depositor/v2.0.0"),
+      name: 'bnb-depositor',
+      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
       config: {
-        tokensSource: counterfactualDependency("bnb-depositor"),
+        tokensSource: counterfactualDependency('bnb-depositor'),
         taskConfig: {
           baseConfig: {
-            smartVault: dependency("smart-vault"),
-            nextBalanceConnectorId: balanceConnectorId("withdrawer-connection"),
+            smartVault: dependency('smart-vault'),
+            nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
           },
           tokenIndexConfig: {
             acceptanceType: 1, //Allow list
@@ -158,14 +151,14 @@ const deployment: EnvironmentDeployment = {
     //Depositor: Fantom
     {
       from: DEPLOYER,
-      name: "fantom-depositor",
-      version: dependency("core/tasks/primitives/depositor/v2.0.0"),
+      name: 'fantom-depositor',
+      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
       config: {
-        tokensSource: counterfactualDependency("fantom-depositor"),
+        tokensSource: counterfactualDependency('fantom-depositor'),
         taskConfig: {
           baseConfig: {
-            smartVault: dependency("smart-vault"),
-            nextBalanceConnectorId: balanceConnectorId("withdrawer-connection"),
+            smartVault: dependency('smart-vault'),
+            nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
           },
           tokenIndexConfig: {
             acceptanceType: 1, //Allow list
@@ -177,14 +170,14 @@ const deployment: EnvironmentDeployment = {
     //Depositor: Gnosis
     {
       from: DEPLOYER,
-      name: "gnosis-depositor",
-      version: dependency("core/tasks/primitives/depositor/v2.0.0"),
+      name: 'gnosis-depositor',
+      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
       config: {
-        tokensSource: counterfactualDependency("gnosis-depositor"),
+        tokensSource: counterfactualDependency('gnosis-depositor'),
         taskConfig: {
           baseConfig: {
-            smartVault: dependency("smart-vault"),
-            nextBalanceConnectorId: balanceConnectorId("withdrawer-connection"),
+            smartVault: dependency('smart-vault'),
+            nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
           },
           tokenIndexConfig: {
             acceptanceType: 1, //Allow list
@@ -196,14 +189,14 @@ const deployment: EnvironmentDeployment = {
     //Depositor: Optimism
     {
       from: DEPLOYER,
-      name: "optimism-depositor",
-      version: dependency("core/tasks/primitives/depositor/v2.0.0"),
+      name: 'optimism-depositor',
+      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
       config: {
-        tokensSource: counterfactualDependency("optimism-depositor"),
+        tokensSource: counterfactualDependency('optimism-depositor'),
         taskConfig: {
           baseConfig: {
-            smartVault: dependency("smart-vault"),
-            nextBalanceConnectorId: balanceConnectorId("withdrawer-connection"),
+            smartVault: dependency('smart-vault'),
+            nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
           },
           tokenIndexConfig: {
             acceptanceType: 1, //Allow list
@@ -215,14 +208,14 @@ const deployment: EnvironmentDeployment = {
     //Depositor: Polygon
     {
       from: DEPLOYER,
-      name: "polygon-depositor",
-      version: dependency("core/tasks/primitives/depositor/v2.0.0"),
+      name: 'polygon-depositor',
+      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
       config: {
-        tokensSource: counterfactualDependency("polygon-depositor"),
+        tokensSource: counterfactualDependency('polygon-depositor'),
         taskConfig: {
           baseConfig: {
-            smartVault: dependency("smart-vault"),
-            nextBalanceConnectorId: balanceConnectorId("withdrawer-connection"),
+            smartVault: dependency('smart-vault'),
+            nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
           },
           tokenIndexConfig: {
             acceptanceType: 1, //Allow list
@@ -234,14 +227,14 @@ const deployment: EnvironmentDeployment = {
     //Depositor: for manual transfers and testing purposes
     {
       from: DEPLOYER,
-      name: "depositor",
-      version: dependency("core/tasks/primitives/depositor/v2.0.0"),
+      name: 'depositor',
+      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
       config: {
-        tokensSource: counterfactualDependency("depositor"),
+        tokensSource: counterfactualDependency('depositor'),
         taskConfig: {
           baseConfig: {
-            smartVault: dependency("smart-vault"),
-            nextBalanceConnectorId: balanceConnectorId("swapper-connection"),
+            smartVault: dependency('smart-vault'),
+            nextBalanceConnectorId: balanceConnectorId('swapper-connection'),
           },
           gasLimitConfig: {
             gasPriceLimit: STANDARD_GAS_PRICE_LIMIT,
@@ -256,17 +249,14 @@ const deployment: EnvironmentDeployment = {
     //Wrapper: wraps native tokens
     {
       from: DEPLOYER,
-      name: "wrapper",
-      version: dependency("core/tasks/primitives/wrapper/v2.0.0"),
+      name: 'wrapper',
+      version: dependency('core/tasks/primitives/wrapper/v2.0.0'),
       config: {
         taskConfig: {
           baseConfig: {
-            smartVault: dependency("smart-vault"),
-            previousBalanceConnectorId:
-              balanceConnectorId("swapper-connection"),
-            nextBalanceConnectorId: balanceConnectorId(
-              "wrapper-handle-over-connection"
-            ),
+            smartVault: dependency('smart-vault'),
+            previousBalanceConnectorId: balanceConnectorId('swapper-connection'),
+            nextBalanceConnectorId: balanceConnectorId('wrapper-handle-over-connection'),
           },
           gasLimitConfig: {
             txCostLimitPct: TX_COST_LIMIT_PCT,
@@ -288,16 +278,14 @@ const deployment: EnvironmentDeployment = {
     //Handle over: moves exited bpt to be swapped
     {
       from: DEPLOYER,
-      name: "wrapper-handle-over",
-      version: dependency("core/tasks/primitives/handle-over/v2.0.0"),
+      name: 'wrapper-handle-over',
+      version: dependency('core/tasks/primitives/handle-over/v2.0.0'),
       config: {
         taskConfig: {
           baseConfig: {
-            smartVault: dependency("smart-vault"),
-            previousBalanceConnectorId: balanceConnectorId(
-              "wrapper-handle-over-connection"
-            ),
-            nextBalanceConnectorId: balanceConnectorId("swapper-connection"),
+            smartVault: dependency('smart-vault'),
+            previousBalanceConnectorId: balanceConnectorId('wrapper-handle-over-connection'),
+            nextBalanceConnectorId: balanceConnectorId('swapper-connection'),
           },
           tokenIndexConfig: {
             acceptanceType: 1, //Allow list
@@ -309,23 +297,20 @@ const deployment: EnvironmentDeployment = {
     //1inch Swapper: swap assets using 1inch dex aggregator
     {
       from: DEPLOYER,
-      name: "1inch-swapper",
-      version: dependency("core/tasks/swap/1inch-v5/v2.0.0"),
+      name: '1inch-swapper',
+      version: dependency('core/tasks/swap/1inch-v5/v2.0.0'),
       config: {
         baseSwapConfig: {
-          connector: dependency("core/connectors/1inch-v5/v1.0.0"),
+          connector: dependency('core/connectors/1inch-v5/v1.0.0'),
           tokenOut: USDC,
           maxSlippage: fp(0.02), //2%
           customTokensOut: [],
           customMaxSlippages: [],
           taskConfig: {
             baseConfig: {
-              smartVault: dependency("smart-vault"),
-              previousBalanceConnectorId:
-                balanceConnectorId("swapper-connection"),
-              nextBalanceConnectorId: balanceConnectorId(
-                "withdrawer-connection"
-              ),
+              smartVault: dependency('smart-vault'),
+              previousBalanceConnectorId: balanceConnectorId('swapper-connection'),
+              nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
             },
             gasLimitConfig: {
               txCostLimitPct: TX_COST_LIMIT_PCT,
@@ -348,15 +333,14 @@ const deployment: EnvironmentDeployment = {
     //Handle over: moves USDC to be bridged
     {
       from: DEPLOYER,
-      name: "usdc-handle-over",
-      version: dependency("core/tasks/primitives/handle-over/v2.0.0"),
+      name: 'usdc-handle-over',
+      version: dependency('core/tasks/primitives/handle-over/v2.0.0'),
       config: {
         taskConfig: {
           baseConfig: {
-            smartVault: dependency("smart-vault"),
-            previousBalanceConnectorId:
-              balanceConnectorId("swapper-connection"),
-            nextBalanceConnectorId: balanceConnectorId("withdrawer-connection"),
+            smartVault: dependency('smart-vault'),
+            previousBalanceConnectorId: balanceConnectorId('swapper-connection'),
+            nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
           },
           tokenIndexConfig: {
             acceptanceType: 1, //Allow list
@@ -368,16 +352,14 @@ const deployment: EnvironmentDeployment = {
     //Withdrawer USDC
     {
       from: DEPLOYER,
-      name: "withdrawer",
-      version: dependency("core/tasks/primitives/withdrawer/v2.0.0"),
+      name: 'withdrawer',
+      version: dependency('core/tasks/primitives/withdrawer/v2.0.0'),
       config: {
         recipient: WITHDRAWER_RECIPIENT,
         taskConfig: {
           baseConfig: {
-            smartVault: dependency("smart-vault"),
-            previousBalanceConnectorId: balanceConnectorId(
-              "withdrawer-connection"
-            ),
+            smartVault: dependency('smart-vault'),
+            previousBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
           },
           tokenIndexConfig: {
             acceptanceType: 1,
@@ -395,24 +377,20 @@ const deployment: EnvironmentDeployment = {
     //Relayer Funder Swapper: swaps assets into native wrapped token to fund the relayer
     {
       from: DEPLOYER,
-      name: "relayer-funder-swapper",
-      version: dependency("core/tasks/swap/1inch-v5/v2.0.0"),
+      name: 'relayer-funder-swapper',
+      version: dependency('core/tasks/swap/1inch-v5/v2.0.0'),
       config: {
         baseSwapConfig: {
-          connector: dependency("core/connectors/1inch-v5/v1.0.0"),
+          connector: dependency('core/connectors/1inch-v5/v1.0.0'),
           tokenOut: WRAPPED_NATIVE_TOKEN,
           maxSlippage: fp(0.02),
           customTokensOut: [],
           customMaxSlippages: [],
           taskConfig: {
             baseConfig: {
-              smartVault: dependency("smart-vault"),
-              previousBalanceConnectorId: balanceConnectorId(
-                "withdrawer-connection"
-              ),
-              nextBalanceConnectorId: balanceConnectorId(
-                "relayer-funder-unwrapper"
-              ),
+              smartVault: dependency('smart-vault'),
+              previousBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
+              nextBalanceConnectorId: balanceConnectorId('relayer-funder-unwrapper'),
             },
             gasLimitConfig: {
               gasPriceLimit: STANDARD_GAS_PRICE_LIMIT,
@@ -435,16 +413,14 @@ const deployment: EnvironmentDeployment = {
     //Relayer Funder Unwrapper: unwraps wrapped native token
     {
       from: DEPLOYER,
-      name: "relayer-funder-unwrapper",
-      version: dependency("core/tasks/primitives/unwrapper/v2.0.0"),
+      name: 'relayer-funder-unwrapper',
+      version: dependency('core/tasks/primitives/unwrapper/v2.0.0'),
       config: {
         taskConfig: {
           baseConfig: {
-            smartVault: dependency("smart-vault"),
-            previousBalanceConnectorId: balanceConnectorId(
-              "relayer-funder-unwrapper"
-            ),
-            nextBalanceConnectorId: balanceConnectorId("relayer-depositor"),
+            smartVault: dependency('smart-vault'),
+            previousBalanceConnectorId: balanceConnectorId('relayer-funder-unwrapper'),
+            nextBalanceConnectorId: balanceConnectorId('relayer-depositor'),
           },
           gasLimitConfig: {
             gasPriceLimit: STANDARD_GAS_PRICE_LIMIT,
@@ -459,13 +435,13 @@ const deployment: EnvironmentDeployment = {
     //Relayer Depositor: transfer and funds the relayer
     {
       from: DEPLOYER,
-      name: "relayer-depositor",
-      version: dependency("core/tasks/relayer/depositor/v2.0.0"),
-      args: [dependency("core/relayer/v1.1.0")],
+      name: 'relayer-depositor',
+      version: dependency('core/tasks/relayer/depositor/v2.0.0'),
+      args: [dependency('core/relayer/v1.1.0')],
       config: {
         baseConfig: {
-          smartVault: dependency("smart-vault"),
-          previousBalanceConnectorId: balanceConnectorId("relayer-depositor"),
+          smartVault: dependency('smart-vault'),
+          previousBalanceConnectorId: balanceConnectorId('relayer-depositor'),
         },
         gasLimitConfig: {
           gasPriceLimit: STANDARD_GAS_PRICE_LIMIT,
@@ -479,305 +455,271 @@ const deployment: EnvironmentDeployment = {
   ],
   permissions: {
     from: USERS_ADMIN,
-    authorizer: dependency("authorizer"),
+    authorizer: dependency('authorizer'),
     changes: [
       {
-        where: dependency("smart-vault"),
+        where: dependency('smart-vault'),
         revokes: [],
         grants: [
           {
-            who: dependency("arbitrum-depositor"),
-            what: "collect",
+            who: dependency('arbitrum-depositor'),
+            what: 'collect',
             params: [],
           },
           {
-            who: dependency("arbitrum-depositor"),
-            what: "updateBalanceConnector",
+            who: dependency('arbitrum-depositor'),
+            what: 'updateBalanceConnector',
             params: [],
           },
           {
-            who: dependency("avalanche-depositor"),
-            what: "collect",
+            who: dependency('avalanche-depositor'),
+            what: 'collect',
             params: [],
           },
           {
-            who: dependency("avalanche-depositor"),
-            what: "updateBalanceConnector",
+            who: dependency('avalanche-depositor'),
+            what: 'updateBalanceConnector',
             params: [],
           },
           {
-            who: dependency("base-depositor"),
-            what: "collect",
+            who: dependency('base-depositor'),
+            what: 'collect',
             params: [],
           },
           {
-            who: dependency("base-depositor"),
-            what: "updateBalanceConnector",
+            who: dependency('base-depositor'),
+            what: 'updateBalanceConnector',
             params: [],
           },
           {
-            who: dependency("bnb-depositor"),
-            what: "collect",
+            who: dependency('bnb-depositor'),
+            what: 'collect',
             params: [],
           },
           {
-            who: dependency("bnb-depositor"),
-            what: "updateBalanceConnector",
+            who: dependency('bnb-depositor'),
+            what: 'updateBalanceConnector',
             params: [],
           },
           {
-            who: dependency("fantom-depositor"),
-            what: "collect",
+            who: dependency('fantom-depositor'),
+            what: 'collect',
             params: [],
           },
           {
-            who: dependency("fantom-depositor"),
-            what: "updateBalanceConnector",
+            who: dependency('fantom-depositor'),
+            what: 'updateBalanceConnector',
             params: [],
           },
           {
-            who: dependency("gnosis-depositor"),
-            what: "collect",
+            who: dependency('gnosis-depositor'),
+            what: 'collect',
             params: [],
           },
           {
-            who: dependency("gnosis-depositor"),
-            what: "updateBalanceConnector",
+            who: dependency('gnosis-depositor'),
+            what: 'updateBalanceConnector',
             params: [],
           },
           {
-            who: dependency("optimism-depositor"),
-            what: "collect",
+            who: dependency('optimism-depositor'),
+            what: 'collect',
             params: [],
           },
           {
-            who: dependency("optimism-depositor"),
-            what: "updateBalanceConnector",
+            who: dependency('optimism-depositor'),
+            what: 'updateBalanceConnector',
             params: [],
           },
           {
-            who: dependency("polygon-depositor"),
-            what: "collect",
+            who: dependency('polygon-depositor'),
+            what: 'collect',
             params: [],
           },
           {
-            who: dependency("polygon-depositor"),
-            what: "updateBalanceConnector",
+            who: dependency('polygon-depositor'),
+            what: 'updateBalanceConnector',
             params: [],
           },
-          { who: dependency("depositor"), what: "collect", params: [] },
+          { who: dependency('depositor'), what: 'collect', params: [] },
           {
-            who: dependency("depositor"),
-            what: "updateBalanceConnector",
-            params: [],
-          },
-          {
-            who: dependency("wrapper"),
-            what: "wrap",
+            who: dependency('depositor'),
+            what: 'updateBalanceConnector',
             params: [],
           },
           {
-            who: dependency("wrapper"),
-            what: "updateBalanceConnector",
+            who: dependency('wrapper'),
+            what: 'wrap',
             params: [],
           },
           {
-            who: dependency("wrapper-handle-over"),
-            what: "updateBalanceConnector",
+            who: dependency('wrapper'),
+            what: 'updateBalanceConnector',
             params: [],
           },
           {
-            who: dependency("1inch-swapper"),
-            what: "execute",
+            who: dependency('wrapper-handle-over'),
+            what: 'updateBalanceConnector',
             params: [],
           },
           {
-            who: dependency("1inch-swapper"),
-            what: "updateBalanceConnector",
+            who: dependency('1inch-swapper'),
+            what: 'execute',
             params: [],
           },
           {
-            who: dependency("usdc-handle-over"),
-            what: "updateBalanceConnector",
+            who: dependency('1inch-swapper'),
+            what: 'updateBalanceConnector',
             params: [],
           },
           {
-            who: dependency("withdrawer"),
-            what: "withdraw",
+            who: dependency('usdc-handle-over'),
+            what: 'updateBalanceConnector',
             params: [],
           },
           {
-            who: dependency("withdrawer"),
-            what: "updateBalanceConnector",
+            who: dependency('withdrawer'),
+            what: 'withdraw',
             params: [],
           },
           {
-            who: dependency("relayer-funder-swapper"),
-            what: "execute",
+            who: dependency('withdrawer'),
+            what: 'updateBalanceConnector',
+            params: [],
+          },
+          {
+            who: dependency('relayer-funder-swapper'),
+            what: 'execute',
             params: [
               {
                 op: OP.EQ,
-                value: dependency("core/connectors/1inch-v5/v1.0.0"),
+                value: dependency('core/connectors/1inch-v5/v1.0.0'),
               },
             ],
           },
           {
-            who: dependency("relayer-funder-swapper"),
-            what: "updateBalanceConnector",
+            who: dependency('relayer-funder-swapper'),
+            what: 'updateBalanceConnector',
             params: [],
           },
           {
-            who: dependency("relayer-funder-unwrapper"),
-            what: "unwrap",
+            who: dependency('relayer-funder-unwrapper'),
+            what: 'unwrap',
             params: [],
           },
           {
-            who: dependency("relayer-funder-unwrapper"),
-            what: "updateBalanceConnector",
+            who: dependency('relayer-funder-unwrapper'),
+            what: 'updateBalanceConnector',
             params: [],
           },
-          { who: dependency("relayer-depositor"), what: "call", params: [] },
+          { who: dependency('relayer-depositor'), what: 'call', params: [] },
           {
-            who: dependency("relayer-depositor"),
-            what: "updateBalanceConnector",
+            who: dependency('relayer-depositor'),
+            what: 'updateBalanceConnector',
             params: [],
           },
         ],
       },
       {
-        where: dependency("arbitrum-depositor"),
+        where: dependency('arbitrum-depositor'),
         revokes: [],
-        grants: [
-          { who: dependency("core/relayer/v1.1.0"), what: "call", params: [] },
-        ],
+        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency("avalanche-depositor"),
+        where: dependency('avalanche-depositor'),
         revokes: [],
-        grants: [
-          { who: dependency("core/relayer/v1.1.0"), what: "call", params: [] },
-        ],
+        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency("base-depositor"),
+        where: dependency('base-depositor'),
         revokes: [],
-        grants: [
-          { who: dependency("core/relayer/v1.1.0"), what: "call", params: [] },
-        ],
+        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency("bnb-depositor"),
+        where: dependency('bnb-depositor'),
         revokes: [],
-        grants: [
-          { who: dependency("core/relayer/v1.1.0"), what: "call", params: [] },
-        ],
+        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency("fantom-depositor"),
+        where: dependency('fantom-depositor'),
         revokes: [],
-        grants: [
-          { who: dependency("core/relayer/v1.1.0"), what: "call", params: [] },
-        ],
+        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency("gnosis-depositor"),
+        where: dependency('gnosis-depositor'),
         revokes: [],
-        grants: [
-          { who: dependency("core/relayer/v1.1.0"), what: "call", params: [] },
-        ],
+        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency("optimism-depositor"),
+        where: dependency('optimism-depositor'),
         revokes: [],
-        grants: [
-          { who: dependency("core/relayer/v1.1.0"), what: "call", params: [] },
-        ],
+        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency("polygon-depositor"),
+        where: dependency('polygon-depositor'),
         revokes: [],
-        grants: [
-          { who: dependency("core/relayer/v1.1.0"), what: "call", params: [] },
-        ],
+        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency("depositor"),
+        where: dependency('depositor'),
         revokes: [],
-        grants: [
-          { who: dependency("core/relayer/v1.1.0"), what: "call", params: [] },
-        ],
+        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency("wrapper"),
+        where: dependency('wrapper'),
         revokes: [],
-        grants: [
-          { who: dependency("core/relayer/v1.1.0"), what: "call", params: [] },
-        ],
+        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency("wrapper-handle-over"),
+        where: dependency('wrapper-handle-over'),
         revokes: [],
-        grants: [
-          { who: dependency("core/relayer/v1.1.0"), what: "call", params: [] },
-        ],
+        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency("1inch-swapper"),
+        where: dependency('1inch-swapper'),
         revokes: [],
-        grants: [
-          { who: dependency("core/relayer/v1.1.0"), what: "call", params: [] },
-        ],
+        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency("usdc-handle-over"),
+        where: dependency('usdc-handle-over'),
         revokes: [],
-        grants: [
-          { who: dependency("core/relayer/v1.1.0"), what: "call", params: [] },
-        ],
+        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency("withdrawer"),
+        where: dependency('withdrawer'),
         revokes: [],
-        grants: [
-          { who: dependency("core/relayer/v1.1.0"), what: "call", params: [] },
-        ],
+        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency("relayer-funder-swapper"),
+        where: dependency('relayer-funder-swapper'),
         revokes: [],
-        grants: [
-          { who: dependency("core/relayer/v1.1.0"), what: "call", params: [] },
-        ],
+        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency("relayer-funder-unwrapper"),
+        where: dependency('relayer-funder-unwrapper'),
         revokes: [],
-        grants: [
-          { who: dependency("core/relayer/v1.1.0"), what: "call", params: [] },
-        ],
+        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency("relayer-depositor"),
+        where: dependency('relayer-depositor'),
         revokes: [],
-        grants: [
-          { who: dependency("core/relayer/v1.1.0"), what: "call", params: [] },
-        ],
+        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
     ],
   },
   feeSettings: {
     from: PROTOCOL_ADMIN,
-    smartVault: dependency("smart-vault"),
-    feeController: dependency("core/fee-controller/v1.0.0"),
+    smartVault: dependency('smart-vault'),
+    feeController: dependency('core/fee-controller/v1.0.0'),
     maxFeePct: fp(0.02), // 2%
     feePct: FEE_PCT,
   },
   relayerSettings: {
     from: PROTOCOL_ADMIN,
-    smartVault: dependency("smart-vault"),
-    relayer: dependency("core/relayer/v1.1.0"),
+    smartVault: dependency('smart-vault'),
+    relayer: dependency('core/relayer/v1.1.0'),
     quota: QUOTA,
   },
-};
+}
 
-export default deployment;
+export default deployment
