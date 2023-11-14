@@ -112,6 +112,7 @@ const deployment: EnvironmentDeployment = {
     from: PROTOCOL_ADMIN,
     smartVault: dependency('smart-vault'),
     feeController: dependency('core/fee-controller/v1.0.0'),
+    feeCollector: dependency('2023111100-public-fee-collector-environment-deploy', 'smart-vault'), //Collector
     maxFeePct: fp(0.02), // 2%
     feePct: BT_FEE_PCT,
   },
