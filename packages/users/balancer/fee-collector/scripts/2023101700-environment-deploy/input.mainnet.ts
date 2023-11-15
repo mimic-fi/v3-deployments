@@ -272,7 +272,7 @@ const deployment: EnvironmentDeployment = {
             baseConfig: {
               smartVault: dependency('smart-vault'),
               previousBalanceConnectorId: balanceConnectorId('swapper-connection'),
-              nextBalanceConnectorId: balanceConnectorId('bridger-connection'),
+              nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
             },
             gasLimitConfig: {
               txCostLimitPct: TX_COST_LIMIT_PCT,
