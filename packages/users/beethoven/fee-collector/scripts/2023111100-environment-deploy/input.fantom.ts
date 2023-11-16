@@ -14,7 +14,7 @@ import { bn, chainlink, fp, NATIVE_TOKEN_ADDRESS, tokens } from '@mimic-fi/v3-he
 /* eslint-disable no-secrets/no-secrets */
 
 //Config - Tokens
-const USDC = tokens.fantom.USDC
+const USDC = '0x28a92dde19d9989f39a49905d7c9c2fac7799bdf' //USDC token by Beethoven
 const WRAPPED_NATIVE_TOKEN = tokens.fantom.WETH
 
 //Config - Addresses
