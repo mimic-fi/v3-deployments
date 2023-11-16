@@ -20,7 +20,7 @@ const TIMELOCK_MODE = {
 }
 
 //Config - Tokens
-const USDC = tokens.fantom.USDC
+const USDC = '0x1B6382DBDEa11d97f24495C9A90b7c88469134a4' //AXELAR USDC
 const WRAPPED_NATIVE_TOKEN = tokens.fantom.WFTM
 
 //Config - Addresses
