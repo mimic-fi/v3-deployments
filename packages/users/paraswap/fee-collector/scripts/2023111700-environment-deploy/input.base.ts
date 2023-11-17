@@ -23,7 +23,7 @@ const WRAPPED_NATIVE_TOKEN = tokens.base.WETH
 
 //Config - Addresses
 const OWNER = '0x65136b3E4f012e4c13Aff0926091E2eadCFEdB42'
-const MAINNET_DEPOSITOR_TASK = ''
+const MAINNET_DEPOSITOR_TASK = '0x249dD0B25FbbA421303f58B7E443b469E45fe3C0'
 const FEE_CLAIMER = '0x9aaB4B24541af30fD72784ED98D8756ac0eFb3C7'
 const PARASWAP_QUOTE_SIGNER = '0x6278c27cf5534f07fa8f1ab6188a155cb8750ffa'
 
@@ -34,8 +34,8 @@ const USDC_CONVERT_THRESHOLD = bn(100000000) // 100 USDC
 const STANDARD_GAS_PRICE_LIMIT = 200e9
 const TX_COST_LIMIT_PCT = fp(0.02) // 2%
 const QUOTA = fp(0.000135)
-const MIN_WINDOW_GAS = QUOTA
-const MAX_WINDOW_GAS = QUOTA.mul(10)
+// const MIN_WINDOW_GAS = QUOTA
+// const MAX_WINDOW_GAS = QUOTA.mul(10)
 
 //Config - To USDC Swapper Timelock
 const WETH_TO_USDC_SWAPPER_TIMELOCK_MODE = TIMELOCK_MODE.SECONDS //SECONDS
@@ -279,37 +279,37 @@ const deployment: EnvironmentDeployment = {
       },
     },
     //Relayer Collector
-    {
-      from: DEPLOYER,
-      name: 'collector-relayer-funder',
-      version: dependency('core/tasks/relayer/collector/v1.0.0'),
-      initialize: 'initializeCollectorRelayerFunder',
-      args: [dependency('core/relayer/v1.0.0')],
-      config: {
-        tokensSource: dependency('smart-vault'),
-        taskConfig: {
-          baseConfig: {
-            smartVault: dependency('smart-vault'),
-            previousBalanceConnectorId: balanceConnectorId('weth-to-usdc-swapper-connection'),
-            nextBalanceConnectorId: balanceConnectorId('relayer-funder-unwrapper'),
-          },
-          gasLimitConfig: {
-            gasPriceLimit: STANDARD_GAS_PRICE_LIMIT,
-          },
-          tokenIndexConfig: {
-            acceptanceType: 1,
-            tokens: [WRAPPED_NATIVE_TOKEN],
-          },
-          tokenThresholdConfig: {
-            defaultThreshold: {
-              token: WRAPPED_NATIVE_TOKEN,
-              min: MIN_WINDOW_GAS,
-              max: MAX_WINDOW_GAS,
-            },
-          },
-        },
-      },
-    },
+    // {
+    //   from: DEPLOYER,
+    //   name: 'collector-relayer-funder',
+    //   version: dependency('core/tasks/relayer/collector/v1.0.0'),
+    //   initialize: 'initializeCollectorRelayerFunder',
+    //   args: [dependency('core/relayer/v1.0.0')],
+    //   config: {
+    //     tokensSource: dependency('smart-vault'),
+    //     taskConfig: {
+    //       baseConfig: {
+    //         smartVault: dependency('smart-vault'),
+    //         previousBalanceConnectorId: balanceConnectorId('weth-to-usdc-swapper-connection'),
+    //         nextBalanceConnectorId: balanceConnectorId('relayer-funder-unwrapper'),
+    //       },
+    //       gasLimitConfig: {
+    //         gasPriceLimit: STANDARD_GAS_PRICE_LIMIT,
+    //       },
+    //       tokenIndexConfig: {
+    //         acceptanceType: 1,
+    //         tokens: [WRAPPED_NATIVE_TOKEN],
+    //       },
+    //       tokenThresholdConfig: {
+    //         defaultThreshold: {
+    //           token: WRAPPED_NATIVE_TOKEN,
+    //           min: MIN_WINDOW_GAS,
+    //           max: MAX_WINDOW_GAS,
+    //         },
+    //       },
+    //     },
+    //   },
+    // },
     //Relayer Funder Unwrapper: unwraps wrapped native token
     {
       from: DEPLOYER,
@@ -422,16 +422,16 @@ const deployment: EnvironmentDeployment = {
             what: 'updateBalanceConnector',
             params: [],
           },
-          {
-            who: dependency('collector-relayer-funder'),
-            what: 'collect',
-            params: [],
-          },
-          {
-            who: dependency('collector-relayer-funder'),
-            what: 'updateBalanceConnector',
-            params: [],
-          },
+          // {
+          //   who: dependency('collector-relayer-funder'),
+          //   what: 'collect',
+          //   params: [],
+          // },
+          // {
+          //   who: dependency('collector-relayer-funder'),
+          //   what: 'updateBalanceConnector',
+          //   params: [],
+          // },
           {
             who: dependency('relayer-funder-unwrapper'),
             what: 'unwrap',
@@ -485,11 +485,11 @@ const deployment: EnvironmentDeployment = {
         revokes: [],
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
-      {
-        where: dependency('collector-relayer-funder'),
-        revokes: [],
-        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
-      },
+      // {
+      //   where: dependency('collector-relayer-funder'),
+      //   revokes: [],
+      //   grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
+      // },
       {
         where: dependency('relayer-funder-unwrapper'),
         revokes: [],

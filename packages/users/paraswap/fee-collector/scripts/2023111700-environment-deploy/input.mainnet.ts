@@ -26,6 +26,7 @@ const OWNER = '0x619bbf92fd6ba59893327676b2685a3762a49a33'
 const FEE_CLAIMER = '0xeF13101C5bbD737cFb2bF00Bbd38c626AD6952F7'
 const PARASWAP_QUOTE_SIGNER = '0x6278c27cf5534f07fa8f1ab6188a155cb8750ffa'
 const WITHDRAWER_RECIPIENT = '0x619BBf92Fd6bA59893327676B2685A3762a49a33'
+const SMART_VAULT_ADDRESS = '0x45a6e007c874Ffc6321D6fB90eAC272Dd6864bFA' //temporary hack to collect from sv
 
 //Config - Threshold
 const USDC_CONVERT_THRESHOLD = bn(500000000) // 500 USDC
@@ -372,15 +373,15 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: 'collector-relayer-funder',
-      version: dependency('core/tasks/relayer/collector/v1.0.0'),
+      version: dependency('core/tasks/relayer/collector/v2.0.0'),
       initialize: 'initializeCollectorRelayerFunder',
-      args: [dependency('core/relayer/v1.0.0')],
+      args: [dependency('core/relayer/v1.1.0')],
       config: {
-        tokensSource: dependency('smart-vault'),
+        tokensSource: SMART_VAULT_ADDRESS,
         taskConfig: {
           baseConfig: {
             smartVault: dependency('smart-vault'),
-            previousBalanceConnectorId: balanceConnectorId('weth-to-usdc-swapper-connection'),
+            //previousBalanceConnectorId: balanceConnectorId('weth-to-usdc-swapper-connection'),
             nextBalanceConnectorId: balanceConnectorId('relayer-funder-unwrapper'),
           },
           gasLimitConfig: {
