@@ -149,7 +149,7 @@ const deployment: EnvironmentDeployment = {
         },
       },
     },
-    //Handle over: moves USDC to be bridged
+    //Handle over: moves wrapped native to be bridged
     {
       from: DEPLOYER,
       name: 'wrapped-native-token-handle-over',
@@ -294,7 +294,7 @@ const deployment: EnvironmentDeployment = {
             nextBalanceConnectorId: balanceConnectorId('relayer-funder-unwrapper'),
           },
           gasLimitConfig: {
-            gasPriceLimit: 10e9,
+            gasPriceLimit: STANDARD_GAS_PRICE_LIMIT,
           },
           tokenIndexConfig: {
             acceptanceType: 1,

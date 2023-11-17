@@ -18,8 +18,8 @@ const TIMELOCK_MODE = {
 }
 
 //Config - Tokens
-const USDC = tokens.base.USDC
-const WRAPPED_NATIVE_TOKEN = tokens.base.WETH
+const USDC = tokens.zkevm.USDC
+const WRAPPED_NATIVE_TOKEN = tokens.zkevm.WETH
 
 //Config - Addresses
 const OWNER = '0x9060C482AB7d1b99504FC7D5f597fF61818B4F77'
@@ -150,7 +150,7 @@ const deployment: EnvironmentDeployment = {
         },
       },
     },
-    //Handle over: moves USDC to be bridged
+    //Handle over: moves wrapped native to be bridged
     {
       from: DEPLOYER,
       name: 'wrapped-native-token-handle-over',
@@ -283,7 +283,7 @@ const deployment: EnvironmentDeployment = {
             nextBalanceConnectorId: balanceConnectorId('relayer-funder-unwrapper'),
           },
           gasLimitConfig: {
-            gasPriceLimit: 10e9,
+            gasPriceLimit: STANDARD_GAS_PRICE_LIMIT,
           },
           tokenIndexConfig: {
             acceptanceType: 1,
