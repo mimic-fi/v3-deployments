@@ -30,7 +30,7 @@ const FEE_CLAIMER = '0x4F14fE8c86A00D6DFB9e91239738499Fc0F587De'
 const PARASWAP_QUOTE_SIGNER = '0x6278c27cf5534f07fa8f1ab6188a155cb8750ffa'
 
 //Config - Threshold
-const USDC_CONVERT_THRESHOLD = bn(100000000) // 100 USDC
+const USDC_CONVERT_THRESHOLD = bn(10000000) // 10 USDC
 
 //Config - Gas
 const STANDARD_GAS_PRICE_LIMIT = 200e9
@@ -42,14 +42,14 @@ const QUOTA = fp(0.79)
 //Config - To USDC Swapper Timelock
 const WETH_TO_USDC_SWAPPER_TIMELOCK_MODE = TIMELOCK_MODE.SECONDS //SECONDS
 const WETH_TO_USDC_SWAPPER_TIMELOCK_FREQUENCY = 2419200 //28 days
-const WETH_TO_USDC_SWAPPER_TIMELOCK_ALLOWED_AT = 1701054000 //Monday, 27 November 2023 3:00:00
+const WETH_TO_USDC_SWAPPER_TIMELOCK_ALLOWED_AT = 1698634800 //Monday, 30 October 2023 3:00:00
 const WETH_TO_USDC_SWAPPER_TIMELOCK_WINDOW = 2 * DAY //2 days
 
-//Config - Withdrawer Timelock
+//Config - Bridger Timelock
 const BRIDGER_TIMELOCK_MODE = TIMELOCK_MODE.SECONDS //SECONDS
 const BRIDGER_TIMELOCK_FREQUENCY = 2419200 //28 days
-const BRIDGER_TIMELOCK_ALLOWED_AT = 1701064800 //Monday, 27 November 2023 6:00:00
-const BRIDGER_TIMELOCK_WINDOW = 2 * DAY //2 days
+const BRIDGER_TIMELOCK_ALLOWED_AT = 1698645600 //Monday, 30 October 2023 6:00:00
+const BRIDGER_TIMELOCK_WINDOW = 25 * DAY //25 days
 
 //Config - Fee
 const FEE_PCT = fp(0.02) // 2%
@@ -266,7 +266,7 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: 'axelar-bridger',
-      version: dependency('core/tasks/bridge/connext/v2.0.0'),
+      version: dependency('core/tasks/bridge/axelar/v2.0.0'),
       config: {
         baseBridgeConfig: {
           connector: dependency('core/connectors/axelar/v1.0.0'),
