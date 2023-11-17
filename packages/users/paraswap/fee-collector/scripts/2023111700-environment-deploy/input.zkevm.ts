@@ -130,7 +130,7 @@ const deployment: EnvironmentDeployment = {
           baseConfig: {
             smartVault: dependency('smart-vault'),
             previousBalanceConnectorId: balanceConnectorId('swapper-connection'),
-            nextBalanceConnectorId: balanceConnectorId('weth-to-usdc-swapper-connection'),
+            nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
           },
           gasLimitConfig: {
             txCostLimitPct: TX_COST_LIMIT_PCT,
@@ -159,7 +159,7 @@ const deployment: EnvironmentDeployment = {
           baseConfig: {
             smartVault: dependency('smart-vault'),
             previousBalanceConnectorId: balanceConnectorId('swapper-connection'),
-            nextBalanceConnectorId: balanceConnectorId('weth-to-usdc-swapper-connection'),
+            nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
           },
           tokenIndexConfig: {
             acceptanceType: 1, //Allow list
@@ -185,7 +185,7 @@ const deployment: EnvironmentDeployment = {
             baseConfig: {
               smartVault: dependency('smart-vault'),
               previousBalanceConnectorId: balanceConnectorId('swapper-connection'),
-              nextBalanceConnectorId: balanceConnectorId('weth-to-usdc-swapper-connection'),
+              nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
             },
             gasLimitConfig: {
               txCostLimitPct: TX_COST_LIMIT_PCT,
@@ -205,42 +205,6 @@ const deployment: EnvironmentDeployment = {
         },
       },
     },
-    //Paraswap Swapper: swap assets using Paraswap dex aggregator
-    {
-      from: DEPLOYER,
-      name: 'paraswap-weth-to-usdc-swapper',
-      version: dependency('core/tasks/swap/paraswap-v5/v2.0.0'),
-      config: {
-        quoteSigner: PARASWAP_QUOTE_SIGNER,
-        baseSwapConfig: {
-          connector: dependency('core/connectors/paraswap-v5/v1.0.0'),
-          tokenOut: USDC,
-          maxSlippage: fp(0.02), //2%
-          customTokensOut: [],
-          customMaxSlippages: [],
-          taskConfig: {
-            baseConfig: {
-              smartVault: dependency('smart-vault'),
-              previousBalanceConnectorId: balanceConnectorId('weth-to-usdc-swapper-connection'),
-              nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
-            },
-            gasLimitConfig: {
-              txCostLimitPct: TX_COST_LIMIT_PCT,
-            },
-            tokenIndexConfig: {
-              acceptanceType: 1, //Allow list
-              tokens: [WRAPPED_NATIVE_TOKEN],
-            },
-            timeLockConfig: {
-              mode: WETH_TO_USDC_SWAPPER_TIMELOCK_MODE,
-              frequency: WETH_TO_USDC_SWAPPER_TIMELOCK_FREQUENCY,
-              allowedAt: WETH_TO_USDC_SWAPPER_TIMELOCK_ALLOWED_AT,
-              window: WETH_TO_USDC_SWAPPER_TIMELOCK_WINDOW,
-            },
-          },
-        },
-      },
-    },
     //Withdrawer USDC
     {
       from: DEPLOYER,
@@ -255,7 +219,7 @@ const deployment: EnvironmentDeployment = {
           },
           tokenIndexConfig: {
             acceptanceType: 1,
-            tokens: [USDC],
+            tokens: [WRAPPED_NATIVE_TOKEN],
           },
           timeLockConfig: {
             mode: WITHDRAWER_TIMELOCK_MODE,
@@ -391,16 +355,6 @@ const deployment: EnvironmentDeployment = {
             params: [],
           },
           {
-            who: dependency('paraswap-weth-to-usdc-swapper'),
-            what: 'execute',
-            params: [],
-          },
-          {
-            who: dependency('paraswap-weth-to-usdc-swapper'),
-            what: 'updateBalanceConnector',
-            params: [],
-          },
-          {
             who: dependency('withdrawer'),
             what: 'withdraw',
             params: [],
@@ -460,11 +414,6 @@ const deployment: EnvironmentDeployment = {
       },
       {
         where: dependency('paraswap-swapper'),
-        revokes: [],
-        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
-      },
-      {
-        where: dependency('paraswap-weth-to-usdc-swapper'),
         revokes: [],
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
