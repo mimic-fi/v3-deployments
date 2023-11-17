@@ -40,7 +40,7 @@ const MAX_WINDOW_GAS = QUOTA.mul(10)
 //Config - Withdrawer Timelock
 const WITHDRAWER_TIMELOCK_MODE = TIMELOCK_MODE.SECONDS //SECONDS
 const WITHDRAWER_TIMELOCK_FREQUENCY = 2419200 //28 days
-const WITHDRAWER_TIMELOCK_ALLOWED_AT = 1701075600 //Monday, 27 November 2023 9:00:00
+const WITHDRAWER_TIMELOCK_ALLOWED_AT = 1701086400 //Monday, 27 November 2023 12:00:00
 const WITHDRAWER_TIMELOCK_WINDOW = 2 * DAY //2 days
 
 //Config - Fee
@@ -48,7 +48,7 @@ const FEE_PCT = fp(0.02) // 2%
 
 const deployment: EnvironmentDeployment = {
   deployer: dependency('core/deployer/v1.0.0'),
-  namespace: 'paraswap-fee-collector',
+  namespace: 'paraswap-fee-collector-v3',
   authorizer: {
     from: DEPLOYER,
     name: 'authorizer',

@@ -40,13 +40,13 @@ const MAX_WINDOW_GAS = QUOTA.mul(10)
 //Config - To USDC Swapper Timelock
 const WETH_TO_USDC_SWAPPER_TIMELOCK_MODE = TIMELOCK_MODE.SECONDS //SECONDS
 const WETH_TO_USDC_SWAPPER_TIMELOCK_FREQUENCY = 2419200 //28 days
-const WETH_TO_USDC_SWAPPER_TIMELOCK_ALLOWED_AT = 1701064800 //Monday, 27 November 2023 6:00:00
+const WETH_TO_USDC_SWAPPER_TIMELOCK_ALLOWED_AT = 1701054000 //Monday, 27 November 2023 3:00:00
 const WETH_TO_USDC_SWAPPER_TIMELOCK_WINDOW = 2 * DAY //2 days
 
 //Config - Withdrawer Timelock
 const BRIDGER_TIMELOCK_MODE = TIMELOCK_MODE.SECONDS //SECONDS
 const BRIDGER_TIMELOCK_FREQUENCY = 2419200 //28 days
-const BRIDGER_TIMELOCK_ALLOWED_AT = 1701075600 //Monday, 27 November 2023 9:00:00
+const BRIDGER_TIMELOCK_ALLOWED_AT = 1701064800 //Monday, 27 November 2023 6:00:00
 const BRIDGER_TIMELOCK_WINDOW = 2 * DAY //2 days
 
 //Config - Fee
@@ -54,7 +54,7 @@ const FEE_PCT = fp(0.02) // 2%
 
 const deployment: EnvironmentDeployment = {
   deployer: dependency('core/deployer/v1.0.0'),
-  namespace: 'paraswap-fee-collector',
+  namespace: 'paraswap-fee-collector-v3',
   authorizer: {
     from: DEPLOYER,
     name: 'authorizer',
