@@ -1,6 +1,6 @@
 import { dependency, DEPLOYER, EnvironmentUpdate, USERS_ADMIN } from '@mimic-fi/v3-deployments-lib'
 
-const WITHDRAWALS_URL = 'https://www.jsonkeeper.com/b/5TQN'
+const WITHDRAWALS_URL = 'https://www.jsonkeeper.com/b/43GG'
 
 const update: EnvironmentUpdate = {
   deployer: dependency('core/deployer/v1.0.0'),
