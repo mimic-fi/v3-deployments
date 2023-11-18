@@ -16,6 +16,7 @@ const TOKEN = tokens.mainnet.USDC
 const ONE_INCH_OWNER = '0x979991695832F3321ad014564f1143A060cECE01'
 const SIGNER = '0x979991695832F3321ad014564f1143A060cECE01'
 const WITHDRAWALS_URL = 'https://www.jsonkeeper.com/b/V7D4'
+const WITHDRAWALS_URL_2 = 'https://www.jsonkeeper.com/b/KQJS'
 
 const deployment: EnvironmentDeployment = {
   deployer: dependency('core/deployer/v1.0.0'),
@@ -83,6 +84,25 @@ const deployment: EnvironmentDeployment = {
         },
       },
     },
+    {
+      from: DEPLOYER,
+      name: 'withdrawer2',
+      version: 'OffChainSignedWithdrawer',
+      args: [SIGNER, WITHDRAWALS_URL_2],
+      config: {
+        baseConfig: {
+          smartVault: dependency('smart-vault'),
+          previousBalanceConnectorId: balanceConnectorId('withdrawer'),
+        },
+        gasLimitConfig: {
+          gasPriceLimit: 30e9,
+        },
+        tokenIndexConfig: {
+          acceptanceType: 1,
+          tokens: [TOKEN],
+        },
+      },
+    },
   ],
   permissions: {
     from: USERS_ADMIN,
@@ -96,6 +116,8 @@ const deployment: EnvironmentDeployment = {
           { who: dependency('depositor'), what: 'updateBalanceConnector', params: [] },
           { who: dependency('withdrawer'), what: 'withdraw', params: [] },
           { who: dependency('withdrawer'), what: 'updateBalanceConnector', params: [] },
+          { who: dependency('withdrawer2'), what: 'withdraw', params: [] },
+          { who: dependency('withdrawer2'), what: 'updateBalanceConnector', params: [] },
         ],
       },
       {
@@ -105,6 +127,11 @@ const deployment: EnvironmentDeployment = {
       },
       {
         where: dependency('withdrawer'),
+        revokes: [],
+        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
+      },
+      {
+        where: dependency('withdrawer2'),
         revokes: [],
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
