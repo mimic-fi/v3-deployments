@@ -26,7 +26,6 @@ const OWNER = '0x619bbf92fd6ba59893327676b2685a3762a49a33'
 const FEE_CLAIMER = '0xeF13101C5bbD737cFb2bF00Bbd38c626AD6952F7'
 const PARASWAP_QUOTE_SIGNER = '0x6278c27cf5534f07fa8f1ab6188a155cb8750ffa'
 const WITHDRAWER_RECIPIENT = '0x619BBf92Fd6bA59893327676B2685A3762a49a33'
-const SMART_VAULT_ADDRESS = '0x45a6e007c874Ffc6321D6fB90eAC272Dd6864bFA' //temporary hack to collect from sv
 
 //Config - Threshold
 const USDC_CONVERT_THRESHOLD = bn(500000000) // 500 USDC
@@ -369,20 +368,17 @@ const deployment: EnvironmentDeployment = {
         },
       },
     },
-    //Relayer Collector
+    //Relayer Funder Unwrapper: unwraps wrapped native token
     {
       from: DEPLOYER,
-      name: 'collector-relayer-funder',
-      version: dependency('core/tasks/relayer/collector/v2.0.0'),
-      initialize: 'initializeCollectorRelayerFunder',
-      args: [dependency('core/relayer/v1.1.0')],
+      name: 'relayer-funder-unwrapper',
+      version: dependency('core/tasks/primitives/unwrapper/v2.0.0'),
       config: {
-        tokensSource: SMART_VAULT_ADDRESS,
         taskConfig: {
           baseConfig: {
             smartVault: dependency('smart-vault'),
-            //previousBalanceConnectorId: balanceConnectorId('weth-to-usdc-swapper-connection'),
-            nextBalanceConnectorId: balanceConnectorId('relayer-funder-unwrapper'),
+            previousBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
+            nextBalanceConnectorId: balanceConnectorId('relayer-depositor'),
           },
           gasLimitConfig: {
             gasPriceLimit: STANDARD_GAS_PRICE_LIMIT,
@@ -397,28 +393,6 @@ const deployment: EnvironmentDeployment = {
               min: MIN_WINDOW_GAS,
               max: MAX_WINDOW_GAS,
             },
-          },
-        },
-      },
-    },
-    //Relayer Funder Unwrapper: unwraps wrapped native token
-    {
-      from: DEPLOYER,
-      name: 'relayer-funder-unwrapper',
-      version: dependency('core/tasks/primitives/unwrapper/v2.0.0'),
-      config: {
-        taskConfig: {
-          baseConfig: {
-            smartVault: dependency('smart-vault'),
-            previousBalanceConnectorId: balanceConnectorId('relayer-funder-unwrapper'),
-            nextBalanceConnectorId: balanceConnectorId('relayer-depositor'),
-          },
-          gasLimitConfig: {
-            gasPriceLimit: STANDARD_GAS_PRICE_LIMIT,
-          },
-          tokenIndexConfig: {
-            acceptanceType: 1,
-            tokens: [WRAPPED_NATIVE_TOKEN],
           },
         },
       },
