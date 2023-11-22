@@ -513,7 +513,6 @@ const deployment: EnvironmentDeployment = {
             what: 'updateBalanceConnector',
             params: [],
           },
-
           {
             who: dependency('bpt-exiter-v2'),
             what: 'call',
