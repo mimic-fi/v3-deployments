@@ -15,11 +15,6 @@
     "version": "core/tasks/primitives/depositor/v2.0.0",
     "address": "0x68247248489fb0c1F55aeA1BBaC0aaE829D9BF77"
   },
-  "BalancerClaimer": "0x76dce81EE82910464db4C646FFb7c5BBEbE3B5a1",
-  "asset-collector": {
-    "version": "BalancerClaimer",
-    "address": "0xEAd9F0610a418f8BCC8dB21A3B57d82B16bb3070"
-  },
   "bpt-exiter": {
     "version": "core/tasks/liquidity/balancer/bpt-exiter/v2.0.0",
     "address": "0x3D2c36867F704869DC107c826157c460c61183d2"
