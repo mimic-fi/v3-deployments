@@ -55,5 +55,9 @@
   "asset-collector-v2": {
     "version": "BalancerClaimer",
     "address": "0xFBfF19FdfeeC906eD985EfD5fe122da0bF310726"
+  },
+  "balancer-v2-boosted-swapper": {
+    "version": "core/tasks/swap/balancer-v2-boosted-swapper/v2.0.0",
+    "address": "0xaBA2ad96046B5CE3E409D286D6Bcbd18344d7B5B"
   }
 }
