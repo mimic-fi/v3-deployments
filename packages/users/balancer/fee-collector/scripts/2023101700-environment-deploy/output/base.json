@@ -15,11 +15,6 @@
     "version": "core/tasks/primitives/depositor/v2.0.0",
     "address": "0x68247248489fb0c1F55aeA1BBaC0aaE829D9BF77"
   },
-  "BalancerClaimer": "0x8aCE25e00066Ed09d5b773E5Cd17C98058fbC682",
-  "asset-collector": {
-    "version": "BalancerClaimer",
-    "address": "0xEAd9F0610a418f8BCC8dB21A3B57d82B16bb3070"
-  },
   "bpt-exiter": {
     "version": "core/tasks/liquidity/balancer/bpt-exiter/v2.0.0",
     "address": "0x3D2c36867F704869DC107c826157c460c61183d2"
@@ -59,5 +54,10 @@
   "cctp-bridger-2": {
     "version": "core/tasks/bridge/wormhole/v2.0.0",
     "address": "0xD9626e32b4D8d1F745f05BbE01C259F345f19CF2"
+  },
+  "BalancerClaimer": "0x99aaa8BC37E24d767242ea50ecb1a6886Ac22E06",
+  "asset-collector-v2": {
+    "version": "BalancerClaimer",
+    "address": "0xFBfF19FdfeeC906eD985EfD5fe122da0bF310726"
   }
 }
