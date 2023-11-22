@@ -6,9 +6,8 @@ import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import '../interfaces/IProtocolFeeWithdrawer.sol';
 
 contract ProtocolFeeWithdrawerMock is IProtocolFeeWithdrawer {
-
     using SafeERC20 for IERC20;
-    
+
     // Protocol fees collector address
     address public protocolFeesCollector;
 

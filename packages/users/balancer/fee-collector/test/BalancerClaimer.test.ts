@@ -23,7 +23,7 @@ describe('BalancerClaimer', () => {
 
   before('setup', async () => {
     // eslint-disable-next-line prettier/prettier
-    ;[, owner, other, protocolFeesCollector] = await getSigners()
+    [, owner, other, protocolFeesCollector] = await getSigners()
     ;({ authorizer, smartVault } = await deployEnvironment(owner))
   })
 
