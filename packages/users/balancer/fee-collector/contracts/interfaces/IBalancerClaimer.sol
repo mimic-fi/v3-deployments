@@ -38,6 +38,11 @@ interface IBalancerClaimer is ITask {
     error TaskProtocolFeeWithdrawerZero();
 
     /**
+     * @dev The protocol fees collector is zero
+     */
+    error TaskProtocolFeesCollectorZero();
+
+    /**
      * @dev The previous balance connector is not zero
      */
     error TaskPreviousConnectorNotZero(bytes32 id);
@@ -48,15 +53,31 @@ interface IBalancerClaimer is ITask {
     event ProtocolFeeWithdrawerSet(address indexed protocolFeeWithdrawer);
 
     /**
+     * @dev Emitted every time the protocol fees collector is set
+     */
+    event ProtocolFeesCollectorSet(address indexed protocolFeesCollector);
+
+    /**
      * @dev Tells the protocol fee withdrawer address
      */
     function protocolFeeWithdrawer() external view returns (address);
+
+    /**
+     * @dev Tells the protocol fee collector address
+     */
+    function protocolFeesCollector() external view returns (address);
 
     /**
      * @dev Sets the protocol fee withdrawer address. Sender must be authorized.
      * @param newProtocolFeeWithdrawer Address of the protocol fee withdrawer to be set
      */
     function setProtocolFeeWithdrawer(address newProtocolFeeWithdrawer) external;
+
+    /**
+     * @dev Sets the protocol fees collector address. Sender must be authorized.
+     * @param newProtocolFeesCollector Address of the protocol fees collector to be set
+     */
+    function setProtocolFeesCollector(address newProtocolFeesCollector) external;
 
     /**
      * @dev Executes the Balancer claimer task
