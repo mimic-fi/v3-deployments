@@ -59,5 +59,9 @@
   "balancer-v2-boosted-swapper": {
     "version": "core/tasks/swap/balancer-v2-boosted-swapper/v2.0.0",
     "address": "0xaBA2ad96046B5CE3E409D286D6Bcbd18344d7B5B"
+  },
+  "balancer-v2-linear-swapper": {
+    "version": "core/tasks/swap/balancer-v2-linear-swapper/v2.0.0",
+    "address": "0x9120cDBDa777E711FFc4CDFAE67659d7Cb7270Ef"
   }
 }
