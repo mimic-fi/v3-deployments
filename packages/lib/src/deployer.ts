@@ -199,8 +199,11 @@ async function deploy(component: string, script: Script, params: RegistryInstanc
 }
 
 function solveStandardTaskConfig(script: Script, config: StandardTaskConfig): StandardTaskConfig {
-  if (isTaskConfig(config)) solveOptionalTaskConfig(script, config)
-  else if (isPrimitiveTaskConfig(config)) {
+  if (isTaskConfig(config)) {
+    solveOptionalTaskConfig(script, config)
+  } else if (isPrimitiveTaskConfig(config)) {
+    const anyConfig = config as any
+    if (anyConfig.connector) solveConnectorDependency(script, anyConfig)
     solveOptionalTaskConfig(script, config.taskConfig)
   } else if (isSwapTaskConfig(config)) {
     solveConnectorDependency(script, config.baseSwapConfig)
