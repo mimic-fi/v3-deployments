@@ -31,7 +31,7 @@ contract BalancerClaimer is IBalancerClaimer, Task {
     // Protocol fee withdrawer address
     address public override protocolFeeWithdrawer;
 
-    // Protocol fee withdrawer address
+    // Protocol fees collector address
     address public override protocolFeesCollector;
 
     /**
@@ -80,11 +80,11 @@ contract BalancerClaimer is IBalancerClaimer, Task {
     }
 
     /**
-     * @dev Tells the token balance in the protocol fee withdrawer available for the smart vault
+     * @dev Tells the token balance in the protocol fees collector available for the smart vault
      * @param token Address of the token being queried
      */
     function getTaskAmount(address token) public view virtual override(IBaseTask, BaseTask) returns (uint256) {
-        return ERC20Helpers.balanceOf(token, protocolFeeWithdrawer);
+        return ERC20Helpers.balanceOf(token, protocolFeesCollector);
     }
 
     /**

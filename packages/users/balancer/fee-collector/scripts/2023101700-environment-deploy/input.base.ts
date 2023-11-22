@@ -20,6 +20,7 @@ const WRAPPED_NATIVE_TOKEN = tokens.base.WETH
 //Config - Addresses
 const OWNER = '0x65226673F3D202E0f897C862590d7e1A992B2048'
 const PROTOCOL_FEE_WITHDRAWER = '0xAcf05BE5134d64d150d153818F8C67EE36996650'
+const PROTOCOL_FEES_COLLECTOR = '0xce88686553686DA562CE7Cea497CE749DA109f9F'
 const BALANCER_VAULT = '0xBA12222222228d8Ba445958a75a0704d566BF2C8'
 const MAINNET_DEPOSITOR_TASK = '0x85B45B363Ec0023885f86775DdFaf6D879643ED7'
 
@@ -87,10 +88,10 @@ const deployment: EnvironmentDeployment = {
     //Asset Collector: collect assets from external source
     {
       from: DEPLOYER,
-      name: 'asset-collector',
+      name: 'asset-collector-v2',
       version: 'BalancerClaimer',
       initialize: 'initializeBalancerClaimer',
-      args: [PROTOCOL_FEE_WITHDRAWER],
+      args: [PROTOCOL_FEE_WITHDRAWER, PROTOCOL_FEES_COLLECTOR],
       config: {
         baseConfig: {
           smartVault: dependency('smart-vault'),
@@ -430,12 +431,12 @@ const deployment: EnvironmentDeployment = {
             params: [],
           },
           {
-            who: dependency('asset-collector'),
+            who: dependency('asset-collector-v2'),
             what: 'call',
             params: [],
           },
           {
-            who: dependency('asset-collector'),
+            who: dependency('asset-collector-v2'),
             what: 'updateBalanceConnector',
             params: [],
           },
@@ -538,7 +539,7 @@ const deployment: EnvironmentDeployment = {
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency('asset-collector'),
+        where: dependency('asset-collector-v2'),
         revokes: [],
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
