@@ -19,11 +19,11 @@ import { Contract, ethers } from 'ethers'
 
 describe('BalancerClaimer', () => {
   let task: Contract, smartVault: Contract, authorizer: Contract, protocolFeeWithdrawer: Contract
-  let owner: SignerWithAddress, other: SignerWithAddress
+  let owner: SignerWithAddress, other: SignerWithAddress, protocolFeesCollector: SignerWithAddress
 
   before('setup', async () => {
     // eslint-disable-next-line prettier/prettier
-    ([, owner, other] = await getSigners())
+    [, owner, other, protocolFeesCollector] = await getSigners()
     ;({ authorizer, smartVault } = await deployEnvironment(owner))
   })
 
@@ -32,7 +32,7 @@ describe('BalancerClaimer', () => {
     task = await deployProxy(
       'BalancerClaimer',
       [],
-      [buildEmptyTaskConfig(owner, smartVault), protocolFeeWithdrawer.address],
+      [buildEmptyTaskConfig(owner, smartVault), protocolFeeWithdrawer.address, protocolFeesCollector.address],
       'initializeBalancerClaimer'
     )
   })
@@ -80,6 +80,47 @@ describe('BalancerClaimer', () => {
 
       it('reverts', async () => {
         await expect(task.setProtocolFeeWithdrawer(other.address)).to.be.revertedWith('AuthSenderNotAllowed')
+      })
+    })
+  })
+
+  describe('setProtocolFeesCollector', () => {
+    context('when the sender is authorized', () => {
+      beforeEach('set sender', async () => {
+        const setProtocolFeesCollectorRole = task.interface.getSighash('setProtocolFeesCollector')
+        await authorizer.connect(owner).authorize(owner.address, task.address, setProtocolFeesCollectorRole, [])
+        task = task.connect(owner)
+      })
+
+      context('when the given address is not zero', () => {
+        it('sets the protocol fees collector', async () => {
+          await task.setProtocolFeesCollector(other.address)
+
+          expect(await task.protocolFeesCollector()).to.be.equal(other.address)
+          expect(await task.getTokensSource()).to.be.equal(other.address)
+        })
+
+        it('emits an event', async () => {
+          const tx = await task.setProtocolFeesCollector(other.address)
+
+          await assertEvent(tx, 'ProtocolFeesCollectorSet', { protocolFeesCollector: other })
+        })
+      })
+
+      context('when the given address is zero', () => {
+        it('reverts', async () => {
+          await expect(task.setProtocolFeesCollector(ZERO_ADDRESS)).to.be.revertedWith('TaskProtocolFeesCollectorZero')
+        })
+      })
+    })
+
+    context('when the sender is not authorized', () => {
+      beforeEach('set sender', () => {
+        task = task.connect(other)
+      })
+
+      it('reverts', async () => {
+        await expect(task.setProtocolFeesCollector(other.address)).to.be.revertedWith('AuthSenderNotAllowed')
       })
     })
   })
