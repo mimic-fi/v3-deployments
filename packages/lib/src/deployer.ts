@@ -184,8 +184,6 @@ async function deploy(component: string, script: Script, params: RegistryInstanc
     const method = `deploy${component}`
     const deployer = await script.dependencyInstance(params.deployer)
 
-    console.log('aa', method, params.initializeParams)
-
     const tx = await script.callContract(deployer, method, [namespace, name, params.initializeParams], from)
     if (!tx) throw Error(`Could not fetch transaction receipt after creating a new ${component} instance`)
     const event = await assertEvent(tx, `${component}Deployed`)
