@@ -31,13 +31,20 @@ contract BalancerClaimer is IBalancerClaimer, Task {
     // Protocol fee withdrawer address
     address public override protocolFeeWithdrawer;
 
+    // Protocol fee withdrawer address
+    address public override protocolFeesCollector;
+
     /**
      * @dev Initializes the balancer claimer
      * @param config Task config
      * @param withdrawer Protocol fee withdrawer address
      */
-    function initializeBalancerClaimer(TaskConfig memory config, address withdrawer) external virtual initializer {
-        __BalancerClaimer_init(config, withdrawer);
+    function initializeBalancerClaimer(TaskConfig memory config, address withdrawer, address collector)
+        external
+        virtual
+        initializer
+    {
+        __BalancerClaimer_init(config, withdrawer, collector);
     }
 
     /**
@@ -45,24 +52,31 @@ contract BalancerClaimer is IBalancerClaimer, Task {
      * @param config Task config
      * @param withdrawer Protocol fee withdrawer address
      */
-    function __BalancerClaimer_init(TaskConfig memory config, address withdrawer) internal onlyInitializing {
+    function __BalancerClaimer_init(TaskConfig memory config, address withdrawer, address collector)
+        internal
+        onlyInitializing
+    {
         __Task_init(config);
-        __BalancerClaimer_init_unchained(config, withdrawer);
+        __BalancerClaimer_init_unchained(config, withdrawer, collector);
     }
 
     /**
      * @dev Initializes the balancer claimer. It does not call upper contracts initializers.
      * @param withdrawer Protocol fee withdrawer address
      */
-    function __BalancerClaimer_init_unchained(TaskConfig memory, address withdrawer) internal onlyInitializing {
+    function __BalancerClaimer_init_unchained(TaskConfig memory, address withdrawer, address collector)
+        internal
+        onlyInitializing
+    {
         _setProtocolFeeWithdrawer(withdrawer);
+        _setProtocolFeesCollector(collector);
     }
 
     /**
      * @dev Tells the address from where the token amounts to execute this task are fetched
      */
     function getTokensSource() external view virtual override(IBaseTask, BaseTask) returns (address) {
-        return protocolFeeWithdrawer;
+        return protocolFeesCollector;
     }
 
     /**
@@ -83,6 +97,18 @@ contract BalancerClaimer is IBalancerClaimer, Task {
         authP(authParams(newProtocolFeeWithdrawer))
     {
         _setProtocolFeeWithdrawer(newProtocolFeeWithdrawer);
+    }
+
+    /**
+     * @dev Sets the protocol fees collector address. Sender must be authorized.
+     * @param newProtocolFeesCollector Address of the protocol fees collector to be set
+     */
+    function setProtocolFeesCollector(address newProtocolFeesCollector)
+        external
+        override
+        authP(authParams(newProtocolFeesCollector))
+    {
+        _setProtocolFeesCollector(newProtocolFeesCollector);
     }
 
     /**
@@ -133,6 +159,16 @@ contract BalancerClaimer is IBalancerClaimer, Task {
         if (newProtocolFeeWithdrawer == address(0)) revert TaskProtocolFeeWithdrawerZero();
         protocolFeeWithdrawer = newProtocolFeeWithdrawer;
         emit ProtocolFeeWithdrawerSet(newProtocolFeeWithdrawer);
+    }
+
+    /**
+     * @dev Sets the protocol fees collector address
+     * @param newProtocolFeesCollector Address of the protocol fees collector to be set
+     */
+    function _setProtocolFeesCollector(address newProtocolFeesCollector) internal {
+        if (newProtocolFeesCollector == address(0)) revert TaskProtocolFeesCollectorZero();
+        protocolFeesCollector = newProtocolFeesCollector;
+        emit ProtocolFeesCollectorSet(newProtocolFeesCollector);
     }
 
     /**
