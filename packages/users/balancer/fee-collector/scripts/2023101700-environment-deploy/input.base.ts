@@ -499,7 +499,7 @@ const deployment: EnvironmentDeployment = {
           },
           {
             who: dependency('bpt-exiter-v2'),
-            what: 'call',
+            what: 'execute',
             params: [],
           },
           {
