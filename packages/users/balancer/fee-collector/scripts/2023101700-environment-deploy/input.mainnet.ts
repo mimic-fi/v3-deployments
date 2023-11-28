@@ -188,10 +188,6 @@ const deployment: EnvironmentDeployment = {
           gasLimitConfig: {
             txCostLimitPct: TX_COST_LIMIT_PCT,
           },
-          tokenIndexConfig: {
-            acceptanceType: 0, //Deny list
-            tokens: [USDC],
-          },
           tokenThresholdConfig: {
             defaultThreshold: {
               token: USDC,
@@ -222,10 +218,6 @@ const deployment: EnvironmentDeployment = {
             },
             gasLimitConfig: {
               txCostLimitPct: TX_COST_LIMIT_PCT,
-            },
-            tokenIndexConfig: {
-              acceptanceType: 0,
-              tokens: [USDC],
             },
             tokenThresholdConfig: {
               defaultThreshold: {
@@ -259,10 +251,6 @@ const deployment: EnvironmentDeployment = {
             gasLimitConfig: {
               txCostLimitPct: TX_COST_LIMIT_PCT,
             },
-            tokenIndexConfig: {
-              acceptanceType: 0,
-              tokens: [USDC],
-            },
             tokenThresholdConfig: {
               defaultThreshold: {
                 token: USDC,
@@ -285,10 +273,6 @@ const deployment: EnvironmentDeployment = {
             smartVault: dependency('smart-vault'),
             previousBalanceConnectorId: balanceConnectorId('bpt-handle-over-connection'),
             nextBalanceConnectorId: balanceConnectorId('swapper-connection'),
-          },
-          tokenIndexConfig: {
-            acceptanceType: 0, //Deny list
-            tokens: [USDC],
           },
         },
       },
