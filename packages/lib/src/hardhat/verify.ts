@@ -14,7 +14,7 @@ task('verify', 'Run deployment task')
   .addParam('key', 'Etherscan API key to verify contracts')
   .setAction(async (args: VerifyArgs, hre: HardhatRuntimeEnvironment) => {
     Logger.setDefaults(false, args.debug || false)
-    const verifier = args.key ? new Verifier(hre.network, args.key) : undefined
+    const verifier = args.key ? new Verifier(hre, args.key) : undefined
     const script = Script.fromHRE(args.id, hre, verifier)
     await script.verify(args.contract)
   })
