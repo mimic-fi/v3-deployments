@@ -541,7 +541,11 @@ const deployment: EnvironmentDeployment = {
             what: 'updateBalanceConnector',
             params: [],
           },
-          { who: dependency('depositor'), what: 'collect', params: [] },
+          {
+            who: dependency('depositor'),
+            what: 'collect',
+            params: [],
+          },
           {
             who: dependency('depositor'),
             what: 'updateBalanceConnector',

@@ -158,7 +158,7 @@ const deployment: EnvironmentDeployment = {
             baseConfig: {
               smartVault: dependency('smart-vault'),
               previousBalanceConnectorId: balanceConnectorId('swapper-connection'),
-              nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
+              nextBalanceConnectorId: balanceConnectorId('bridger-connection'),
             },
             gasLimitConfig: {
               txCostLimitPct: TX_COST_LIMIT_PCT,
@@ -188,7 +188,7 @@ const deployment: EnvironmentDeployment = {
           baseConfig: {
             smartVault: dependency('smart-vault'),
             previousBalanceConnectorId: balanceConnectorId('swapper-connection'),
-            nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
+            nextBalanceConnectorId: balanceConnectorId('bridger-connection'),
           },
           tokenIndexConfig: {
             acceptanceType: 1, //Allow list
@@ -249,7 +249,7 @@ const deployment: EnvironmentDeployment = {
           taskConfig: {
             baseConfig: {
               smartVault: dependency('smart-vault'),
-              previousBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
+              previousBalanceConnectorId: balanceConnectorId('bridger-connection'),
               nextBalanceConnectorId: balanceConnectorId('relayer-funder-unwrapper'),
             },
             gasLimitConfig: {
@@ -321,7 +321,11 @@ const deployment: EnvironmentDeployment = {
         where: dependency('smart-vault'),
         revokes: [],
         grants: [
-          { who: dependency('depositor'), what: 'collect', params: [] },
+          {
+            who: dependency('depositor'),
+            what: 'collect',
+            params: [],
+          },
           {
             who: dependency('depositor'),
             what: 'updateBalanceConnector',
