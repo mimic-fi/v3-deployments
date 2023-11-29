@@ -1,3 +1,7 @@
 {
-  "BalancerClaimer": "0x8984851aa57d379019998adFE7ADCd501B51C258"
+  "BalancerClaimer": "0x8984851aa57d379019998adFE7ADCd501B51C258",
+  "asset-collector-v2": {
+    "version": "BalancerClaimer",
+    "address": "0xDEf579cf580A81ea68C043341433379b7C350280"
+  }
 }
