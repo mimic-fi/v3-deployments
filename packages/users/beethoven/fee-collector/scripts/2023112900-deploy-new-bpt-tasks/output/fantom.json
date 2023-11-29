@@ -1,0 +1,15 @@
+{
+  "BalancerClaimer": "0x5DB4C0F4010dC912b0C579c693E076c2439f9EaD",
+  "bpt-exiter-v2": {
+    "version": "core/tasks/liquidity/balancer/bpt-exiter/v2.1.0",
+    "address": "0x09A8c88EfBce9Dd70293bb9688d8a4b0F189703C"
+  },
+  "balancer-v2-boosted-swapper": {
+    "version": "core/tasks/swap/balancer-v2-boosted-swapper/v2.0.0",
+    "address": "0xc89E74fE1A05B8F157976319251649a146Ad9046"
+  },
+  "balancer-v2-linear-swapper": {
+    "version": "core/tasks/swap/balancer-v2-linear-swapper/v2.0.0",
+    "address": "0x8786977c3B5Fa154cA6408Ec3c6100dEEA76B7f3"
+  }
+}
