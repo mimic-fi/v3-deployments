@@ -1,10 +1,4 @@
-import {
-  dependency,
-  DEPLOYER,
-  PROTOCOL_ADMIN,
-  PROTOCOL_ADMIN_AURORA,
-  RegistryImplementationDeployment,
-} from '@mimic-fi/v3-deployments-lib'
+import { dependency, DEPLOYER, PROTOCOL_ADMIN, RegistryImplementationDeployment } from '@mimic-fi/v3-deployments-lib'
 
 const deployment: RegistryImplementationDeployment = {
   from: PROTOCOL_ADMIN,
@@ -16,9 +10,12 @@ const deployment: RegistryImplementationDeployment = {
   deployerIfFail: DEPLOYER,
 }
 
-const aurora: RegistryImplementationDeployment = {
-  ...deployment,
-  from: PROTOCOL_ADMIN_AURORA,
+export default {
+  mainnet: deployment,
+  polygon: deployment,
+  arbitrum: deployment,
+  bsc: deployment,
+  fantom: deployment,
+  avalanche: deployment,
+  base: deployment,
 }
-
-export default { ...deployment, aurora }

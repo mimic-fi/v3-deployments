@@ -21,4 +21,15 @@ const aurora: RegistryImplementationDeployment = {
   from: PROTOCOL_ADMIN_AURORA,
 }
 
-export default { ...deployment, aurora }
+export default {
+  mainnet: deployment,
+  polygon: deployment,
+  arbitrum: deployment,
+  optimism: deployment,
+  gnosis: deployment,
+  bsc: deployment,
+  fantom: deployment,
+  avalanche: deployment,
+  base: deployment,
+  aurora,
+}

@@ -165,7 +165,7 @@ export class Script {
       const script = require(scriptPath).default
       await script(this)
     } else {
-      throw Error(`Could not find an input file for network ${this.inputNetwork}`)
+      throw Error(`Could not find an input file for network ${this.inputNetwork} in script ${this.id}`)
     }
   }
 

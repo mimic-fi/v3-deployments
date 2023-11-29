@@ -10,4 +10,14 @@ const deployment: RegistryImplementationDeployment = {
   deployerIfFail: DEPLOYER,
 }
 
-export default { mainnet: deployment, avalanche: deployment, base: deployment }
+export default {
+  arbitrum: deployment,
+  avalanche: deployment,
+  base: deployment,
+  fantom: deployment,
+  gnosis: deployment,
+  mainnet: deployment,
+  optimism: deployment,
+  polygon: deployment,
+  zkevm: deployment,
+}
