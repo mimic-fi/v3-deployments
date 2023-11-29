@@ -8,7 +8,6 @@ const USDC = '0x28a92dde19d9989f39a49905d7c9c2fac7799bdf' //USDC token by Beetho
 
 //Config - Addresses
 const PROTOCOL_FEE_WITHDRAWER = '0xC6920d3a369E7c8BD1A22DbE385e11d1F7aF948F'
-const PROTOCOL_FEES_COLLECTOR = ''
 
 //Config - Threshold
 const USDC_THRESHOLD = bn(10000000) // 10 USDC
@@ -26,7 +25,7 @@ const update: EnvironmentUpdate = {
       name: 'asset-collector-v2',
       version: 'BalancerClaimer',
       initialize: 'initializeBalancerClaimer',
-      args: [PROTOCOL_FEE_WITHDRAWER, PROTOCOL_FEES_COLLECTOR],
+      args: [PROTOCOL_FEE_WITHDRAWER, PROTOCOL_FEE_WITHDRAWER],
       config: {
         baseConfig: {
           smartVault: dependency('2023111100-environment-deploy', 'smart-vault'),
