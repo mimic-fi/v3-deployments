@@ -49,10 +49,14 @@ function printPendingDeployments(results: Result[]): void {
   for (const result of results) {
     const row = [result.scriptId]
     for (const network of TRACKED_NETWORKS) {
-      const script = Script.forNetwork(result.scriptId, network)
-      if (script.hasInput && result.missingNetworks.includes(network)) row.push('🔴')
-      else if (!script.hasInput && result.missingNetworks.includes(network)) row.push('🟠')
-      else row.push('🟢')
+      try {
+        const script = Script.forNetwork(result.scriptId, network)
+        if (script.hasInput && result.missingNetworks.includes(network)) row.push('🔴')
+        else if (!script.hasInput && result.missingNetworks.includes(network)) row.push('🟠')
+        else row.push('🟢')
+      } catch (error) {
+        row.push('⭕️')
+      }
     }
     table.push(row)
   }
