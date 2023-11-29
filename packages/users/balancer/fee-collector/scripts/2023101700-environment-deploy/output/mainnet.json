@@ -71,5 +71,17 @@
   "asset-collector-v2": {
     "version": "BalancerClaimer",
     "address": "0xFBfF19FdfeeC906eD985EfD5fe122da0bF310726"
+  },
+  "bpt-exiter-v2": {
+    "version": "core/tasks/liquidity/balancer/bpt-exiter/v2.1.0",
+    "address": "0xC4bdaeE2a32Add090847c970547b3Db057eDeB49"
+  },
+  "balancer-v2-boosted-swapper": {
+    "version": "core/tasks/swap/balancer-v2-boosted-swapper/v2.0.0",
+    "address": "0xaBA2ad96046B5CE3E409D286D6Bcbd18344d7B5B"
+  },
+  "balancer-v2-linear-swapper": {
+    "version": "core/tasks/swap/balancer-v2-linear-swapper/v2.0.0",
+    "address": "0x9120cDBDa777E711FFc4CDFAE67659d7Cb7270Ef"
   }
 }
