@@ -23,7 +23,6 @@
     "version": "core/tasks/primitives/depositor/v2.0.0",
     "address": "0x68247248489fb0c1F55aeA1BBaC0aaE829D9BF77"
   },
-  "BalancerClaimer": "0x2338287BA9C11D75f4017CE5Af007AB96B94bbA9",
   "asset-collector": {
     "version": "BalancerClaimer",
     "address": "0xEAd9F0610a418f8BCC8dB21A3B57d82B16bb3070"
@@ -67,5 +66,22 @@
   "paraswap-swapper": {
     "version": "core/tasks/swap/paraswap-v5/v2.0.0",
     "address": "0xAD63A7AfBCE3f93CA40dDFeE6df148EC805D92ae"
+  },
+  "BalancerClaimer": "0x9EE5Ed054F4518b53345dA5345CED4A199eC4a03",
+  "asset-collector-v2": {
+    "version": "BalancerClaimer",
+    "address": "0xFBfF19FdfeeC906eD985EfD5fe122da0bF310726"
+  },
+  "bpt-exiter-v2": {
+    "version": "core/tasks/liquidity/balancer/bpt-exiter/v2.1.0",
+    "address": "0xC4bdaeE2a32Add090847c970547b3Db057eDeB49"
+  },
+  "balancer-v2-boosted-swapper": {
+    "version": "core/tasks/swap/balancer-v2-boosted-swapper/v2.0.0",
+    "address": "0xaBA2ad96046B5CE3E409D286D6Bcbd18344d7B5B"
+  },
+  "balancer-v2-linear-swapper": {
+    "version": "core/tasks/swap/balancer-v2-linear-swapper/v2.0.0",
+    "address": "0x9120cDBDa777E711FFc4CDFAE67659d7Cb7270Ef"
   }
 }

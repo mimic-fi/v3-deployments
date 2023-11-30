@@ -28,7 +28,7 @@ describe('BalancerClaimer', () => {
   })
 
   beforeEach('deploy task', async () => {
-    protocolFeeWithdrawer = await deploy('ProtocolFeeWithdrawerMock')
+    protocolFeeWithdrawer = await deploy('ProtocolFeeWithdrawerMock', [protocolFeesCollector.address])
     task = await deployProxy(
       'BalancerClaimer',
       [],
@@ -200,8 +200,9 @@ describe('BalancerClaimer', () => {
         context('when the amount is greater than zero', () => {
           const totalBalance = fp(100)
 
-          beforeEach('fund protocol fee withdrawer', async () => {
-            await token.mint(protocolFeeWithdrawer.address, totalBalance)
+          beforeEach('fund protocol fees collector', async () => {
+            await token.mint(protocolFeesCollector.address, totalBalance)
+            await token.connect(protocolFeesCollector).approve(protocolFeeWithdrawer.address, totalBalance)
           })
 
           const itExecutesTheTaskProperly = (requestedAmount: BigNumberish) => {
@@ -225,15 +226,15 @@ describe('BalancerClaimer', () => {
 
             it('transfers the token in from the protocol fee withdrawer to the smart vault', async () => {
               const previousSmartVaultBalance = await token.balanceOf(smartVault.address)
-              const previousFeeWithdrawerBalance = await token.balanceOf(protocolFeeWithdrawer.address)
+              const previousFeesCollectorBalance = await token.balanceOf(protocolFeesCollector.address)
 
               await task.connect(owner).call(token.address, requestedAmount)
 
               const currentSmartVaultBalance = await token.balanceOf(smartVault.address)
               expect(currentSmartVaultBalance).to.be.eq(previousSmartVaultBalance.add(transactedAmount))
 
-              const currentFeeWithdrawerBalance = await token.balanceOf(protocolFeeWithdrawer.address)
-              expect(currentFeeWithdrawerBalance).to.be.eq(previousFeeWithdrawerBalance.sub(transactedAmount))
+              const currentFeesCollectorBalance = await token.balanceOf(protocolFeesCollector.address)
+              expect(currentFeesCollectorBalance).to.be.eq(previousFeesCollectorBalance.sub(transactedAmount))
             })
 
             it('emits an Executed event', async () => {

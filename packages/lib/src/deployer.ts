@@ -183,6 +183,7 @@ async function deploy(component: string, script: Script, params: RegistryInstanc
     logger.info(`Deploying ${name}...`)
     const method = `deploy${component}`
     const deployer = await script.dependencyInstance(params.deployer)
+
     const tx = await script.callContract(deployer, method, [namespace, name, params.initializeParams], from)
     if (!tx) throw Error(`Could not fetch transaction receipt after creating a new ${component} instance`)
     const event = await assertEvent(tx, `${component}Deployed`)
@@ -198,8 +199,11 @@ async function deploy(component: string, script: Script, params: RegistryInstanc
 }
 
 function solveStandardTaskConfig(script: Script, config: StandardTaskConfig): StandardTaskConfig {
-  if (isTaskConfig(config)) solveOptionalTaskConfig(script, config)
-  else if (isPrimitiveTaskConfig(config)) {
+  if (isTaskConfig(config)) {
+    solveOptionalTaskConfig(script, config)
+  } else if (isPrimitiveTaskConfig(config)) {
+    const anyConfig = config as any
+    if (anyConfig.connector) solveConnectorDependency(script, anyConfig)
     solveOptionalTaskConfig(script, config.taskConfig)
   } else if (isSwapTaskConfig(config)) {
     solveConnectorDependency(script, config.baseSwapConfig)
