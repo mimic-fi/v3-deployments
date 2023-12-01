@@ -8,7 +8,7 @@ const MAX_WINDOW_GAS = QUOTA.mul(10)
 
 const update: EnvironmentUpdate = {
   deployer: dependency('core/deployer/v1.0.0'),
-  namespace: 'balancer-fee-collector',
+  namespace: 'paraswap-fee-collector-v3',
   steps: [
     {
       from: USERS_ADMIN,

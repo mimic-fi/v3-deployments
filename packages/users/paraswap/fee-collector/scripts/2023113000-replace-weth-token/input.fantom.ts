@@ -6,7 +6,7 @@ const NEW_WETH = '0x695921034f0387eAc4e11620EE91b1b15A6A09fE' //ZeroLayer WETH
 
 const update: EnvironmentUpdate = {
   deployer: dependency('core/deployer/v1.0.0'),
-  namespace: 'balancer-fee-collector',
+  namespace: 'paraswap-fee-collector-v3',
   steps: [
     {
       from: USERS_ADMIN,
