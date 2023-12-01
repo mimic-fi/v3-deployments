@@ -3,7 +3,7 @@ import { bn, tokens } from '@mimic-fi/v3-helpers'
 
 const OLD_BALANCE_CONNECTOR = balanceConnectorId('weth-to-usdc-swapper-connection')
 const NEW_BALANCE_CONNECTOR = balanceConnectorId('swapper-connection')
-const AMOUNT = bn(38650066799465216)
+const AMOUNT = '38650066799465216'
 
 const OLD_WETH = tokens.fantom.WETH
 
