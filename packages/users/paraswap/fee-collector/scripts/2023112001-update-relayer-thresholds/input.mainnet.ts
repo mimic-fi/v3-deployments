@@ -1,5 +1,5 @@
 import { dependency, DEPLOYER, EnvironmentUpdate, USERS_ADMIN } from '@mimic-fi/v3-deployments-lib'
-import { tokens, fp } from '@mimic-fi/v3-helpers'
+import { fp, tokens } from '@mimic-fi/v3-helpers'
 
 const WRAPPED_NATIVE_TOKEN = tokens.mainnet.WETH
 const QUOTA = fp(0.0796)
