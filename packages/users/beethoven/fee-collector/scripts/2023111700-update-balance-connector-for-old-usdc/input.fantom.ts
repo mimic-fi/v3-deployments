@@ -8,7 +8,7 @@ const OLD_USDC = tokens.fantom.USDC
 
 const update: EnvironmentUpdate = {
   deployer: dependency('core/deployer/v1.0.0'),
-  namespace: 'balancer-fee-collector',
+  namespace: 'beethoven-fee-collector-v3.0',
   steps: [
     {
       from: USERS_ADMIN,
