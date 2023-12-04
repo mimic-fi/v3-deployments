@@ -6,7 +6,7 @@ const USDC_THRESHOLD = bn(100000000) // 100 USDC
 
 const update: EnvironmentUpdate = {
   deployer: dependency('core/deployer/v1.0.0'),
-  namespace: 'balancer-fee-collectoh',
+  namespace: 'balancer-fee-collector',
   steps: [
     {
       from: USERS_ADMIN,
