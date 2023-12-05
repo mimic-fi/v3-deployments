@@ -76,7 +76,7 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: 'depositor',
-      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
+      version: dependency('core/tasks/primitives/depositor/v2.1.0'),
       config: {
         tokensSource: counterfactualDependency('depositor'),
         taskConfig: {

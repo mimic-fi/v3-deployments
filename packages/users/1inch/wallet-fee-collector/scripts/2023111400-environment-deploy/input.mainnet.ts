@@ -76,7 +76,7 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: 'arbitrum-depositor',
-      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
+      version: dependency('core/tasks/primitives/depositor/v2.1.0'),
       config: {
         tokensSource: counterfactualDependency('arbitrum-depositor'),
         taskConfig: {
@@ -95,7 +95,7 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: 'avalanche-depositor',
-      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
+      version: dependency('core/tasks/primitives/depositor/v2.1.0'),
       config: {
         tokensSource: counterfactualDependency('avalanche-depositor'),
         taskConfig: {
@@ -114,7 +114,7 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: 'base-depositor',
-      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
+      version: dependency('core/tasks/primitives/depositor/v2.1.0'),
       config: {
         tokensSource: counterfactualDependency('base-depositor'),
         taskConfig: {
@@ -133,7 +133,7 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: 'bnb-depositor',
-      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
+      version: dependency('core/tasks/primitives/depositor/v2.1.0'),
       config: {
         tokensSource: counterfactualDependency('bnb-depositor'),
         taskConfig: {
@@ -152,7 +152,7 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: 'fantom-depositor',
-      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
+      version: dependency('core/tasks/primitives/depositor/v2.1.0'),
       config: {
         tokensSource: counterfactualDependency('fantom-depositor'),
         taskConfig: {
@@ -171,7 +171,7 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: 'gnosis-depositor',
-      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
+      version: dependency('core/tasks/primitives/depositor/v2.1.0'),
       config: {
         tokensSource: counterfactualDependency('gnosis-depositor'),
         taskConfig: {
@@ -190,7 +190,7 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: 'optimism-depositor',
-      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
+      version: dependency('core/tasks/primitives/depositor/v2.1.0'),
       config: {
         tokensSource: counterfactualDependency('optimism-depositor'),
         taskConfig: {
@@ -209,7 +209,7 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: 'polygon-depositor',
-      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
+      version: dependency('core/tasks/primitives/depositor/v2.1.0'),
       config: {
         tokensSource: counterfactualDependency('polygon-depositor'),
         taskConfig: {
@@ -228,7 +228,7 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: 'depositor',
-      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
+      version: dependency('core/tasks/primitives/depositor/v2.1.0'),
       config: {
         tokensSource: counterfactualDependency('depositor'),
         taskConfig: {
