@@ -5,7 +5,9 @@ import { OptionalTaskConfig } from './base'
 
 export type BalancerBptExitConfig = {
   taskConfig: OptionalTaskConfig
-  balancerVault: string
+  connector: Dependency
+  maxSlippage: BigNumberish
+  customMaxSlippages: { token: string; maxSlippage: string }[]
 }
 
 export type BaseCurveConfig = {

@@ -1,0 +1,6 @@
+{
+  "management-withdrawer": {
+    "version": "core/tasks/primitives/withdrawer/v2.0.0",
+    "address": "0x26C308770329A8496E82Ab4b1b70C5c26d2c2b96"
+  }
+}

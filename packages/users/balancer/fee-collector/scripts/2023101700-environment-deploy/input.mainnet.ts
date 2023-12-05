@@ -9,7 +9,7 @@ import {
   PROTOCOL_ADMIN,
   USERS_ADMIN,
 } from '@mimic-fi/v3-deployments-lib'
-import { bn, chainlink, fp, NATIVE_TOKEN_ADDRESS, tokens } from '@mimic-fi/v3-helpers'
+import { bn, chainlink, fp, NATIVE_TOKEN_ADDRESS, tokens, ZERO_ADDRESS } from '@mimic-fi/v3-helpers'
 
 /* eslint-disable no-secrets/no-secrets */
 
@@ -21,7 +21,7 @@ const WRAPPED_NATIVE_TOKEN = tokens.mainnet.WETH
 //Config - Addresses
 const OWNER = '0xc38c5f97B34E175FFd35407fc91a937300E33860'
 const PROTOCOL_FEE_WITHDRAWER = '0x5ef4c5352882b10893b70DbcaA0C000965bd23c5'
-const BALANCER_VAULT = '0xBA12222222228d8Ba445958a75a0704d566BF2C8'
+const PROTOCOL_FEES_COLLECTOR = '0xce88686553686DA562CE7Cea497CE749DA109f9F'
 const WITHDRAWER_RECIPIENT = '0x7c68c42De679ffB0f16216154C996C354cF1161B'
 
 //Config - Threshold
@@ -88,7 +88,7 @@ const deployment: EnvironmentDeployment = {
       name: 'base-depositor',
       version: dependency('core/tasks/primitives/depositor/v2.0.0'),
       config: {
-        tokensSource: counterfactualDependency('avalanche-depositor'),
+        tokensSource: counterfactualDependency('base-depositor'),
         taskConfig: {
           baseConfig: {
             smartVault: dependency('smart-vault'),
@@ -145,10 +145,10 @@ const deployment: EnvironmentDeployment = {
     //Asset Collector: collect assets from external source
     {
       from: DEPLOYER,
-      name: 'asset-collector',
+      name: 'asset-collector-v2',
       version: 'BalancerClaimer',
       initialize: 'initializeBalancerClaimer',
-      args: [PROTOCOL_FEE_WITHDRAWER],
+      args: [PROTOCOL_FEE_WITHDRAWER, PROTOCOL_FEES_COLLECTOR],
       config: {
         baseConfig: {
           smartVault: dependency('smart-vault'),
@@ -170,13 +170,15 @@ const deployment: EnvironmentDeployment = {
         },
       },
     },
-    //Bpt Exiter: unwrap bpt into underlying assets
+    //Bpt Exiter: exit bpt into underlying assets
     {
       from: DEPLOYER,
-      name: 'bpt-exiter',
-      version: dependency('core/tasks/liquidity/balancer/bpt-exiter/v2.0.0'),
+      name: 'bpt-exiter-v2',
+      version: dependency('core/tasks/liquidity/balancer/bpt-exiter/v2.1.0'),
       config: {
-        balancerVault: BALANCER_VAULT,
+        connector: dependency('core/connectors/balancer-v2-pool/v1.0.0'),
+        maxSlippage: fp(0.02), //2%
+        customMaxSlippages: [],
         taskConfig: {
           baseConfig: {
             smartVault: dependency('smart-vault'),
@@ -186,15 +188,75 @@ const deployment: EnvironmentDeployment = {
           gasLimitConfig: {
             txCostLimitPct: TX_COST_LIMIT_PCT,
           },
-          tokenIndexConfig: {
-            acceptanceType: 0, //Deny list
-            tokens: [USDC],
-          },
           tokenThresholdConfig: {
             defaultThreshold: {
               token: USDC,
               min: USDC_THRESHOLD,
               max: 0,
+            },
+          },
+        },
+      },
+    },
+    //Bpt Boosted Swapper: swap assets using 1inch dex aggregator
+    {
+      from: DEPLOYER,
+      name: 'balancer-v2-boosted-swapper',
+      version: dependency('core/tasks/swap/balancer-v2-boosted-swapper/v2.0.0'),
+      config: {
+        baseSwapConfig: {
+          connector: dependency('core/connectors/balancer-v2-swap/v1.0.0'),
+          tokenOut: ZERO_ADDRESS,
+          maxSlippage: fp(0.02), //2%
+          customTokensOut: [],
+          customMaxSlippages: [],
+          taskConfig: {
+            baseConfig: {
+              smartVault: dependency('smart-vault'),
+              previousBalanceConnectorId: balanceConnectorId('swapper-connection'),
+              nextBalanceConnectorId: balanceConnectorId('bpt-handle-over-connection'),
+            },
+            gasLimitConfig: {
+              txCostLimitPct: TX_COST_LIMIT_PCT,
+            },
+            tokenThresholdConfig: {
+              defaultThreshold: {
+                token: USDC,
+                min: USDC_THRESHOLD,
+                max: 0,
+              },
+            },
+          },
+        },
+      },
+    },
+    //Bpt Linear Swapper: swap assets using 1inch dex aggregator
+    {
+      from: DEPLOYER,
+      name: 'balancer-v2-linear-swapper',
+      version: dependency('core/tasks/swap/balancer-v2-linear-swapper/v2.0.0'),
+      config: {
+        baseSwapConfig: {
+          connector: dependency('core/connectors/balancer-v2-swap/v1.0.0'),
+          tokenOut: ZERO_ADDRESS,
+          maxSlippage: fp(0.02), //2%
+          customTokensOut: [],
+          customMaxSlippages: [],
+          taskConfig: {
+            baseConfig: {
+              smartVault: dependency('smart-vault'),
+              previousBalanceConnectorId: balanceConnectorId('swapper-connection'),
+              nextBalanceConnectorId: balanceConnectorId('bpt-handle-over-connection'),
+            },
+            gasLimitConfig: {
+              txCostLimitPct: TX_COST_LIMIT_PCT,
+            },
+            tokenThresholdConfig: {
+              defaultThreshold: {
+                token: USDC,
+                min: USDC_THRESHOLD,
+                max: 0,
+              },
             },
           },
         },
@@ -211,10 +273,6 @@ const deployment: EnvironmentDeployment = {
             smartVault: dependency('smart-vault'),
             previousBalanceConnectorId: balanceConnectorId('bpt-handle-over-connection'),
             nextBalanceConnectorId: balanceConnectorId('swapper-connection'),
-          },
-          tokenIndexConfig: {
-            acceptanceType: 0, //Deny list
-            tokens: [USDC],
           },
         },
       },
@@ -272,7 +330,7 @@ const deployment: EnvironmentDeployment = {
             baseConfig: {
               smartVault: dependency('smart-vault'),
               previousBalanceConnectorId: balanceConnectorId('swapper-connection'),
-              nextBalanceConnectorId: balanceConnectorId('bridger-connection'),
+              nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
             },
             gasLimitConfig: {
               txCostLimitPct: TX_COST_LIMIT_PCT,
@@ -340,7 +398,9 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: 'relayer-funder-swapper',
-      version: dependency('core/tasks/swap/1inch-v5/v2.0.0'),
+      version: dependency('core/tasks/relayer/1inch-v5-swapper/v2.0.0'),
+      initialize: 'initializeOneInchV5RelayerFunder',
+      args: [dependency('core/relayer/v1.1.0')],
       config: {
         baseSwapConfig: {
           connector: dependency('core/connectors/1inch-v5/v1.0.0'),
@@ -460,22 +520,42 @@ const deployment: EnvironmentDeployment = {
             params: [],
           },
           {
-            who: dependency('asset-collector'),
+            who: dependency('asset-collector-v2'),
             what: 'call',
             params: [],
           },
           {
-            who: dependency('asset-collector'),
+            who: dependency('asset-collector-v2'),
             what: 'updateBalanceConnector',
             params: [],
           },
           {
-            who: dependency('bpt-exiter'),
-            what: 'call',
+            who: dependency('bpt-exiter-v2'),
+            what: 'execute',
             params: [],
           },
           {
-            who: dependency('bpt-exiter'),
+            who: dependency('bpt-exiter-v2'),
+            what: 'updateBalanceConnector',
+            params: [],
+          },
+          {
+            who: dependency('balancer-v2-boosted-swapper'),
+            what: 'execute',
+            params: [],
+          },
+          {
+            who: dependency('balancer-v2-boosted-swapper'),
+            what: 'updateBalanceConnector',
+            params: [],
+          },
+          {
+            who: dependency('balancer-v2-linear-swapper'),
+            what: 'execute',
+            params: [],
+          },
+          {
+            who: dependency('balancer-v2-linear-swapper'),
             what: 'updateBalanceConnector',
             params: [],
           },
@@ -573,12 +653,22 @@ const deployment: EnvironmentDeployment = {
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency('asset-collector'),
+        where: dependency('asset-collector-v2'),
         revokes: [],
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency('bpt-exiter'),
+        where: dependency('bpt-exiter-v2'),
+        revokes: [],
+        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
+      },
+      {
+        where: dependency('balancer-v2-boosted-swapper'),
+        revokes: [],
+        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
+      },
+      {
+        where: dependency('balancer-v2-linear-swapper'),
         revokes: [],
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
