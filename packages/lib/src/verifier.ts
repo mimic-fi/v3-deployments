@@ -12,6 +12,8 @@ import { BuildInfo, HardhatRuntimeEnvironment } from 'hardhat/types'
 import logger from './logger'
 import { Script } from './script'
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export default class Verifier {
   hre: HardhatRuntimeEnvironment
   apiKey: string
