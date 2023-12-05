@@ -23,7 +23,7 @@ export function isRegistryImplementationDeployment(input: ScriptInput): input is
 
 export function isEnvironmentDeployment(input: ScriptInput): input is EnvironmentDeployment {
   const environmentDeployment = input as EnvironmentDeployment
-  return !!environmentDeployment.smartVault
+  return !!environmentDeployment.smartVaults
 }
 
 export function isEnvironmentUpdate(input: ScriptInput): input is EnvironmentUpdate {
