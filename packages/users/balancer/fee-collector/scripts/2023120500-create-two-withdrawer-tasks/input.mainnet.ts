@@ -1,6 +1,5 @@
-import { OP } from '@mimic-fi/v3-authorizer'
 import { balanceConnectorId, dependency, DEPLOYER, EnvironmentUpdate, USERS_ADMIN } from '@mimic-fi/v3-deployments-lib'
-import { fp, tokens } from '@mimic-fi/v3-helpers'
+import { tokens } from '@mimic-fi/v3-helpers'
 
 /* eslint-disable no-secrets/no-secrets */
 const TIMELOCK_MODE = {
