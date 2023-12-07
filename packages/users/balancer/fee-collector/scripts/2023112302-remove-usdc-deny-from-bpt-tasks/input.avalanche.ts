@@ -1,7 +1,7 @@
 import { dependency, DEPLOYER, EnvironmentUpdate, USERS_ADMIN } from '@mimic-fi/v3-deployments-lib'
 import { tokens } from '@mimic-fi/v3-helpers'
 
-const USDC = tokens.mainnet.USDC
+const USDC = tokens.avalanche.USDC
 
 const update: EnvironmentUpdate = {
   deployer: dependency('core/deployer/v1.0.0'),
