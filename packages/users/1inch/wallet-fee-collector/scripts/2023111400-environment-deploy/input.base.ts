@@ -9,39 +9,40 @@ import {
   PROTOCOL_ADMIN,
   USERS_ADMIN,
 } from '@mimic-fi/v3-deployments-lib'
-import { bn, chainlink, DAY, fp, NATIVE_TOKEN_ADDRESS, tokens } from '@mimic-fi/v3-helpers'
+import { bn, chainlink, fp, NATIVE_TOKEN_ADDRESS, tokens } from '@mimic-fi/v3-helpers'
 
 /* eslint-disable no-secrets/no-secrets */
-const TIMELOCK_MODE = {
-  SECONDS: 0,
-  ON_DAY: 1,
-  ON_LAST_DAY: 2,
-  EVERY_X_MONTH: 3,
-}
+// const TIMELOCK_MODE = {
+//   SECONDS: 0,
+//   ON_DAY: 1,
+//   ON_LAST_DAY: 2,
+//   EVERY_X_MONTH: 3,
+// }
 
 //Config - Tokens
 const USDC = tokens.base.USDC
 const WRAPPED_NATIVE_TOKEN = tokens.base.WETH
 
 //Config - Addresses
-const OWNER = ''
 const MAINNET_DEPOSITOR_TASK = ''
 
 //Config - Threshold
-const USDC_CONVERT_THRESHOLD = bn(100000000) // 100 USDC
+const USDC_CONVERT_THRESHOLD = bn(10e6) // 10 USDC
+//const USDC_CONVERT_THRESHOLD = bn(100e6) // 100 USDC
 
 //Config - Gas
 const STANDARD_GAS_PRICE_LIMIT = 200e9
-const TX_COST_LIMIT_PCT = fp(0.02) // 2%
+const TX_COST_LIMIT_PCT = 0
+//const TX_COST_LIMIT_PCT = fp(0.08) // 8%
 const QUOTA = fp(0.000135)
 const MIN_WINDOW_GAS = QUOTA
 const MAX_WINDOW_GAS = QUOTA.mul(10)
 
 //Config - Withdrawer Timelock
-const BRIDGER_TIMELOCK_MODE = TIMELOCK_MODE.ON_LAST_DAY //SECONDS
-const BRIDGER_TIMELOCK_FREQUENCY = 1 //1 month
-const BRIDGER_TIMELOCK_ALLOWED_AT = 1701345600 //12:00hs UTC
-const BRIDGER_TIMELOCK_WINDOW = 2 * DAY //2 days
+// const BRIDGER_TIMELOCK_MODE = TIMELOCK_MODE.ON_LAST_DAY //SECONDS
+// const BRIDGER_TIMELOCK_FREQUENCY = 1 //1 month
+// const BRIDGER_TIMELOCK_ALLOWED_AT = 1704024000 //12:00hs UTC
+// const BRIDGER_TIMELOCK_WINDOW = 2 * DAY //2 days
 
 //Config - Fee
 const FEE_PCT = fp(0.009) // 0.9%
@@ -53,7 +54,7 @@ const deployment: EnvironmentDeployment = {
     from: DEPLOYER,
     name: 'authorizer',
     version: dependency('core/authorizer/v1.1.0'),
-    owners: [OWNER, USERS_ADMIN.safe],
+    owners: [USERS_ADMIN.safe],
   },
   priceOracle: {
     from: DEPLOYER,
@@ -85,7 +86,7 @@ const deployment: EnvironmentDeployment = {
             nextBalanceConnectorId: balanceConnectorId('swapper-connection'),
           },
           gasLimitConfig: {
-            gasPriceLimit: STANDARD_GAS_PRICE_LIMIT,
+            txCostLimitPct: TX_COST_LIMIT_PCT,
           },
           tokenIndexConfig: {
             acceptanceType: 0, //Deny list
@@ -224,11 +225,18 @@ const deployment: EnvironmentDeployment = {
               acceptanceType: 1,
               tokens: [USDC],
             },
-            timeLockConfig: {
-              mode: BRIDGER_TIMELOCK_MODE,
-              frequency: BRIDGER_TIMELOCK_FREQUENCY,
-              allowedAt: BRIDGER_TIMELOCK_ALLOWED_AT,
-              window: BRIDGER_TIMELOCK_WINDOW,
+            // timeLockConfig: {
+            //   mode: BRIDGER_TIMELOCK_MODE,
+            //   frequency: BRIDGER_TIMELOCK_FREQUENCY,
+            //   allowedAt: BRIDGER_TIMELOCK_ALLOWED_AT,
+            //   window: BRIDGER_TIMELOCK_WINDOW,
+            // },
+            tokenThresholdConfig: {
+              defaultThreshold: {
+                token: USDC,
+                min: USDC_CONVERT_THRESHOLD.mul(2),
+                max: 0,
+              },
             },
           },
         },
