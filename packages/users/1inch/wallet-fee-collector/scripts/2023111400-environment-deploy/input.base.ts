@@ -39,7 +39,6 @@ const QUOTA = TEN_TX_GAS.mul(10) //100 tx
 const MIN_WINDOW_GAS = TEN_TX_GAS // 10 tx
 const MAX_WINDOW_GAS = TEN_TX_GAS.mul(10) //100 tx
 
-
 //Config - Withdrawer Timelock
 // const BRIDGER_TIMELOCK_MODE = TIMELOCK_MODE.ON_LAST_DAY //SECONDS
 // const BRIDGER_TIMELOCK_FREQUENCY = 1 //1 month
