@@ -24,7 +24,7 @@ const USDC = tokens.avalanche.USDC
 const WRAPPED_NATIVE_TOKEN = tokens.avalanche.WAVAX
 
 //Config - Addresses
-const MAINNET_DEPOSITOR_TASK = ''
+const MAINNET_DEPOSITOR_TASK = '0xe834a52fDba2cD70DE683F7bA7192cfAC6180B6a'
 
 //Config - Threshold
 const USDC_CONVERT_THRESHOLD = bn(100e6) // 100 USDC
@@ -33,9 +33,11 @@ const USDC_CONVERT_THRESHOLD = bn(100e6) // 100 USDC
 const STANDARD_GAS_PRICE_LIMIT = 50e9
 const TX_COST_LIMIT_PCT = 0
 //const TX_COST_LIMIT_PCT = fp(0.8) // 8%
-const QUOTA = fp(0.148)
-const MIN_WINDOW_GAS = QUOTA
-const MAX_WINDOW_GAS = QUOTA.mul(10)
+const TEN_TX_GAS = fp(0.148) //10 tx
+const QUOTA = TEN_TX_GAS.mul(10) //100 tx
+const MIN_WINDOW_GAS = TEN_TX_GAS // 10 tx
+const MAX_WINDOW_GAS = TEN_TX_GAS.mul(10) //100 tx
+
 
 //Config - Withdrawer Timelock
 // const BRIDGER_TIMELOCK_MODE = TIMELOCK_MODE.ON_LAST_DAY //SECONDS

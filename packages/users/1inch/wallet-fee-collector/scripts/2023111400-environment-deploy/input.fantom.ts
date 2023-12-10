@@ -24,7 +24,7 @@ const USDC = '0x1B6382DBDEa11d97f24495C9A90b7c88469134a4' //AXELAR USDC
 const WRAPPED_NATIVE_TOKEN = tokens.fantom.WFTM
 
 //Config - Addresses
-const MAINNET_DEPOSITOR_TASK = ''
+const MAINNET_DEPOSITOR_TASK = '0xb7d182b9f4C8F917a0e05B3E217b3fD833A1199b'
 
 //Config - Threshold
 const USDC_CONVERT_THRESHOLD = bn(10e6) // 10 USDC
@@ -34,9 +34,10 @@ const USDC_CONVERT_THRESHOLD = bn(10e6) // 10 USDC
 const STANDARD_GAS_PRICE_LIMIT = 200e9
 const TX_COST_LIMIT_PCT = 0
 //const TX_COST_LIMIT_PCT = fp(0.08) // 8%
-const QUOTA = fp(0.79)
-const MIN_WINDOW_GAS = QUOTA
-const MAX_WINDOW_GAS = QUOTA.mul(10)
+const TEN_TX_GAS = fp(0.79) //10 tx
+const QUOTA = TEN_TX_GAS.mul(10) //100 tx
+const MIN_WINDOW_GAS = TEN_TX_GAS // 10 tx
+const MAX_WINDOW_GAS = TEN_TX_GAS.mul(10) //100 tx
 
 //Config - Withdrawer Timelock
 // const BRIDGER_TIMELOCK_MODE = TIMELOCK_MODE.ON_LAST_DAY //SECONDS
@@ -202,7 +203,7 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: 'axelar-bridger',
-      version: dependency('core/tasks/bridge/connext/v2.0.0'),
+      version: dependency('core/tasks/bridge/axelar/v2.0.0'),
       config: {
         baseBridgeConfig: {
           connector: dependency('core/connectors/axelar/v1.0.0'),
@@ -372,12 +373,12 @@ const deployment: EnvironmentDeployment = {
             params: [],
           },
           {
-            who: dependency('wormhole-bridger'),
+            who: dependency('axelar-bridger'),
             what: 'execute',
             params: [],
           },
           {
-            who: dependency('wormhole-bridger'),
+            who: dependency('axelar-bridger'),
             what: 'updateBalanceConnector',
             params: [],
           },
@@ -440,7 +441,7 @@ const deployment: EnvironmentDeployment = {
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency('wormhole-bridger'),
+        where: dependency('axelar-bridger'),
         revokes: [],
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },

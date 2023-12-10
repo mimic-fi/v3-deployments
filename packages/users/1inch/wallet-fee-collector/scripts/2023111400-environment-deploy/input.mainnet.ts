@@ -24,7 +24,7 @@ const USDC = tokens.mainnet.USDC
 const WRAPPED_NATIVE_TOKEN = tokens.mainnet.WETH
 
 //Config - Addresses
-const WITHDRAWER_RECIPIENT = ''
+const WITHDRAWER_RECIPIENT = '0x979991695832F3321ad014564f1143A060cECE01'
 
 //Config - Threshold
 const USDC_CONVERT_THRESHOLD = bn(10e6) // 10 USDC
@@ -34,9 +34,10 @@ const USDC_CONVERT_THRESHOLD = bn(10e6) // 10 USDC
 const STANDARD_GAS_PRICE_LIMIT = 100e9
 const TX_COST_LIMIT_PCT = 0
 //const TX_COST_LIMIT_PCT = fp(0.08) // 8%
-const QUOTA = fp(0.0796)
-const MIN_WINDOW_GAS = QUOTA
-const MAX_WINDOW_GAS = QUOTA.mul(7)
+const TEN_TX_GAS = fp(0.0796) //10 tx
+const QUOTA = TEN_TX_GAS.mul(10) //100 tx
+const MIN_WINDOW_GAS = TEN_TX_GAS // 10 tx
+const MAX_WINDOW_GAS = TEN_TX_GAS.mul(10) //100 tx
 
 //Config - Withdrawer Timelock
 // const WITHDRAWER_TIMELOCK_MODE = TIMELOCK_MODE.ON_LAST_DAY //SECONDS

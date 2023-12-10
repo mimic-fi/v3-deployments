@@ -24,7 +24,7 @@ const USDC = tokens.polygon.USDC
 const WRAPPED_NATIVE_TOKEN = tokens.polygon.WMATIC
 
 //Config - Addresses
-const MAINNET_DEPOSITOR_TASK = ''
+const MAINNET_DEPOSITOR_TASK = '0x3b2aDB502B3D83a1aF96ee583f122f0040023d4a'
 
 //Config - Threshold
 const USDC_CONVERT_THRESHOLD = bn(10e6) // 10 USDC
@@ -34,9 +34,10 @@ const USDC_CONVERT_THRESHOLD = bn(10e6) // 10 USDC
 const STANDARD_GAS_PRICE_LIMIT = 200e9
 const TX_COST_LIMIT_PCT = 0
 //const TX_COST_LIMIT_PCT = fp(0.08) // 8%
-const QUOTA = fp(0.54)
-const MIN_WINDOW_GAS = QUOTA
-const MAX_WINDOW_GAS = QUOTA.mul(10)
+const TEN_TX_GAS = fp(0.54) //10 tx
+const QUOTA = TEN_TX_GAS.mul(10) //100 tx
+const MIN_WINDOW_GAS = TEN_TX_GAS // 10 tx
+const MAX_WINDOW_GAS = TEN_TX_GAS.mul(10) //100 tx
 
 //Config - Withdrawer Timelock
 // const BRIDGER_TIMELOCK_MODE = TIMELOCK_MODE.ON_LAST_DAY //SECONDS
@@ -372,12 +373,12 @@ const deployment: EnvironmentDeployment = {
             params: [],
           },
           {
-            who: dependency('wormhole-bridger'),
+            who: dependency('connext-bridger'),
             what: 'execute',
             params: [],
           },
           {
-            who: dependency('wormhole-bridger'),
+            who: dependency('connext-bridger'),
             what: 'updateBalanceConnector',
             params: [],
           },
@@ -440,7 +441,7 @@ const deployment: EnvironmentDeployment = {
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency('wormhole-bridger'),
+        where: dependency('connext-bridger'),
         revokes: [],
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },

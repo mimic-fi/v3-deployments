@@ -24,7 +24,7 @@ const USDC = tokens.arbitrum.USDC
 const WRAPPED_NATIVE_TOKEN = tokens.arbitrum.WETH
 
 //Config - Addresses
-const MAINNET_DEPOSITOR_TASK = ''
+const MAINNET_DEPOSITOR_TASK = '0x6dc52dae6bD5340ff48fDFe45C498B995E55CbE2'
 
 //Config - Threshold
 const USDC_CONVERT_THRESHOLD = bn(10e6) // 10 USDC
@@ -34,9 +34,10 @@ const USDC_CONVERT_THRESHOLD = bn(10e6) // 10 USDC
 const STANDARD_GAS_PRICE_LIMIT = 10e9
 const TX_COST_LIMIT_PCT = 0
 //const TX_COST_LIMIT_PCT = fp(0.08) // 8%
-const QUOTA = fp(0.0025) //10 tx
-const MIN_WINDOW_GAS = QUOTA // 10 tx
-const MAX_WINDOW_GAS = QUOTA.mul(10) //100 tx
+const TEN_TX_GAS = fp(0.0025) //10 tx
+const QUOTA = TEN_TX_GAS.mul(10) //100 tx
+const MIN_WINDOW_GAS = TEN_TX_GAS // 10 tx
+const MAX_WINDOW_GAS = TEN_TX_GAS.mul(10) //100 tx
 
 //Config - Withdrawer Timelock
 // const BRIDGER_TIMELOCK_MODE = TIMELOCK_MODE.ON_LAST_DAY //SECONDS
