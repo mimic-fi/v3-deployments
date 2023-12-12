@@ -19,5 +19,9 @@
   "withdrawer": {
     "version": "OffChainSignedWithdrawer",
     "address": "0x3590819dB27781FDa2711131938a426f0e67e73C"
+  },
+  "withdrawer2": {
+    "version": "OffChainSignedWithdrawer",
+    "address": "0x115F046ea19Ca35Fadcc2abbE374431816D49758"
   }
 }

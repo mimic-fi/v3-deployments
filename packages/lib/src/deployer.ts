@@ -49,8 +49,15 @@ import {
 export async function deployEnvironment(script: Script, params: EnvironmentDeployment): Promise<void> {
   await deployAuthorizer(script, params.deployer, params.namespace, params.authorizer)
   await deployPriceOracle(script, params.deployer, params.namespace, params.priceOracle)
-  await deploySmartVault(script, params.deployer, params.namespace, params.smartVault)
-  for (const taskParams of params.tasks) await deployTask(script, params.deployer, params.namespace, taskParams)
+
+  for (const smartVaultParams of params.smartVaults) {
+    await deploySmartVault(script, params.deployer, params.namespace, smartVaultParams)
+  }
+
+  for (const taskParams of params.tasks) {
+    await deployTask(script, params.deployer, params.namespace, taskParams)
+  }
+
   await executePermissionChanges(script, params.permissions)
   await executeFeeSettings(script, params.feeSettings)
   if (params.relayerSettings) await executeRelayerSettings(script, params.relayerSettings)

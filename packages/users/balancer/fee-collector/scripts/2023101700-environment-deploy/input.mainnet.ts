@@ -55,13 +55,15 @@ const deployment: EnvironmentDeployment = {
     pivot: chainlink.denominations.USD,
     feeds: [],
   },
-  smartVault: {
-    from: DEPLOYER,
-    name: 'smart-vault',
-    version: dependency('core/smart-vault/v1.0.0'),
-    authorizer: dependency('authorizer'),
-    priceOracle: dependency('price-oracle'),
-  },
+  smartVaults: [
+    {
+      from: DEPLOYER,
+      name: 'smart-vault',
+      version: dependency('core/smart-vault/v1.0.0'),
+      authorizer: dependency('authorizer'),
+      priceOracle: dependency('price-oracle'),
+    },
+  ],
   tasks: [
     //Depositor: Avalanche
     {
@@ -398,7 +400,9 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: 'relayer-funder-swapper',
-      version: dependency('core/tasks/swap/1inch-v5/v2.0.0'),
+      version: dependency('core/tasks/relayer/1inch-v5-swapper/v2.0.0'),
+      initialize: 'initializeOneInchV5RelayerFunder',
+      args: [dependency('core/relayer/v1.1.0')],
       config: {
         baseSwapConfig: {
           connector: dependency('core/connectors/1inch-v5/v1.0.0'),
