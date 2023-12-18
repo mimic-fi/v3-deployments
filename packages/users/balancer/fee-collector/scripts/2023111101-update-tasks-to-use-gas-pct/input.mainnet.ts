@@ -1,7 +1,7 @@
 import { dependency, DEPLOYER, EnvironmentUpdate, USERS_ADMIN } from '@mimic-fi/v3-deployments-lib'
 import { fp } from '@mimic-fi/v3-helpers'
 
-const TX_COST_LIMIT_PCT = fp(0.05) // 5%
+const TX_COST_LIMIT_PCT = fp(0.1) // 10%
 
 const update: EnvironmentUpdate = {
   deployer: dependency('core/deployer/v1.0.0'),
@@ -17,12 +17,27 @@ const update: EnvironmentUpdate = {
           revokes: [],
         },
         {
-          where: dependency('2023101700-environment-deploy', 'bpt-exiter'),
+          where: dependency('2023101700-environment-deploy', 'bpt-exiter-v2'),
+          grants: [{ who: DEPLOYER.address, what: 'setGasLimits', params: [] }],
+          revokes: [],
+        },
+        {
+          where: dependency('2023101700-environment-deploy', 'balancer-v2-boosted-swapper'),
+          grants: [{ who: DEPLOYER.address, what: 'setGasLimits', params: [] }],
+          revokes: [],
+        },
+        {
+          where: dependency('2023101700-environment-deploy', 'balancer-v2-linear-swapper'),
           grants: [{ who: DEPLOYER.address, what: 'setGasLimits', params: [] }],
           revokes: [],
         },
         {
           where: dependency('2023101700-environment-deploy', '1inch-swapper'),
+          grants: [{ who: DEPLOYER.address, what: 'setGasLimits', params: [] }],
+          revokes: [],
+        },
+        {
+          where: dependency('2023101700-environment-deploy', 'paraswap-swapper'),
           grants: [{ who: DEPLOYER.address, what: 'setGasLimits', params: [] }],
           revokes: [],
         },
@@ -36,13 +51,31 @@ const update: EnvironmentUpdate = {
     },
     {
       from: DEPLOYER,
-      target: dependency('2023101700-environment-deploy', 'bpt-exiter'),
+      target: dependency('2023101700-environment-deploy', 'bpt-exiter-v2'),
+      method: 'setGasLimits',
+      args: [0, 0, 0, TX_COST_LIMIT_PCT],
+    },
+    {
+      from: DEPLOYER,
+      target: dependency('2023101700-environment-deploy', 'balancer-v2-boosted-swapper'),
+      method: 'setGasLimits',
+      args: [0, 0, 0, TX_COST_LIMIT_PCT],
+    },
+    {
+      from: DEPLOYER,
+      target: dependency('2023101700-environment-deploy', 'balancer-v2-linear-swapper'),
       method: 'setGasLimits',
       args: [0, 0, 0, TX_COST_LIMIT_PCT],
     },
     {
       from: DEPLOYER,
       target: dependency('2023101700-environment-deploy', '1inch-swapper'),
+      method: 'setGasLimits',
+      args: [0, 0, 0, TX_COST_LIMIT_PCT],
+    },
+    {
+      from: DEPLOYER,
+      target: dependency('2023101700-environment-deploy', 'paraswap-swapper'),
       method: 'setGasLimits',
       args: [0, 0, 0, TX_COST_LIMIT_PCT],
     },
@@ -56,12 +89,27 @@ const update: EnvironmentUpdate = {
           grants: [],
         },
         {
-          where: dependency('2023101700-environment-deploy', 'bpt-exiter'),
+          where: dependency('2023101700-environment-deploy', 'bpt-exiter-v2'),
+          revokes: [{ who: DEPLOYER.address, what: 'setGasLimits' }],
+          grants: [],
+        },
+        {
+          where: dependency('2023101700-environment-deploy', 'balancer-v2-boosted-swapper'),
+          revokes: [{ who: DEPLOYER.address, what: 'setGasLimits' }],
+          grants: [],
+        },
+        {
+          where: dependency('2023101700-environment-deploy', 'balancer-v2-linear-swapper'),
           revokes: [{ who: DEPLOYER.address, what: 'setGasLimits' }],
           grants: [],
         },
         {
           where: dependency('2023101700-environment-deploy', '1inch-swapper'),
+          revokes: [{ who: DEPLOYER.address, what: 'setGasLimits' }],
+          grants: [],
+        },
+        {
+          where: dependency('2023101700-environment-deploy', 'paraswap-swapper'),
           revokes: [{ who: DEPLOYER.address, what: 'setGasLimits' }],
           grants: [],
         },

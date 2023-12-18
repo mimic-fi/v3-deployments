@@ -12,6 +12,12 @@ import {
 import { bn, chainlink, fp, NATIVE_TOKEN_ADDRESS, tokens, ZERO_ADDRESS } from '@mimic-fi/v3-helpers'
 
 /* eslint-disable no-secrets/no-secrets */
+const TIMELOCK_MODE = {
+  SECONDS: 0,
+  ON_DAY: 1,
+  ON_LAST_DAY: 2,
+  EVERY_X_MONTH: 3,
+}
 
 //Config - Tokens
 const USDC = tokens.mainnet.USDC
@@ -302,7 +308,7 @@ const deployment: EnvironmentDeployment = {
             },
             tokenIndexConfig: {
               acceptanceType: 0,
-              tokens: [USDC],
+              tokens: [USDC, BAL],
             },
             tokenThresholdConfig: {
               defaultThreshold: {
@@ -339,7 +345,7 @@ const deployment: EnvironmentDeployment = {
             },
             tokenIndexConfig: {
               acceptanceType: 0,
-              tokens: [USDC],
+              tokens: [USDC, BAL],
             },
             tokenThresholdConfig: {
               defaultThreshold: {
@@ -388,7 +394,7 @@ const deployment: EnvironmentDeployment = {
             tokens: [USDC, BAL],
           },
           timeLockConfig: {
-            mode: 1, //SECONDS
+            mode: TIMELOCK_MODE.SECONDS, //SECONDS
             frequency: 14 * 60 * 60 * 24, //14 days
             allowedAt: 1699534800, //Thursday, 9 November 2023 13:00:00
             window: 2 * 60 * 60 * 24, //2 days

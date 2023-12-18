@@ -15,7 +15,7 @@ import { bn, chainlink, fp, NATIVE_TOKEN_ADDRESS, tokens } from '@mimic-fi/v3-he
 
 //Config - Tokens
 const USDC = '0x28a92dde19d9989f39a49905d7c9c2fac7799bdf' //USDC token by Beethoven
-const WRAPPED_NATIVE_TOKEN = tokens.fantom.WETH
+const WRAPPED_NATIVE_TOKEN = tokens.fantom.WFTM
 
 //Config - Addresses
 const OWNER = '0xa1e849b1d6c2fd31c63eef7822e9e0632411ada7'

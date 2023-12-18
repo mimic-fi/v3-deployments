@@ -6,13 +6,13 @@ import { fp, tokens } from '@mimic-fi/v3-helpers'
 
 //Config - Tokens
 const USDC = '0x28a92dde19d9989f39a49905d7c9c2fac7799bdf' //USDC token by Beethoven
-const WRAPPED_NATIVE_TOKEN = tokens.fantom.WETH
+const WRAPPED_NATIVE_TOKEN = tokens.fantom.WFTM
 
 //Config - Gas
 const STANDARD_GAS_PRICE_LIMIT = 200e9
-const QUOTA = fp(0.79)
+const QUOTA = fp(0.79).mul(10)
 const MIN_WINDOW_GAS = QUOTA
-const MAX_WINDOW_GAS = QUOTA.mul(10)
+const MAX_WINDOW_GAS = QUOTA.mul(10).mul(10)
 
 const update: EnvironmentUpdate = {
   deployer: dependency('core/deployer/v1.0.0'),
@@ -21,7 +21,7 @@ const update: EnvironmentUpdate = {
     //Relayer Funder Swapper: swaps assets into native wrapped token to fund the relayer
     {
       from: DEPLOYER,
-      name: 'relayer-funder-swapper-v2',
+      name: 'relayer-funder-swapper-v3',
       version: dependency('core/tasks/relayer/1inch-v5-swapper/v2.0.0'),
       initialize: 'initializeOneInchV5RelayerFunder',
       args: [dependency('core/relayer/v1.1.0')],
@@ -64,17 +64,17 @@ const update: EnvironmentUpdate = {
           where: dependency('2023111100-environment-deploy', 'smart-vault'),
           revokes: [
             {
-              who: dependency('2023111100-environment-deploy', 'relayer-funder-swapper'),
+              who: dependency('2023120300-replace-relayer-funder-swapper', 'relayer-funder-swapper-v2'),
               what: 'execute',
             },
             {
-              who: dependency('2023111100-environment-deploy', 'relayer-funder-swapper'),
+              who: dependency('2023120300-replace-relayer-funder-swapper', 'relayer-funder-swapper-v2'),
               what: 'updateBalanceConnector',
             },
           ],
           grants: [
             {
-              who: dependency('relayer-funder-swapper-v2'),
+              who: dependency('relayer-funder-swapper-v3'),
               what: 'execute',
               params: [
                 {
@@ -84,19 +84,19 @@ const update: EnvironmentUpdate = {
               ],
             },
             {
-              who: dependency('relayer-funder-swapper-v2'),
+              who: dependency('relayer-funder-swapper-v3'),
               what: 'updateBalanceConnector',
               params: [],
             },
           ],
         },
         {
-          where: dependency('2023111100-environment-deploy', 'relayer-funder-swapper'),
+          where: dependency('2023120300-replace-relayer-funder-swapper', 'relayer-funder-swapper-v2'),
           revokes: [{ who: dependency('core/relayer/v1.1.0'), what: 'call' }],
           grants: [],
         },
         {
-          where: dependency('relayer-funder-swapper-v2'),
+          where: dependency('relayer-funder-swapper-v3'),
           revokes: [],
           grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
         },
