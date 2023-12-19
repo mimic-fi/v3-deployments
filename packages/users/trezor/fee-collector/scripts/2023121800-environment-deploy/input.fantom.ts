@@ -24,7 +24,7 @@ const USDC = '0x1B6382DBDEa11d97f24495C9A90b7c88469134a4' //AXELAR USDC
 const WRAPPED_NATIVE_TOKEN = tokens.fantom.WFTM
 
 //Config - Addresses
-const MAINNET_DEPOSITOR_TASK = ''
+const MAINNET_DEPOSITOR_TASK = '0x4AcBc0fe92c1be11D7aEE1718Cb7465A84C45530'
 
 //Config - Threshold
 const USDC_CONVERT_THRESHOLD = bn(20e6) // 20 USDC
@@ -64,13 +64,15 @@ const deployment: EnvironmentDeployment = {
     pivot: chainlink.denominations.USD,
     feeds: [],
   },
-  smartVault: {
-    from: DEPLOYER,
-    name: 'smart-vault',
-    version: dependency('core/smart-vault/v1.0.0'),
-    authorizer: dependency('authorizer'),
-    priceOracle: dependency('price-oracle'),
-  },
+  smartVaults: [
+    {
+      from: DEPLOYER,
+      name: 'smart-vault',
+      version: dependency('core/smart-vault/v1.0.0'),
+      authorizer: dependency('authorizer'),
+      priceOracle: dependency('price-oracle'),
+    },
+  ],
   tasks: [
     //Depositor: for manual transfers and testing purposes
     {
