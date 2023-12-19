@@ -24,7 +24,7 @@ const USDC = tokens.mainnet.USDC
 const WRAPPED_NATIVE_TOKEN = tokens.mainnet.WETH
 
 //Config - Addresses
-const WITHDRAWER_RECIPIENT = ''
+const WITHDRAWER_RECIPIENT = '0xEf05fEB84C20fd1b0D7DD42E6338c9342d4E4344'
 
 //Config - Threshold
 const USDC_CONVERT_THRESHOLD = bn(50e6) // 50 USDC
@@ -64,13 +64,15 @@ const deployment: EnvironmentDeployment = {
     pivot: chainlink.denominations.USD,
     feeds: [],
   },
-  smartVault: {
-    from: DEPLOYER,
-    name: 'smart-vault',
-    version: dependency('core/smart-vault/v1.0.0'),
-    authorizer: dependency('authorizer'),
-    priceOracle: dependency('price-oracle'),
-  },
+  smartVaults: [
+    {
+      from: DEPLOYER,
+      name: 'smart-vault',
+      version: dependency('core/smart-vault/v1.0.0'),
+      authorizer: dependency('authorizer'),
+      priceOracle: dependency('price-oracle'),
+    },
+  ],
   tasks: [
     //Depositor: Arbitrum
     {
