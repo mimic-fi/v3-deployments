@@ -35,5 +35,16 @@ export async function createRegistryImplementation(
     } else {
       logger.warn(`Could not retrieve a receipt from the transaction. Possibly a safe tx needs to be executed.`)
     }
+
+    if (params.deprecate) {
+      logger.info(`Deprecating ${params.deprecate.id}...`)
+      const address = script.dependencyAddress(params.deprecate)
+      if (!(await registry.isDeprecated(address))) {
+        await script.callContract(registry, 'deprecate', [address], from)
+        logger.success(`${params.deprecate.id} deprecated successfully`)
+      } else {
+        logger.warn(`${params.deprecate.id} already deprecated`)
+      }
+    }
   }
 }
