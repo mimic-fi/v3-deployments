@@ -69,7 +69,7 @@ export type EnvironmentDeployment = {
   namespace: string
   authorizer: AuthorizerParams
   priceOracle: PriceOracleParams
-  smartVault: SmartVaultParams
+  smartVaults: SmartVaultParams[]
   tasks: TaskParams[]
   permissions: PermissionsUpdate
   feeSettings: SmartVaultFeeSettings

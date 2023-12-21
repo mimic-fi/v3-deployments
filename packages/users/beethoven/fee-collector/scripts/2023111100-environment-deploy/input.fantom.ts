@@ -14,8 +14,8 @@ import { bn, chainlink, fp, NATIVE_TOKEN_ADDRESS, tokens } from '@mimic-fi/v3-he
 /* eslint-disable no-secrets/no-secrets */
 
 //Config - Tokens
-const USDC = tokens.fantom.USDC
-const WRAPPED_NATIVE_TOKEN = tokens.fantom.WETH
+const USDC = '0x28a92dde19d9989f39a49905d7c9c2fac7799bdf' //USDC token by Beethoven
+const WRAPPED_NATIVE_TOKEN = tokens.fantom.WFTM
 
 //Config - Addresses
 const OWNER = '0xa1e849b1d6c2fd31c63eef7822e9e0632411ada7'
@@ -24,7 +24,7 @@ const BALANCER_VAULT = '0x20dd72ed959b6147912c2e529f0a0c651c33c9ce'
 const WITHDRAWER_RECIPIENT = '0xa1e849b1d6c2fd31c63eef7822e9e0632411ada7'
 
 //Config - Threshold
-const USDC_THRESHOLD = bn(100000000) // 100 USDC
+const USDC_THRESHOLD = bn(10000000) // 10 USDC
 
 //Config - Gas
 const STANDARD_GAS_PRICE_LIMIT = 200e9
@@ -54,13 +54,15 @@ const deployment: EnvironmentDeployment = {
     pivot: chainlink.denominations.USD,
     feeds: [],
   },
-  smartVault: {
-    from: DEPLOYER,
-    name: 'smart-vault',
-    version: dependency('core/smart-vault/v1.0.0'),
-    authorizer: dependency('authorizer'),
-    priceOracle: dependency('price-oracle'),
-  },
+  smartVaults: [
+    {
+      from: DEPLOYER,
+      name: 'smart-vault',
+      version: dependency('core/smart-vault/v1.0.0'),
+      authorizer: dependency('authorizer'),
+      priceOracle: dependency('price-oracle'),
+    },
+  ],
   tasks: [
     //Depositor: for manual transfers and testing purposes
     {
@@ -214,7 +216,7 @@ const deployment: EnvironmentDeployment = {
             baseConfig: {
               smartVault: dependency('smart-vault'),
               previousBalanceConnectorId: balanceConnectorId('swapper-connection'),
-              nextBalanceConnectorId: balanceConnectorId('bridger-connection'),
+              nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
             },
             gasLimitConfig: {
               txCostLimitPct: TX_COST_LIMIT_PCT,
@@ -282,7 +284,9 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: 'relayer-funder-swapper',
-      version: dependency('core/tasks/swap/1inch-v5/v2.0.0'),
+      version: dependency('core/tasks/relayer/1inch-v5-swapper/v2.0.0'),
+      initialize: 'initializeOneInchV5RelayerFunder',
+      args: [dependency('core/relayer/v1.1.0')],
       config: {
         baseSwapConfig: {
           connector: dependency('core/connectors/1inch-v5/v1.0.0'),

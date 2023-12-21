@@ -1,0 +1,10 @@
+{
+  "withdrawer-usdc": {
+    "version": "core/tasks/primitives/withdrawer/v2.0.0",
+    "address": "0x0B45576b44cf9BF493c31908F30c10730E4Aa3BE"
+  },
+  "withdrawer-bal": {
+    "version": "core/tasks/primitives/withdrawer/v2.0.0",
+    "address": "0x53b9259BCc252eA873C121FB69308c6e2c86a2E1"
+  }
+}

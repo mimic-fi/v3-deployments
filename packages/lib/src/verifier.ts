@@ -1,39 +1,26 @@
-import { encodeArguments } from '@nomiclabs/hardhat-etherscan/dist/src/ABIEncoder'
-import { chainConfig } from '@nomiclabs/hardhat-etherscan/dist/src/ChainConfig'
+import { Etherscan } from '@nomicfoundation/hardhat-verify/internal/etherscan'
 import {
-  delay,
-  EtherscanResponse,
-  getVerificationStatus,
-} from '@nomiclabs/hardhat-etherscan/dist/src/etherscan/EtherscanService'
-import {
-  EtherscanVerifyRequest,
-  toCheckStatusRequest,
-  toVerifyRequest,
-} from '@nomiclabs/hardhat-etherscan/dist/src/etherscan/EtherscanVerifyContractRequest'
-import { getEtherscanEndpoints, retrieveContractBytecode } from '@nomiclabs/hardhat-etherscan/dist/src/network/prober'
-import {
-  Bytecode,
-  ContractInformation,
+  ExtendedContractInformation,
   extractMatchingContractInformation,
-} from '@nomiclabs/hardhat-etherscan/dist/src/solc/bytecode'
-import { getLibraryLinks, Libraries } from '@nomiclabs/hardhat-etherscan/dist/src/solc/libraries'
-import { getLongVersion } from '@nomiclabs/hardhat-etherscan/dist/src/solc/version'
-import { EtherscanNetworkEntry } from '@nomiclabs/hardhat-etherscan/dist/src/types'
-import { BuildInfo, CompilerInput, Network } from 'hardhat/types'
-import fetch, { Response } from 'node-fetch'
+  getLibraryInformation,
+  LibraryToAddress,
+} from '@nomicfoundation/hardhat-verify/internal/solc/artifacts'
+import { Bytecode } from '@nomicfoundation/hardhat-verify/internal/solc/bytecode'
+import { encodeArguments, sleep } from '@nomicfoundation/hardhat-verify/internal/utilities'
+import { BuildInfo, HardhatRuntimeEnvironment } from 'hardhat/types'
 
 import logger from './logger'
 import { Script } from './script'
 
-const MAX_VERIFICATION_INTENTS = 3
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 export default class Verifier {
+  hre: HardhatRuntimeEnvironment
   apiKey: string
-  network: Network
 
-  constructor(_network: Network, _apiKey: string) {
-    this.network = _network
-    this.apiKey = _apiKey
+  constructor(hre: HardhatRuntimeEnvironment, apiKey: string) {
+    this.hre = hre
+    this.apiKey = apiKey
   }
 
   async call(
@@ -41,133 +28,84 @@ export default class Verifier {
     name: string,
     address: string,
     constructorArguments: unknown,
-    libraries: Libraries = {},
-    intent = 1
+    libraries: LibraryToAddress = {}
   ): Promise<string> {
-    const response = await this.verify(script, name, address, constructorArguments)
+    const chainConfig = await Etherscan.getCurrentChainConfig(this.hre.network.name, this.hre.network.provider, [])
+    const etherscan = Etherscan.fromChainConfig(this.apiKey, chainConfig)
 
-    if (response.isVerificationSuccess()) {
-      const etherscanEndpoints = await getEtherscanEndpoints(this.network.provider, this.network.name, chainConfig, [])
-      const contractURL = new URL(`/address/${address}#code`, etherscanEndpoints.urls.browserURL)
-      return contractURL.toString()
-    } else if (intent < MAX_VERIFICATION_INTENTS && response.isBytecodeMissingInNetworkError()) {
-      logger.info(`Could not find deployed bytecode in network, retrying ${intent++}/${MAX_VERIFICATION_INTENTS}...`)
-      delay(300)
-      return this.call(script, name, address, constructorArguments, libraries, intent++)
-    } else {
-      throw new Error(`The contract verification failed. Reason: ${response.message}`)
-    }
+    const isVerified = await etherscan.isVerified(address)
+    if (!isVerified) return this.verify(etherscan, script, name, address, constructorArguments, libraries)
+
+    const contractURL = etherscan.getContractUrl(address)
+    logger.info(`The contract ${address} has already been verified on ${contractURL}`)
+    return contractURL
   }
 
   private async verify(
+    etherscan: Etherscan,
     script: Script,
     name: string,
     address: string,
     args: unknown,
-    libraries: Libraries = {}
-  ): Promise<EtherscanResponse> {
-    const deployedBytecodeHex = await retrieveContractBytecode(address, this.network.provider, this.network.name)
-    const deployedBytecode = new Bytecode(deployedBytecodeHex)
+    libraries: LibraryToAddress
+  ): Promise<string> {
+    const deployedBytecode = await this.getDeployedContractBytecode(address)
     const buildInfo = script.buildInfos().find((buildInfo) => !!this.findContractSourceName(buildInfo, name))
     if (!buildInfo) throw Error('Could not find a bytecode matching the requested contract')
+
     const sourceName = this.findContractSourceName(buildInfo, name)
     if (!sourceName) throw Error('Could not find a source name for the requested contract')
-    const contractInformation = await extractMatchingContractInformation(sourceName, name, buildInfo, deployedBytecode)
+
+    const contractFQN = `${sourceName}:${name}`
+    const contractInformation = await extractMatchingContractInformation(contractFQN, buildInfo, deployedBytecode)
     if (!contractInformation) throw Error('Could not find a bytecode matching the requested contract')
 
-    const { libraryLinks } = await getLibraryLinks(contractInformation, libraries)
-    contractInformation.libraryLinks = libraryLinks
+    const libraryInformation = await getLibraryInformation(contractInformation, libraries)
+    const extendedContractInformation: ExtendedContractInformation = { ...contractInformation, ...libraryInformation }
 
-    const deployArgumentsEncoded = await encodeArguments(
-      contractInformation.contract.abi,
-      contractInformation.sourceName,
-      contractInformation.contractName,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const encodedConstructorArguments = await encodeArguments(
+      extendedContractInformation.contractOutput.abi,
+      extendedContractInformation.sourceName,
+      extendedContractInformation.contractName,
       args as any[]
     )
 
-    const solcFullVersion = await getLongVersion(contractInformation.solcVersion)
-    const etherscanEndpoints = await getEtherscanEndpoints(this.network.provider, this.network.name, chainConfig, [])
+    // Ensure the linking information is present in the compiler input;
+    const compilerInput = extendedContractInformation.compilerInput
+    compilerInput.settings.libraries = extendedContractInformation.libraries
 
-    const minimumBuildVerificationStatus = await this.attemptVerification(
-      etherscanEndpoints,
-      contractInformation,
+    const { message: guid } = await etherscan.verify(
       address,
-      this.apiKey,
-      buildInfo.input,
-      solcFullVersion,
-      deployArgumentsEncoded
+      JSON.stringify(compilerInput),
+      `${contractInformation.sourceName}:${contractInformation.contractName}`,
+      `v${contractInformation.solcLongVersion}`,
+      encodedConstructorArguments
     )
 
-    if (minimumBuildVerificationStatus.isVerificationSuccess()) return minimumBuildVerificationStatus
-
-    const verificationStatus = await this.attemptVerification(
-      etherscanEndpoints,
-      contractInformation,
-      address,
-      this.apiKey,
-      contractInformation.compilerInput,
-      solcFullVersion,
-      deployArgumentsEncoded
+    logger.info(
+      `Successfully submitted source code for contract ${contractInformation.sourceName}:${contractInformation.contractName} at ${address} for verification on the block explorer. Waiting for verification result...`
     )
+    await sleep(700)
+    const verificationStatus = await etherscan.getVerificationStatus(guid)
 
-    if (verificationStatus.isVerificationSuccess()) return verificationStatus
-    throw new Error(`The contract verification failed. Reason: ${verificationStatus.message}`)
+    if (!(verificationStatus.isFailure() || verificationStatus.isSuccess())) {
+      throw Error(verificationStatus.message)
+    }
+
+    if (verificationStatus.isSuccess()) {
+      const contractURL = etherscan.getContractUrl(address)
+      logger.info(`Successfully verified contract ${contractInformation.contractName} on ${contractURL}\n`)
+      return contractURL
+    }
+
+    throw Error(`Unknown verification status ${verificationStatus}`)
   }
 
-  private async attemptVerification(
-    etherscanEndpoints: EtherscanNetworkEntry,
-    contractInformation: ContractInformation,
-    contractAddress: string,
-    etherscanAPIKey: string,
-    compilerInput: CompilerInput,
-    solcFullVersion: string,
-    deployArgumentsEncoded: string
-  ): Promise<EtherscanResponse> {
-    compilerInput.settings.libraries = contractInformation.libraryLinks
-    const request = toVerifyRequest({
-      apiKey: etherscanAPIKey,
-      contractAddress,
-      sourceCode: JSON.stringify(compilerInput),
-      sourceName: contractInformation.sourceName,
-      contractName: contractInformation.contractName,
-      compilerVersion: solcFullVersion,
-      constructorArguments: deployArgumentsEncoded,
-    })
-
-    const response = await this.verifyContract(etherscanEndpoints.urls.apiURL, request)
-    const pollRequest = toCheckStatusRequest({ apiKey: etherscanAPIKey, guid: response.message })
-
-    await delay(700)
-    const verificationStatus = await getVerificationStatus(etherscanEndpoints.urls.apiURL, pollRequest)
-
-    if (verificationStatus.isVerificationFailure() || verificationStatus.isVerificationSuccess()) {
-      return verificationStatus
-    }
-
-    throw new Error(`The API responded with an unexpected message: ${verificationStatus.message}`)
-  }
-
-  private async verifyContract(url: string, req: EtherscanVerifyRequest): Promise<EtherscanResponse> {
-    const parameters = new URLSearchParams({ ...req })
-    const requestDetails = { method: 'post', body: parameters }
-
-    let response: Response
-    try {
-      response = await fetch(url, requestDetails)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      throw Error(`Failed to send verification request. Reason: ${error?.message}`)
-    }
-
-    if (!response.ok) {
-      const responseText = await response.text()
-      throw Error(`Failed to send verification request.\nHTTP code: ${response.status}.\nResponse: ${responseText}`)
-    }
-
-    const etherscanResponse = new EtherscanResponse(await response.json())
-    if (!etherscanResponse.isOk()) throw Error(etherscanResponse.message)
-    return etherscanResponse
+  private async getDeployedContractBytecode(address: string): Promise<Bytecode> {
+    const response: string = await this.hre.network.provider.send('eth_getCode', [address, 'latest'])
+    const deployedBytecode = response.replace(/^0x/, '')
+    if (deployedBytecode === '') throw Error('Could not find a bytecode matching the requested contract')
+    return new Bytecode(deployedBytecode)
   }
 
   private findContractSourceName(buildInfo: BuildInfo, contractName: string): string | undefined {

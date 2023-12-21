@@ -15,6 +15,7 @@ export type RegistryImplementationDeployment = ContractDeployment & {
   name: string
   stateless: boolean
   deployerIfFail?: Account
+  deprecate?: Dependency
 }
 
 export type RegistryInstanceParams = {
