@@ -24,31 +24,36 @@ const USDC = tokens.base.USDC
 const WRAPPED_NATIVE_TOKEN = tokens.base.WETH
 
 //Config - Addresses
-const OWNER = '0x65226673F3D202E0f897C862590d7e1A992B2048'
-const MAINNET_DEPOSITOR_TASK = '0x85B45B363Ec0023885f86775DdFaf6D879643ED7'
+const MAINNET_DEPOSITOR_TASK = '0xeb4Af8a64070Ef0dEa6260e0Bf2310748f014d88'
 
 //Config - Threshold
-const USDC_CONVERT_THRESHOLD = bn(100000000) // 100 USDC
-const USDC_BRIDGE_THRESHOLD = bn(1000000000) // 1000 USDC
+const USDC_CONVERT_THRESHOLD = bn(20e6) // 20 USDC
 
 //Config - Gas
 const STANDARD_GAS_PRICE_LIMIT = 200e9
-const TX_COST_LIMIT_PCT = fp(0.02) // 2%
-const QUOTA = fp(0.000135)
-const MIN_WINDOW_GAS = QUOTA
-const MAX_WINDOW_GAS = QUOTA.mul(10)
+const TX_COST_LIMIT_PCT = fp(0.05) // 5%
+const TEN_TX_GAS = fp(0.000135) //10 tx
+const QUOTA = TEN_TX_GAS.mul(10) //100 tx
+const MIN_WINDOW_GAS = TEN_TX_GAS // 10 tx
+const MAX_WINDOW_GAS = TEN_TX_GAS.mul(10) //100 tx
+
+//Config - Withdrawer Timelock
+const BRIDGER_TIMELOCK_MODE = TIMELOCK_MODE.ON_LAST_DAY //SECONDS
+const BRIDGER_TIMELOCK_FREQUENCY = 1 //1 month
+const BRIDGER_TIMELOCK_ALLOWED_AT = 1704024000 //12:00hs UTC
+const BRIDGER_TIMELOCK_WINDOW = 2 * DAY //2 days
 
 //Config - Fee
-const FEE_PCT = fp(0.099) // 9.9%
+const FEE_PCT = fp(0.009) // 0.9%
 
 const deployment: EnvironmentDeployment = {
   deployer: dependency('core/deployer/v1.0.0'),
-  namespace: 'bt-fee-collector',
+  namespace: 'bt-swapper',
   authorizer: {
     from: DEPLOYER,
     name: 'authorizer',
     version: dependency('core/authorizer/v1.1.0'),
-    owners: [OWNER, USERS_ADMIN.safe],
+    owners: [USERS_ADMIN.safe],
   },
   priceOracle: {
     from: DEPLOYER,
@@ -59,28 +64,30 @@ const deployment: EnvironmentDeployment = {
     pivot: chainlink.denominations.USD,
     feeds: [],
   },
-  smartVault: {
-    from: DEPLOYER,
-    name: 'smart-vault',
-    version: dependency('core/smart-vault/v1.0.0'),
-    authorizer: dependency('authorizer'),
-    priceOracle: dependency('price-oracle'),
-  },
+  smartVaults: [
+    {
+      from: DEPLOYER,
+      name: 'smart-vault-fee-collector',
+      version: dependency('core/smart-vault/v1.0.0'),
+      authorizer: dependency('authorizer'),
+      priceOracle: dependency('price-oracle'),
+    },
+  ],
   tasks: [
     //Depositor: for manual transfers and testing purposes
     {
       from: DEPLOYER,
       name: 'depositor',
-      version: dependency('core/tasks/primitives/depositor/v2.0.0'),
+      version: dependency('core/tasks/primitives/depositor/v2.1.0'),
       config: {
         tokensSource: counterfactualDependency('depositor'),
         taskConfig: {
           baseConfig: {
-            smartVault: dependency('smart-vault'),
+            smartVault: dependency('smart-vault-fee-collector'),
             nextBalanceConnectorId: balanceConnectorId('swapper-connection'),
           },
           gasLimitConfig: {
-            gasPriceLimit: STANDARD_GAS_PRICE_LIMIT,
+            txCostLimitPct: TX_COST_LIMIT_PCT,
           },
           tokenIndexConfig: {
             acceptanceType: 0, //Deny list
@@ -97,7 +104,7 @@ const deployment: EnvironmentDeployment = {
       config: {
         taskConfig: {
           baseConfig: {
-            smartVault: dependency('smart-vault'),
+            smartVault: dependency('smart-vault-fee-collector'),
             previousBalanceConnectorId: balanceConnectorId('swapper-connection'),
             nextBalanceConnectorId: balanceConnectorId('wrapper-handle-over-connection'),
           },
@@ -126,7 +133,7 @@ const deployment: EnvironmentDeployment = {
       config: {
         taskConfig: {
           baseConfig: {
-            smartVault: dependency('smart-vault'),
+            smartVault: dependency('smart-vault-fee-collector'),
             previousBalanceConnectorId: balanceConnectorId('wrapper-handle-over-connection'),
             nextBalanceConnectorId: balanceConnectorId('swapper-connection'),
           },
@@ -151,44 +158,7 @@ const deployment: EnvironmentDeployment = {
           customMaxSlippages: [],
           taskConfig: {
             baseConfig: {
-              smartVault: dependency('smart-vault'),
-              previousBalanceConnectorId: balanceConnectorId('swapper-connection'),
-              nextBalanceConnectorId: balanceConnectorId('bridger-connection'),
-            },
-            gasLimitConfig: {
-              txCostLimitPct: TX_COST_LIMIT_PCT,
-            },
-            tokenIndexConfig: {
-              acceptanceType: 0,
-              tokens: [USDC],
-            },
-            tokenThresholdConfig: {
-              defaultThreshold: {
-                token: USDC,
-                min: USDC_CONVERT_THRESHOLD,
-                max: 0,
-              },
-            },
-          },
-        },
-      },
-    },
-    //Paraswap Swapper: swap assets using Paraswap dex aggregator
-    {
-      from: DEPLOYER,
-      name: 'paraswap-swapper',
-      version: dependency('core/tasks/swap/paraswap-v5/v2.0.0'),
-      config: {
-        quoteSigner: '0x6278c27cf5534f07fa8f1ab6188a155cb8750ffa',
-        baseSwapConfig: {
-          connector: dependency('core/connectors/paraswap-v5/v1.0.0'),
-          tokenOut: USDC,
-          maxSlippage: fp(0.02), //2%
-          customTokensOut: [],
-          customMaxSlippages: [],
-          taskConfig: {
-            baseConfig: {
-              smartVault: dependency('smart-vault'),
+              smartVault: dependency('smart-vault-fee-collector'),
               previousBalanceConnectorId: balanceConnectorId('swapper-connection'),
               nextBalanceConnectorId: balanceConnectorId('bridger-connection'),
             },
@@ -218,7 +188,7 @@ const deployment: EnvironmentDeployment = {
       config: {
         taskConfig: {
           baseConfig: {
-            smartVault: dependency('smart-vault'),
+            smartVault: dependency('smart-vault-fee-collector'),
             previousBalanceConnectorId: balanceConnectorId('swapper-connection'),
             nextBalanceConnectorId: balanceConnectorId('bridger-connection'),
           },
@@ -229,48 +199,10 @@ const deployment: EnvironmentDeployment = {
         },
       },
     },
-    //Bridger by threshold: bridges every certain threshold
-    {
-      from: DEPLOYER,
-      name: 'cctp-bridger-by-threshold',
-      version: dependency('core/tasks/bridge/wormhole/v2.0.0'),
-      config: {
-        baseBridgeConfig: {
-          connector: dependency('core/connectors/wormhole/v1.0.0'),
-          recipient: MAINNET_DEPOSITOR_TASK,
-          destinationChain: 1, // mainnet
-          maxSlippage: fp(0.02), //2%
-          maxFee: {
-            token: USDC,
-            amount: fp(0.02), //2%
-          },
-          customDestinationChains: [],
-          customMaxSlippages: [],
-          customMaxFees: [],
-          taskConfig: {
-            baseConfig: {
-              smartVault: dependency('smart-vault'),
-              previousBalanceConnectorId: balanceConnectorId('bridger-connection'),
-            },
-            tokenIndexConfig: {
-              acceptanceType: 1,
-              tokens: [USDC],
-            },
-            tokenThresholdConfig: {
-              defaultThreshold: {
-                token: USDC,
-                min: USDC_BRIDGE_THRESHOLD,
-                max: 0,
-              },
-            },
-          },
-        },
-      },
-    },
     //Bridger by time: makes sure that by the end of the period, it bridges everything
     {
       from: DEPLOYER,
-      name: 'cctp-bridger-by-time',
+      name: 'wormhole-bridger',
       version: dependency('core/tasks/bridge/wormhole/v2.0.0'),
       config: {
         baseBridgeConfig: {
@@ -287,7 +219,7 @@ const deployment: EnvironmentDeployment = {
           customMaxFees: [],
           taskConfig: {
             baseConfig: {
-              smartVault: dependency('smart-vault'),
+              smartVault: dependency('smart-vault-fee-collector'),
               previousBalanceConnectorId: balanceConnectorId('bridger-connection'),
             },
             tokenIndexConfig: {
@@ -295,10 +227,17 @@ const deployment: EnvironmentDeployment = {
               tokens: [USDC],
             },
             timeLockConfig: {
-              mode: TIMELOCK_MODE.ON_LAST_DAY,
-              frequency: 1,
-              allowedAt: 1701363600, //17:00hs UTC
-              window: 2 * DAY, //2 days
+              mode: BRIDGER_TIMELOCK_MODE,
+              frequency: BRIDGER_TIMELOCK_FREQUENCY,
+              allowedAt: BRIDGER_TIMELOCK_ALLOWED_AT,
+              window: BRIDGER_TIMELOCK_WINDOW,
+            },
+            tokenThresholdConfig: {
+              defaultThreshold: {
+                token: USDC,
+                min: USDC_CONVERT_THRESHOLD.mul(2),
+                max: 0,
+              },
             },
           },
         },
@@ -308,7 +247,9 @@ const deployment: EnvironmentDeployment = {
     {
       from: DEPLOYER,
       name: 'relayer-funder-swapper',
-      version: dependency('core/tasks/swap/1inch-v5/v2.0.0'),
+      version: dependency('core/tasks/relayer/1inch-v5-swapper/v2.0.0'),
+      initialize: 'initializeOneInchV5RelayerFunder',
+      args: [dependency('core/relayer/v1.1.0')],
       config: {
         baseSwapConfig: {
           connector: dependency('core/connectors/1inch-v5/v1.0.0'),
@@ -318,7 +259,7 @@ const deployment: EnvironmentDeployment = {
           customMaxSlippages: [],
           taskConfig: {
             baseConfig: {
-              smartVault: dependency('smart-vault'),
+              smartVault: dependency('smart-vault-fee-collector'),
               previousBalanceConnectorId: balanceConnectorId('bridger-connection'),
               nextBalanceConnectorId: balanceConnectorId('relayer-funder-unwrapper'),
             },
@@ -348,7 +289,7 @@ const deployment: EnvironmentDeployment = {
       config: {
         taskConfig: {
           baseConfig: {
-            smartVault: dependency('smart-vault'),
+            smartVault: dependency('smart-vault-fee-collector'),
             previousBalanceConnectorId: balanceConnectorId('relayer-funder-unwrapper'),
             nextBalanceConnectorId: balanceConnectorId('relayer-depositor'),
           },
@@ -370,7 +311,7 @@ const deployment: EnvironmentDeployment = {
       args: [dependency('core/relayer/v1.1.0')],
       config: {
         baseConfig: {
-          smartVault: dependency('smart-vault'),
+          smartVault: dependency('smart-vault-fee-collector'),
           previousBalanceConnectorId: balanceConnectorId('relayer-depositor'),
         },
         gasLimitConfig: {
@@ -388,10 +329,14 @@ const deployment: EnvironmentDeployment = {
     authorizer: dependency('authorizer'),
     changes: [
       {
-        where: dependency('smart-vault'),
+        where: dependency('smart-vault-fee-collector'),
         revokes: [],
         grants: [
-          { who: dependency('depositor'), what: 'collect', params: [] },
+          {
+            who: dependency('depositor'),
+            what: 'collect',
+            params: [],
+          },
           {
             who: dependency('depositor'),
             what: 'updateBalanceConnector',
@@ -423,27 +368,17 @@ const deployment: EnvironmentDeployment = {
             params: [],
           },
           {
-            who: dependency('paraswap-swapper'),
-            what: 'execute',
-            params: [],
-          },
-          {
-            who: dependency('paraswap-swapper'),
-            what: 'updateBalanceConnector',
-            params: [],
-          },
-          {
             who: dependency('usdc-handle-over'),
             what: 'updateBalanceConnector',
             params: [],
           },
           {
-            who: dependency('cctp-bridger'),
+            who: dependency('wormhole-bridger'),
             what: 'execute',
             params: [],
           },
           {
-            who: dependency('cctp-bridger'),
+            who: dependency('wormhole-bridger'),
             what: 'updateBalanceConnector',
             params: [],
           },
@@ -501,17 +436,12 @@ const deployment: EnvironmentDeployment = {
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency('paraswap-swapper'),
-        revokes: [],
-        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
-      },
-      {
         where: dependency('usdc-handle-over'),
         revokes: [],
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency('cctp-bridger'),
+        where: dependency('wormhole-bridger'),
         revokes: [],
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
@@ -534,14 +464,14 @@ const deployment: EnvironmentDeployment = {
   },
   feeSettings: {
     from: PROTOCOL_ADMIN,
-    smartVault: dependency('smart-vault'),
+    smartVault: dependency('smart-vault-fee-collector'),
     feeController: dependency('core/fee-controller/v1.0.0'),
     maxFeePct: fp(0.02), // 2%
     feePct: FEE_PCT,
   },
   relayerSettings: {
     from: PROTOCOL_ADMIN,
-    smartVault: dependency('smart-vault'),
+    smartVault: dependency('smart-vault-fee-collector'),
     relayer: dependency('core/relayer/v1.1.0'),
     quota: QUOTA,
   },
