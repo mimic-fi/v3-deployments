@@ -24,7 +24,7 @@ describe('RainbowClaimer', () => {
 
   before('setup', async () => {
     // eslint-disable-next-line prettier/prettier
-    ;[, owner, other] = await getSigners()
+    [, owner, other] = await getSigners()
     ;({ authorizer, smartVault } = await deployEnvironment(owner))
   })
 
@@ -48,28 +48,28 @@ describe('RainbowClaimer', () => {
   describe('setFeeClaimer', () => {
     context('when the sender is authorized', () => {
       beforeEach('set sender', async () => {
-        const setFeeClaimerRole = task.interface.getSighash('setFeeClaimer')
-        await authorizer.connect(owner).authorize(owner.address, task.address, setFeeClaimerRole, [])
+        const setFeeCollectorRole = task.interface.getSighash('setFeeCollector')
+        await authorizer.connect(owner).authorize(owner.address, task.address, setFeeCollectorRole, [])
         task = task.connect(owner)
       })
 
       context('when the given address is not zero', () => {
         it('sets the fee claimer', async () => {
-          await task.setFeeClaimer(other.address)
+          await task.setFeeCollector(other.address)
 
-          expect(await task.feeClaimer()).to.be.equal(other.address)
+          expect(await task.feeCollector()).to.be.equal(other.address)
         })
 
         it('emits an event', async () => {
-          const tx = await task.setFeeClaimer(other.address)
+          const tx = await task.setFeeCollector(other.address)
 
           await assertEvent(tx, 'FeeClaimerSet', { feeClaimer: other })
         })
       })
-      
-      context('when the fiven address is zero', () => {
+
+      context('when the given address is zero', () => {
         it('reverts', async () => {
-          await expect(task.setFeeClaimer(ZERO_ADDRESS)).to.be.revertedWith('TaskFeeClaimerZero')
+          await expect(task.setFeeCollector(ZERO_ADDRESS)).to.be.revertedWith('TaskFeeClaimerZero')
         })
       })
     })

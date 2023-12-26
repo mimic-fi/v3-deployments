@@ -29,8 +29,8 @@ contract RainbowClaimer is IRainbowClaimer, Task {
     // Execution type for relayers
     bytes32 public constant override EXECUTION_TYPE = keccak256('RAINBOW_CLAIMER');
 
-    // Fee claimer address
-    address public override feeClaimer;
+    // Fee collector address
+    address public override feeCollector;
 
     /**
      * @dev Initializes the rainbow claimer
@@ -56,14 +56,14 @@ contract RainbowClaimer is IRainbowClaimer, Task {
      * @param claimer Fee claimer address
      */
     function __RainbowClaimer_init_unchained(TaskConfig memory, address claimer) internal onlyInitializing {
-        _setFeeClaimer(claimer);
+        _setFeeCollector(claimer);
     }
 
     /**
      * @dev Tells the address from where the token amounts to execute this task are fetched
      */
     function getTokensSource() external view virtual override(IBaseTask, BaseTask) returns (address) {
-        return feeClaimer;
+        return feeCollector;
     }
 
     /**
@@ -71,15 +71,15 @@ contract RainbowClaimer is IRainbowClaimer, Task {
      * @param token Address of the token being queried
      */
     function getTaskAmount(address token) public view virtual override(IBaseTask, BaseTask) returns (uint256) {
-        return ERC20Helpers.balanceOf(token, feeClaimer);
+        return ERC20Helpers.balanceOf(token, feeCollector);
     }
 
     /**
-     * @dev Sets the protocol fee withdrawer address. Sender must be authorized.
-     * @param newFeeClaimer Address of the protocol fee withdrawer to be set
+     * @dev Sets the protocol fee collector address. Sender must be authorized.
+     * @param newFeeCollector Address of the fee collector to be set
      */
-    function setFeeClaimer(address newFeeClaimer) external override authP(authParams(newFeeClaimer)) {
-        _setFeeClaimer(newFeeClaimer);
+    function setFeeCollector(address newFeeCollector) external override authP(authParams(newFeeCollector)) {
+        _setFeeCollector(newFeeCollector);
     }
 
     /**
@@ -89,12 +89,12 @@ contract RainbowClaimer is IRainbowClaimer, Task {
         if (amount == 0) amount = getTaskAmount(token);
         _beforeRainbowClaimer(token, amount);
         // solhint-disable-next-line avoid-low-level-calls
-        ISmartVault(smartVault).call(feeClaimer, _buildRainbowClaimerData(token, amount), 0);
+        ISmartVault(smartVault).call(feeCollector, _buildRainbowClaimerData(token, amount), 0);
         _afterRainbowClaimer(token, amount);
     }
 
     /**
-     * @dev Builds protocol fee withdrawer calldata
+     * @dev Builds fee collector calldata
      */
     function _buildRainbowClaimerData(address token, uint256 amount) internal view returns (bytes memory) {
         if (Denominations.isNativeToken(token))
@@ -121,12 +121,12 @@ contract RainbowClaimer is IRainbowClaimer, Task {
 
     /**
      * @dev Sets the protocol fee withdrawer address
-     * @param newFeeClaimer Address of the fee claimer to be set
+     * @param newFeeCollector Address of the fee collector to be set
      */
-    function _setFeeClaimer(address newFeeClaimer) internal {
-        if (newFeeClaimer == address(0)) revert TaskFeeClaimerZero();
-        feeClaimer = newFeeClaimer;
-        emit FeeClaimerSet(newFeeClaimer);
+    function _setFeeCollector(address newFeeCollector) internal {
+        if (newFeeCollector == address(0)) revert TaskFeeClaimerZero();
+        feeCollector = newFeeCollector;
+        emit FeeClaimerSet(newFeeCollector);
     }
 
     /**

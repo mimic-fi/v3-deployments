@@ -17,7 +17,7 @@ pragma solidity >=0.8.0;
 import '@mimic-fi/v3-tasks/contracts/interfaces/ITask.sol';
 
 /**
- * @title Balancer claimer interface
+ * @title Rainbow claimer interface
  */
 interface IRainbowClaimer is ITask {
     /**
@@ -41,25 +41,20 @@ interface IRainbowClaimer is ITask {
     error TaskPreviousConnectorNotZero(bytes32 id);
 
     /**
-     * @dev The Rainbow claim failed
-     */
-    error TaskClaimFailed();
-
-    /**
      * @dev Emitted every time the fee claimer is set
      */
     event FeeClaimerSet(address indexed feeClaimer);
 
     /**
-     * @dev Tells the fee claimer address
+     * @dev Tells the fee collector address
      */
-    function feeClaimer() external view returns (address);
+    function feeCollector() external view returns (address);
 
     /**
      * @dev Sets the fee claimer address. Sender must be authorized.
-     * @param newFeeClaimer Address of the fee claimer to be set
+     * @param newFeeCollector Address of the fee claimer to be set
      */
-    function setFeeClaimer(address newFeeClaimer) external;
+    function setFeeCollector(address newFeeCollector) external;
 
     /**
      * @dev Executes the Balancer claimer task
