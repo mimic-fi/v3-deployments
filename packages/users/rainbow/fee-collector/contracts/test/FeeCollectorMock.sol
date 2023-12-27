@@ -13,10 +13,6 @@ contract FeeCollectorMock is IFeeCollector {
         // solhint-disable-previous-line no-empty-blocks
     }
 
-    function registerFee(address, address, uint256) external {
-        // solhint-disable-previous-line no-empty-blocks
-    }
-
     function collectETHFees(uint256 amount) external override {
         (bool success, ) = address(msg.sender).call{ value: amount }('');
     }

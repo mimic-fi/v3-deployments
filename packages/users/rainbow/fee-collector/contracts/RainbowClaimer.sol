@@ -35,28 +35,28 @@ contract RainbowClaimer is IRainbowClaimer, Task {
     /**
      * @dev Initializes the Rainbow claimer
      * @param config Task config
-     * @param claimer Fee claimer address
+     * @param collector Fee collector address
      */
-    function initializeRainbowClaimer(TaskConfig memory config, address claimer) external virtual initializer {
-        __RainbowClaimer_init(config, claimer);
+    function initializeRainbowClaimer(TaskConfig memory config, address collector) external virtual initializer {
+        __RainbowClaimer_init(config, collector);
     }
 
     /**
      * @dev Initializes the Rainbow claimer. It does call upper contracts initializers.
      * @param config Task config
-     * @param claimer Fee claimer address
+     * @param collector Fee collector address
      */
-    function __RainbowClaimer_init(TaskConfig memory config, address claimer) internal onlyInitializing {
+    function __RainbowClaimer_init(TaskConfig memory config, address collector) internal onlyInitializing {
         __Task_init(config);
-        __RainbowClaimer_init_unchained(config, claimer);
+        __RainbowClaimer_init_unchained(config, collector);
     }
 
     /**
      * @dev Initializes the Rainbow claimer. It does not call upper contracts initializers.
-     * @param claimer Fee claimer address
+     * @param collector Fee collector address
      */
-    function __RainbowClaimer_init_unchained(TaskConfig memory, address claimer) internal onlyInitializing {
-        _setFeeCollector(claimer);
+    function __RainbowClaimer_init_unchained(TaskConfig memory, address collector) internal onlyInitializing {
+        _setFeeCollector(collector);
     }
 
     /**

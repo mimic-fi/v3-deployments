@@ -63,7 +63,7 @@ describe('RainbowClaimer', () => {
         it('emits an event', async () => {
           const tx = await task.setFeeCollector(other.address)
 
-          await assertEvent(tx, 'FeeCollectorSet', { feeClaimer: other })
+          await assertEvent(tx, 'FeeCollectorSet', { feeCollector: other })
         })
       })
 

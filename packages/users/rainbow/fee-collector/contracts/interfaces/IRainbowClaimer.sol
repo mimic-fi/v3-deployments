@@ -31,7 +31,7 @@ interface IRainbowClaimer is ITask {
     error TaskAmountZero();
 
     /**
-     * @dev The fee claimer is zero
+     * @dev The fee collector is zero
      */
     error TaskFeeCollectorZero();
 
@@ -41,9 +41,9 @@ interface IRainbowClaimer is ITask {
     error TaskPreviousConnectorNotZero(bytes32 id);
 
     /**
-     * @dev Emitted every time the fee claimer is set
+     * @dev Emitted every time the fee collector is set
      */
-    event FeeCollectorSet(address indexed feeClaimer);
+    event FeeCollectorSet(address indexed feeCollector);
 
     /**
      * @dev Tells the fee collector address
@@ -52,7 +52,7 @@ interface IRainbowClaimer is ITask {
 
     /**
      * @dev Sets the fee claimer address. Sender must be authorized.
-     * @param newFeeCollector Address of the fee claimer to be set
+     * @param newFeeCollector Address of the fee collector to be set
      */
     function setFeeCollector(address newFeeCollector) external;
 
