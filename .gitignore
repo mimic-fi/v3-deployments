@@ -10,3 +10,6 @@ dist
 test.json
 hardhat.json
 localhost.json
+
+graph.dot
+graph.obg
