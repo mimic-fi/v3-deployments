@@ -245,7 +245,7 @@ describe('RainbowClaimer', () => {
         context('when the amount is not zero', () => {
           const totalBalance = fp(100)
 
-          beforeEach('fund protocol fees collector', async () => {
+          beforeEach('fund fee collector', async () => {
             await owner.sendTransaction({ to: feeCollector.address, value: totalBalance })
           })
 
