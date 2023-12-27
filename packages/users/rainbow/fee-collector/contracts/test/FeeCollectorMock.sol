@@ -13,10 +13,6 @@ contract FeeCollectorMock is IFeeCollector {
         // solhint-disable-previous-line no-empty-blocks
     }
 
-    function getBalance(address token) external view returns (uint256) {
-        return ERC20Helpers.balanceOf(token, address(this));
-    }
-
     function registerFee(address, address, uint256) external {
         // solhint-disable-previous-line no-empty-blocks
     }

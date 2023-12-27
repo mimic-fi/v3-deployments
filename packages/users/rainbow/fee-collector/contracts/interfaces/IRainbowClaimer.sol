@@ -33,7 +33,7 @@ interface IRainbowClaimer is ITask {
     /**
      * @dev The fee claimer is zero
      */
-    error TaskFeeClaimerZero();
+    error TaskFeeCollectorZero();
 
     /**
      * @dev The previous balance connector is not zero
@@ -43,7 +43,7 @@ interface IRainbowClaimer is ITask {
     /**
      * @dev Emitted every time the fee claimer is set
      */
-    event FeeClaimerSet(address indexed feeClaimer);
+    event FeeCollectorSet(address indexed feeClaimer);
 
     /**
      * @dev Tells the fee collector address

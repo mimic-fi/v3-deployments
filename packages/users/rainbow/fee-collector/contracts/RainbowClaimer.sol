@@ -33,7 +33,7 @@ contract RainbowClaimer is IRainbowClaimer, Task {
     address public override feeCollector;
 
     /**
-     * @dev Initializes the rainbow claimer
+     * @dev Initializes the Rainbow claimer
      * @param config Task config
      * @param claimer Fee claimer address
      */
@@ -42,7 +42,7 @@ contract RainbowClaimer is IRainbowClaimer, Task {
     }
 
     /**
-     * @dev Initializes the rainbow claimer. It does call upper contracts initializers.
+     * @dev Initializes the Rainbow claimer. It does call upper contracts initializers.
      * @param config Task config
      * @param claimer Fee claimer address
      */
@@ -52,7 +52,7 @@ contract RainbowClaimer is IRainbowClaimer, Task {
     }
 
     /**
-     * @dev Initializes the rainbow claimer. It does not call upper contracts initializers.
+     * @dev Initializes the Rainbow claimer. It does not call upper contracts initializers.
      * @param claimer Fee claimer address
      */
     function __RainbowClaimer_init_unchained(TaskConfig memory, address claimer) internal onlyInitializing {
@@ -96,11 +96,11 @@ contract RainbowClaimer is IRainbowClaimer, Task {
     /**
      * @dev Builds fee collector calldata
      */
-    function _buildRainbowClaimerData(address token, uint256 amount) internal view returns (bytes memory) {
-        return 
-          Denominations.isNativeToken(token)
-            ? abi.encodeWithSelector(IFeeCollector.collectETHFees.selector, amount)
-            : abi.encodeWithSelector(IFeeCollector.collectTokenFees.selector, token, amount);
+    function _buildRainbowClaimerData(address token, uint256 amount) internal pure returns (bytes memory) {
+        return
+            Denominations.isNativeToken(token)
+                ? abi.encodeWithSelector(IFeeCollector.collectETHFees.selector, amount)
+                : abi.encodeWithSelector(IFeeCollector.collectTokenFees.selector, token, amount);
     }
 
     /**

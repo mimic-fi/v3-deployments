@@ -63,13 +63,13 @@ describe('RainbowClaimer', () => {
         it('emits an event', async () => {
           const tx = await task.setFeeCollector(other.address)
 
-          await assertEvent(tx, 'FeeClaimerSet', { feeClaimer: other })
+          await assertEvent(tx, 'FeeCollectorSet', { feeClaimer: other })
         })
       })
 
       context('when the given address is zero', () => {
         it('reverts', async () => {
-          await expect(task.setFeeCollector(ZERO_ADDRESS)).to.be.revertedWith('TaskFeeClaimerZero')
+          await expect(task.setFeeCollector(ZERO_ADDRESS)).to.be.revertedWith('TaskFeeCollectorZero')
         })
       })
     })
