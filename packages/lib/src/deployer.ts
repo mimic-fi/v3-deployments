@@ -17,6 +17,7 @@ import {
   isFeeSetting,
   isPermissionsUpdate,
   isRelayerSetting,
+  isSmartVaultParams,
   isTaskParams,
   OptionalTaskConfig,
   PriceOracleParams,
@@ -69,6 +70,8 @@ export async function updateEnvironment(script: Script, params: EnvironmentUpdat
       await updateEnvironmentSetting(script, step)
     } else if (isPermissionsUpdate(step)) {
       await executePermissionChanges(script, step)
+    } else if (isSmartVaultParams(step)) {
+      await deploySmartVault(script, params.deployer, params.namespace, step)
     } else if (isTaskParams(step)) {
       await deployTask(script, params.deployer, params.namespace, step)
     } else if (isFeeSetting(step)) {
