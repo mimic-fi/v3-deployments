@@ -67,7 +67,7 @@ contract RainbowClaimer is IRainbowClaimer, Task {
     }
 
     /**
-     * @dev Tells the token balance in the protocol fees collector available for the smart vault
+     * @dev Tells the token balance in the fee collector
      * @param token Address of the token being queried
      */
     function getTaskAmount(address token) public view virtual override(IBaseTask, BaseTask) returns (uint256) {
@@ -75,7 +75,7 @@ contract RainbowClaimer is IRainbowClaimer, Task {
     }
 
     /**
-     * @dev Sets the protocol fee collector address. Sender must be authorized.
+     * @dev Sets the fee collector address. Sender must be authorized.
      * @param newFeeCollector Address of the fee collector to be set
      */
     function setFeeCollector(address newFeeCollector) external override authP(authParams(newFeeCollector)) {
@@ -97,9 +97,10 @@ contract RainbowClaimer is IRainbowClaimer, Task {
      * @dev Builds fee collector calldata
      */
     function _buildRainbowClaimerData(address token, uint256 amount) internal view returns (bytes memory) {
-        if (Denominations.isNativeToken(token))
-            return abi.encodeWithSelector(IFeeCollector.collectETHFees.selector, amount);
-        return abi.encodeWithSelector(IFeeCollector.collectTokenFees.selector, token, amount);
+        return 
+          Denominations.isNativeToken(token)
+            ? abi.encodeWithSelector(IFeeCollector.collectETHFees.selector, amount)
+            : abi.encodeWithSelector(IFeeCollector.collectTokenFees.selector, token, amount);
     }
 
     /**
@@ -112,7 +113,7 @@ contract RainbowClaimer is IRainbowClaimer, Task {
     }
 
     /**
-     * @dev After rainbow claimer task hook
+     * @dev After Rainbow claimer task hook
      */
     function _afterRainbowClaimer(address token, uint256 amount) internal {
         _increaseBalanceConnector(token, amount);
@@ -120,13 +121,13 @@ contract RainbowClaimer is IRainbowClaimer, Task {
     }
 
     /**
-     * @dev Sets the protocol fee withdrawer address
+     * @dev Sets the fee collector address
      * @param newFeeCollector Address of the fee collector to be set
      */
     function _setFeeCollector(address newFeeCollector) internal {
-        if (newFeeCollector == address(0)) revert TaskFeeClaimerZero();
+        if (newFeeCollector == address(0)) revert TaskFeeCollectorZero();
         feeCollector = newFeeCollector;
-        emit FeeClaimerSet(newFeeCollector);
+        emit FeeCollectorSet(newFeeCollector);
     }
 
     /**

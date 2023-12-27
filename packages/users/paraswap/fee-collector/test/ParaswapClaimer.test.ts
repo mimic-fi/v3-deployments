@@ -23,7 +23,7 @@ describe('ParaswapClaimer', () => {
 
   before('setup', async () => {
     // eslint-disable-next-line prettier/prettier
-    ;[, owner, other] = await getSigners()
+    ([, owner, other] = await getSigners())
     ;({ authorizer, smartVault } = await deployEnvironment(owner))
   })
 

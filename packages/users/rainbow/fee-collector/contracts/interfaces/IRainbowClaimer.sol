@@ -57,7 +57,7 @@ interface IRainbowClaimer is ITask {
     function setFeeCollector(address newFeeCollector) external;
 
     /**
-     * @dev Executes the Balancer claimer task
+     * @dev Executes the Rainbow claimer task
      */
     function call(address token, uint256 amount) external;
 }

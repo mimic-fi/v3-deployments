@@ -45,7 +45,7 @@ describe('RainbowClaimer', () => {
     })
   })
 
-  describe('setFeeClaimer', () => {
+  describe('setFeeCollector', () => {
     context('when the sender is authorized', () => {
       beforeEach('set sender', async () => {
         const setFeeCollectorRole = task.interface.getSighash('setFeeCollector')
@@ -54,7 +54,7 @@ describe('RainbowClaimer', () => {
       })
 
       context('when the given address is not zero', () => {
-        it('sets the fee claimer', async () => {
+        it('sets the fee collector', async () => {
           await task.setFeeCollector(other.address)
 
           expect(await task.feeCollector()).to.be.equal(other.address)
@@ -134,7 +134,7 @@ describe('RainbowClaimer', () => {
         await authorizer.connect(owner).authorize(owner.address, task.address, callRole, [])
       })
 
-      context('when the token to claim is not the address zero', () => {
+      context('when the token to claim is an ERC20', () => {
         let token: Contract
 
         beforeEach('deploy token', async () => {
@@ -144,7 +144,7 @@ describe('RainbowClaimer', () => {
         context('when the amount is greater than zero', () => {
           const totalBalance = fp(100)
 
-          beforeEach('fund protocol fees collector', async () => {
+          beforeEach('fund fee collector', async () => {
             await token.mint(feeCollector.address, totalBalance)
           })
 
@@ -166,7 +166,7 @@ describe('RainbowClaimer', () => {
               })
             })
 
-            it('transfers the token in from the protocol fee withdrawer to the receiver', async () => {
+            it('transfers the token in from the fee collector to the receiver', async () => {
               const previousSmartVaultBalance = await token.balanceOf(smartVault.address)
               const previousFeesCollectorBalance = await token.balanceOf(feeCollector.address)
 
@@ -264,7 +264,7 @@ describe('RainbowClaimer', () => {
               })
             })
 
-            it('transfers the token in from the protocol fee withdrawer to the receiver', async () => {
+            it('transfers the token in from the fee collector to the receiver', async () => {
               const previousSmartVaultBalance = await ethershh.provider.getBalance(smartVault.address)
               const previousFeesCollectorBalance = await ethershh.provider.getBalance(feeCollector.address)
 
