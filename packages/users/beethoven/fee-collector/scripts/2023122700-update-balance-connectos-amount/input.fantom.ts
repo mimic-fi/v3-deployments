@@ -8,7 +8,7 @@ const ADD = false
 
 const update: EnvironmentUpdate = {
   deployer: dependency('core/deployer/v1.0.0'),
-  namespace: 'paraswap-fee-collector-v3',
+  namespace: 'beethoven-fee-collector-v3.0',
   steps: [
     {
       from: USERS_ADMIN,
