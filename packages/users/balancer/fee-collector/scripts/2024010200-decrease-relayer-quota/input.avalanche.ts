@@ -2,6 +2,7 @@ import { dependency, DEPLOYER, EnvironmentUpdate, PROTOCOL_ADMIN, USERS_ADMIN } 
 import { fp, tokens } from '@mimic-fi/v3-helpers'
 
 const WRAPPED_NATIVE_TOKEN = tokens.avalanche.WAVAX
+const RELAYER_QUOTA = fp(9)
 const QUOTA = fp(1)
 const MIN_WINDOW_GAS = QUOTA
 const MAX_WINDOW_GAS = QUOTA.mul(10)
@@ -14,7 +15,7 @@ const update: EnvironmentUpdate = {
       from: PROTOCOL_ADMIN,
       target: dependency('core/relayer/v1.1.0'),
       method: 'setSmartVaultMaxQuota',
-      args: [dependency('2023101700-environment-deploy', 'smart-vault'), QUOTA],
+      args: [dependency('2023101700-environment-deploy', 'smart-vault'), RELAYER_QUOTA],
     },
     {
       from: USERS_ADMIN,
