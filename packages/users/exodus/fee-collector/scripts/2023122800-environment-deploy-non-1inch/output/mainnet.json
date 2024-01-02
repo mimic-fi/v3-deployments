@@ -1,0 +1,82 @@
+{
+  "authorizer": {
+    "version": "core/authorizer/v1.1.0",
+    "address": "0x987306919A09cc725FBF27C95615A6B2C68E80A1"
+  },
+  "price-oracle": {
+    "version": "core/price-oracle/v1.0.0",
+    "address": "0x874f5cf97F1e4562b8416bBBcaF8EA97D3E6aDD0"
+  },
+  "smart-vault": {
+    "version": "core/smart-vault/v1.0.0",
+    "address": "0x60d1994b91CB8566dE1B2200bdf8d94e9E76B267"
+  },
+  "arbitrum-depositor": {
+    "version": "core/tasks/primitives/depositor/v2.1.0",
+    "address": "0xe756c3df2969653EA3b2BcB55E726cFea949328b"
+  },
+  "avalanche-depositor": {
+    "version": "core/tasks/primitives/depositor/v2.1.0",
+    "address": "0x408264900B890951128778e76374D3a4B01c2137"
+  },
+  "base-depositor": {
+    "version": "core/tasks/primitives/depositor/v2.1.0",
+    "address": "0xb5b167758dD0F1A089fd1725A4E897e065728b6b"
+  },
+  "bnb-depositor": {
+    "version": "core/tasks/primitives/depositor/v2.1.0",
+    "address": "0xAECD3a3dB2E5a11B81af2C3468397a5BfD6b480c"
+  },
+  "fantom-depositor": {
+    "version": "core/tasks/primitives/depositor/v2.1.0",
+    "address": "0xBf07458E07dACa407bdFa7B1779709e3190E9762"
+  },
+  "gnosis-depositor": {
+    "version": "core/tasks/primitives/depositor/v2.1.0",
+    "address": "0x19C57FD3e3c7cB09531e9db2D778aFfb57d6DE31"
+  },
+  "optimism-depositor": {
+    "version": "core/tasks/primitives/depositor/v2.1.0",
+    "address": "0x2B07EC1636f4A4d0Da12bAD9F722771A5EB8aB0C"
+  },
+  "polygon-depositor": {
+    "version": "core/tasks/primitives/depositor/v2.1.0",
+    "address": "0xFC5194Ec5797009180218b6E31dbeAb4df1D7eb5"
+  },
+  "depositor": {
+    "version": "core/tasks/primitives/depositor/v2.1.0",
+    "address": "0xdB2e6ef9a200D4F7330C900623382a14F1cE091C"
+  },
+  "wrapper": {
+    "version": "core/tasks/primitives/wrapper/v2.0.0",
+    "address": "0xDd9f784e66CF379eb6fF74419Fd28bA8E289bfd7"
+  },
+  "wrapper-handle-over": {
+    "version": "core/tasks/primitives/handle-over/v2.0.0",
+    "address": "0x8CFf3B6e63039fCE530A4D2C74EAD838684c1440"
+  },
+  "1inch-swapper": {
+    "version": "core/tasks/swap/1inch-v5/v2.0.0",
+    "address": "0x91C0e5F6D818a9E99BEed56249658f0f9a30b008"
+  },
+  "usdc-handle-over": {
+    "version": "core/tasks/primitives/handle-over/v2.0.0",
+    "address": "0x4F81D5556b84FE2C04Bc91aea5b71e9E5fA89C97"
+  },
+  "withdrawer": {
+    "version": "core/tasks/primitives/withdrawer/v2.0.0",
+    "address": "0x66BaFa4319A50f3ee0B87df235aaB851539649ae"
+  },
+  "relayer-funder-swapper": {
+    "version": "core/tasks/relayer/1inch-v5-swapper/v2.0.0",
+    "address": "0x41A8AC4ef2BC2addE72D8cb53095C7e2D40Ab2Cf"
+  },
+  "relayer-funder-unwrapper": {
+    "version": "core/tasks/primitives/unwrapper/v2.0.0",
+    "address": "0xBc8d68B2c4826bFE2b6C37012a0C87DB39915De6"
+  },
+  "relayer-depositor": {
+    "version": "core/tasks/relayer/depositor/v2.0.0",
+    "address": "0x47be9340d6F3641077caca0a37Daf71765770EA7"
+  }
+}
