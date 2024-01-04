@@ -1,0 +1,14 @@
+{
+  "authorizer": {
+    "version": "core/authorizer/v1.1.0",
+    "address": "0xfdA4eA4D550E113AdEe3f15Ff5a4fd83B71a6711"
+  },
+  "price-oracle": {
+    "version": "core/price-oracle/v1.0.0",
+    "address": "0x9352ec1824b60beBAa8509e3218De9d0A4C8244d"
+  },
+  "smart-vault": {
+    "version": "core/smart-vault/v1.0.0",
+    "address": "0xce4C24c2A44E4ab92cB1b0CFDdAC314971430E66"
+  }
+}
