@@ -1,0 +1,11 @@
+{
+  "smart-vault-tw-android": {
+    "version": "core/smart-vault/v1.0.0",
+    "address": "0x63b0a12146029aA6FA5E75803e9b7e37d363b214"
+  },
+  "OneInchV5PublicSwapper": "0x9DCcA54940Eea4935821d527C72939638617ea0E",
+  "1inch-v5-public-swapper-tw-android": {
+    "version": "OneInchV5PublicSwapper",
+    "address": "0x7868140989E79971dc92A4A7577A5dF4E39C3cC2"
+  }
+}
