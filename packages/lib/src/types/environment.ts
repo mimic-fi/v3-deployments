@@ -91,6 +91,7 @@ export type EnvironmentSettingUpdate = {
 
 export type EnvironmentUpdateStep =
   | TaskParams
+  | SmartVaultParams
   | PermissionsUpdate
   | SmartVaultFeeSettings
   | SmartVaultRelayerSettings

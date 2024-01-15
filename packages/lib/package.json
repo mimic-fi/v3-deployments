@@ -23,6 +23,7 @@
     "cli-table": "^0.3.11",
     "ethereum-waffle": "^3.4.4",
     "ethers": "~5.6.0",
+    "graphviz": "^0.0.9",
     "hardhat": "^2.14.1",
     "hardhat-local-networks-config-plugin": "^0.0.6",
     "node-fetch": "^2.6.1"
@@ -30,6 +31,7 @@
   "devDependencies": {
     "@types/cli-table": "^0.3.3",
     "@types/debug": "^4.1.12",
+    "@types/graphviz": "^0.0.38",
     "@types/node": "^14.6.0",
     "@types/node-fetch": "^2.5.12",
     "@types/semver": "^7.5.6",

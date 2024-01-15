@@ -5,6 +5,7 @@ import {
   EnvironmentUpdateStep,
   PermissionsUpdate,
   SmartVaultFeeSettings,
+  SmartVaultParams,
   SmartVaultRelayerSettings,
   TaskParams,
 } from '../environment'
@@ -39,6 +40,11 @@ export function isEnvironmentSettingUpdate(input: EnvironmentUpdateStep): input 
 export function isPermissionsUpdate(input: EnvironmentUpdateStep): input is PermissionsUpdate {
   const permissionsUpdate = input as PermissionsUpdate
   return !!permissionsUpdate.changes
+}
+
+export function isSmartVaultParams(input: EnvironmentUpdateStep): input is SmartVaultParams {
+  const smartVaultParams = input as SmartVaultParams
+  return !!smartVaultParams.authorizer && !!smartVaultParams.priceOracle
 }
 
 export function isTaskParams(input: EnvironmentUpdateStep): input is TaskParams {
