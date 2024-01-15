@@ -1,5 +1,5 @@
 import { OP } from '@mimic-fi/v3-authorizer'
-import { dependency, DEPLOYER, EnvironmentUpdate, USERS_ADMIN, PROTOCOL_ADMIN } from '@mimic-fi/v3-deployments-lib'
+import { dependency, DEPLOYER, EnvironmentUpdate, PROTOCOL_ADMIN, USERS_ADMIN } from '@mimic-fi/v3-deployments-lib'
 import { fp, ONES_ADDRESS } from '@mimic-fi/v3-helpers'
 
 /* eslint-disable no-secrets/no-secrets */

@@ -1,0 +1,35 @@
+{
+  "smart-vault-tw-ios": {
+    "version": "core/smart-vault/v1.0.0",
+    "address": "0xe3f3D3B9be77F6cDe926163bEe10Cf7b32Ad8bb6"
+  },
+  "smart-vault-tw-browser-extension": {
+    "version": "core/smart-vault/v1.0.0",
+    "address": "0x7F4788D9A6b4eb7Ad32B1821c42116866C333668"
+  },
+  "smart-vault-defi-android": {
+    "version": "core/smart-vault/v1.0.0",
+    "address": "0x0088969a7e3A41492ec9375b5d324aD510cc4ef2"
+  },
+  "smart-vault-defi-ios": {
+    "version": "core/smart-vault/v1.0.0",
+    "address": "0x88149c8C9d88B4a4D4bDf7f6147787b4F8320006"
+  },
+  "OneInchV5PublicSwapper": "0x6e7d21e7750f1BE6ba473ef1B642fc2D622521A6",
+  "1inch-v5-public-swapper-tw-ios": {
+    "version": "OneInchV5PublicSwapper",
+    "address": "0xb50064E73d2574d07530ebCF8A8c4581a8c987c7"
+  },
+  "1inch-v5-public-swapper-tw-browser-extension": {
+    "version": "OneInchV5PublicSwapper",
+    "address": "0xEdE368f7D3F494B492A01645661522Ce510C14D1"
+  },
+  "1inch-v5-public-swapper-defi-android": {
+    "version": "OneInchV5PublicSwapper",
+    "address": "0x14CCED861989b0fb6a95bc5fDc3BCFCdCE0513df"
+  },
+  "1inch-v5-public-swapper-defi-ios": {
+    "version": "OneInchV5PublicSwapper",
+    "address": "0x73FcBaeFBd1441e7C1eAa98C51d51789f49feb01"
+  }
+}
