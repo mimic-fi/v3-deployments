@@ -37,6 +37,11 @@ interface IMigrationClaimer is ITask {
     error TaskSourceSmartVaultZero();
 
     /**
+     * @dev The depositor is zero
+     */
+    error TaskDepositorZero();
+
+    /**
      * @dev The previous balance connector is not zero
      */
     error TaskPreviousConnectorNotZero(bytes32 id);
@@ -47,15 +52,31 @@ interface IMigrationClaimer is ITask {
     event SourceSmartVaultSet(address indexed sourceSmartVault);
 
     /**
+     * @dev Emitted every time the depositor is set
+     */
+    event DepositorSet(address indexed depositor);
+
+    /**
      * @dev Tells the source smart vault address
      */
     function sourceSmartVault() external view returns (address);
+
+    /**
+     * @dev Tells the depositor address
+     */
+    function depositor() external view returns (address);
 
     /**
      * @dev Sets the source smart vault address. Sender must be authorized.
      * @param newSourceSmartVault Address of the source smart vault to be set
      */
     function setSourceSmartVault(address newSourceSmartVault) external;
+
+    /**
+     * @dev Sets the depositor address. Sender must be authorized.
+     * @param newDepositor Address of the depositor to be set
+     */
+    function setDepositor(address newDepositor) external;
 
     /**
      * @dev Executes the Migration claimer task
