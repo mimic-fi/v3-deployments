@@ -16,9 +16,10 @@ pragma solidity ^0.8.0;
 
 import '@mimic-fi/v3-tasks/contracts/Task.sol';
 import '@mimic-fi/v3-helpers/contracts/utils/ERC20Helpers.sol';
+import '@mimic-fi/v3-smart-vault/contracts/interfaces/ISmartVault.sol';
 
 import './interfaces/IMigrationClaimer.sol';
-import '@mimic-fi/v3-smart-vault/contracts/interfaces/ISmartVault.sol';
+import './interfaces/IOldSmartVault.sol';
 
 /**
  * @title Balancer claimer
@@ -121,7 +122,7 @@ contract MigrationClaimer is IMigrationClaimer, Task {
      * @dev Builds Source smart vault calldata
      */
     function _buildMigrationClaimerData(address token, uint256 amount) internal view returns (bytes memory) {
-        return abi.encodeWithSelector(ISmartVault.withdraw.selector, token, amount, depositor, '0x0');
+        return abi.encodeWithSelector(IOldSmartVault.withdraw.selector, token, amount, depositor, '0x0');
     }
 
     /**
