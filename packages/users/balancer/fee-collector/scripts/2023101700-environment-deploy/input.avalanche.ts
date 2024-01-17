@@ -430,7 +430,6 @@ const deployment: EnvironmentDeployment = {
         },
       },
     },
-    
   ],
   permissions: {
     from: USERS_ADMIN,

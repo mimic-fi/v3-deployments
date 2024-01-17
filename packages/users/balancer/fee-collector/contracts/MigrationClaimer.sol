@@ -32,48 +32,31 @@ contract MigrationClaimer is IMigrationClaimer, Task {
     // Source smart vault address
     address public override sourceSmartVault;
 
-    // Depositor address
-    address public override depositor;
-
     /**
      * @dev Initializes the balancer claimer
      * @param config Task config
      * @param smartVault Source smart vault address
-     * @param _depositor Depositor address
      */
-    function initializeMigrationClaimer(TaskConfig memory config, address smartVault, address _depositor)
-        external
-        virtual
-        initializer
-    {
-        __MigrationClaimer_init(config, smartVault, _depositor);
+    function initializeMigrationClaimer(TaskConfig memory config, address smartVault) external virtual initializer {
+        __MigrationClaimer_init(config, smartVault);
     }
 
     /**
      * @dev Initializes the balancer claimer. It does call upper contracts initializers.
      * @param config Task config
      * @param smartVault Source smart vault address
-     * @param _depositor Depositor address
      */
-    function __MigrationClaimer_init(TaskConfig memory config, address smartVault, address _depositor)
-        internal
-        onlyInitializing
-    {
+    function __MigrationClaimer_init(TaskConfig memory config, address smartVault) internal onlyInitializing {
         __Task_init(config);
-        __MigrationClaimer_init_unchained(config, smartVault, _depositor);
+        __MigrationClaimer_init_unchained(config, smartVault);
     }
 
     /**
      * @dev Initializes the balancer claimer. It does not call upper contracts initializers.
      * @param smartVault Source smart vault address
-     * @param _depositor Depositor address
      */
-    function __MigrationClaimer_init_unchained(TaskConfig memory, address smartVault, address _depositor)
-        internal
-        onlyInitializing
-    {
+    function __MigrationClaimer_init_unchained(TaskConfig memory, address smartVault) internal onlyInitializing {
         _setSourceSmartVault(smartVault);
-        _setDepositor(_depositor);
     }
 
     /**
@@ -100,14 +83,6 @@ contract MigrationClaimer is IMigrationClaimer, Task {
     }
 
     /**
-     * @dev Sets the depostor address. Sender must be authorized.
-     * @param newDepositor Address of the depostor to be set
-     */
-    function setDepositor(address newDepositor) external override authP(authParams(newDepositor)) {
-        _setDepositor(newDepositor);
-    }
-
-    /**
      * @dev Executes the Balancer claimer task
      */
     function call(address token, uint256 amount) external override authP(authParams(token, amount)) {
@@ -122,7 +97,7 @@ contract MigrationClaimer is IMigrationClaimer, Task {
      * @dev Builds Source smart vault calldata
      */
     function _buildMigrationClaimerData(address token, uint256 amount) internal view returns (bytes memory) {
-        return abi.encodeWithSelector(IOldSmartVault.withdraw.selector, token, amount, depositor, '0x0');
+        return abi.encodeWithSelector(IOldSmartVault.withdraw.selector, token, amount, this.smartVault, '0x0');
     }
 
     /**
@@ -150,16 +125,6 @@ contract MigrationClaimer is IMigrationClaimer, Task {
         if (newSourceSmartVault == address(0)) revert TaskSourceSmartVaultZero();
         sourceSmartVault = newSourceSmartVault;
         emit SourceSmartVaultSet(newSourceSmartVault);
-    }
-
-    /**
-     * @dev Sets the depositor address
-     * @param newDepositor Address of the depositor to be set
-     */
-    function _setDepositor(address newDepositor) internal {
-        if (newDepositor == address(0)) revert TaskDepositorZero();
-        depositor = newDepositor;
-        emit DepositorSet(newDepositor);
     }
 
     /**
