@@ -6,9 +6,14 @@ import path from 'path'
 import { Script } from '../script'
 import { NETWORKS } from '../types'
 
-const SKIPPED_VERSIONS = ['v1.0.0']
 const IGNORED_NETWORKS = ['localhost', 'hardhat', 'goerli', 'mumbai']
 const TRACKED_NETWORKS = NETWORKS.filter((network) => !IGNORED_NETWORKS.includes(network))
+
+const SKIPPED_VERSIONS: { [key: string]: string[] } = {
+  tasks: ['v1.0.0'],
+  authorizer: ['v1.0.0'],
+  relayer: ['v1.0.0'],
+}
 
 type Result = { scriptId: string; missingNetworks: string[] }
 
@@ -31,7 +36,8 @@ function lookForPendingDeployments(dir: string, results: Result[]): void {
 function trackPendingDeployments(scriptPath: string, results: Result[]): void {
   const scriptId = scriptPath.substring(scriptPath.indexOf('/') + 1)
   const version = scriptId.substring(scriptId.lastIndexOf('/') + 1)
-  if (SKIPPED_VERSIONS.includes(version)) return
+  const key = Object.keys(SKIPPED_VERSIONS).find((key) => scriptId.startsWith(key))
+  if (key && SKIPPED_VERSIONS[key].includes(version)) return
 
   const outputPath = path.join(scriptPath, 'output')
   const files = fs.readdirSync(outputPath)
