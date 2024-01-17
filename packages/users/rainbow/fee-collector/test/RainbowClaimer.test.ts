@@ -33,7 +33,7 @@ describe('RainbowClaimer', () => {
     task = await deployProxy(
       'RainbowClaimer',
       [],
-      [buildEmptyTaskConfig(owner, smartVault), feeCollector.address],
+      [buildEmptyTaskConfig(owner, smartVault), feeCollector.address, feeCollector.address],
       'initializeRainbowClaimer'
     )
   })
