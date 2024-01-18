@@ -97,7 +97,7 @@ contract MigrationClaimer is IMigrationClaimer, Task {
      * @dev Builds Source smart vault calldata
      */
     function _buildMigrationClaimerData(address token, uint256 amount) internal view returns (bytes memory) {
-        return abi.encodeWithSelector(IOldSmartVault.withdraw.selector, token, amount, this.smartVault, '0x0');
+        return abi.encodeWithSelector(IOldSmartVault.withdraw.selector, token, amount, smartVault, '0x');
     }
 
     /**

@@ -1,0 +1,11 @@
+{
+  "migration-claimer-v2": {
+    "version": "MigrationClaimer",
+    "address": "0x22F9c68F3D285e10267B79069F575D1b69E114af"
+  },
+  "MigrationClaimer": "0x17112D7E478c39b4FC05605f51BD1810D95022B1",
+  "migration-claimer-v3": {
+    "version": "MigrationClaimer",
+    "address": "0x8E48C670CAeD225cA62722f73ae7e522863Cb0B8"
+  }
+}
