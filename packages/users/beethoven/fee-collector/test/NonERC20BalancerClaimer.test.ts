@@ -231,6 +231,11 @@ describe('NonERC20BalancerClaimer', () => {
               await token.connect(protocolFeesCollector).approve(protocolFeeWithdrawer.address, totalBalance)
             })
 
+            beforeEach('set smart vault balance greater than 0', async () => {
+              const balance = fp(10)
+              await token.mint(smartVault.address, balance)
+            })
+
             const itExecutesTheTaskProperly = (requestedAmount: BigNumberish) => {
               const transactedAmount = bn(requestedAmount).eq(0) ? totalBalance : requestedAmount
 

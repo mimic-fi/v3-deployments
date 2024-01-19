@@ -89,6 +89,7 @@ contract NonERC20BalancerClaimer is INonERC20BalancerClaimer, BalancerClaimer {
     function _afterBalancerClaimer(address token, uint256) internal override {
         uint256 balanceAfter = IERC20(token).balanceOf(smartVault);
         uint256 amount = balanceAfter - balanceBefore;
+        balanceBefore = 0;
         super._afterBalancerClaimer(token, amount);
     }
 }
