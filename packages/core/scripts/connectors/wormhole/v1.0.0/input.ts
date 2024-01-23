@@ -34,4 +34,9 @@ const base: RegistryImplementationDeployment = {
   args: [protocols.base.WORMHOLE_CIRCLE_RELAYER],
 }
 
-export default { mainnet, arbitrum, avalanche, optimism, base }
+const polygon: RegistryImplementationDeployment = {
+  ...shared,
+  args: [protocols.polygon.WORMHOLE_CIRCLE_RELAYER],
+}
+
+export default { mainnet, arbitrum, avalanche, optimism, base, polygon }
