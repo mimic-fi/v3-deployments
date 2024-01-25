@@ -1,0 +1,72 @@
+{
+  "authorizer": {
+    "version": "core/authorizer/v1.1.0",
+    "address": "0xC95F3B5177019619Bc9F2B6d5fAD2052A0263c92"
+  },
+  "price-oracle": {
+    "version": "core/price-oracle/v1.0.0",
+    "address": "0x4f9d034B58725954270AF466F6dd570fa181ed13"
+  },
+  "smart-vault": {
+    "version": "core/smart-vault/v1.0.0",
+    "address": "0xA09BC385421f18D5d5072924f9d3709bB2B76281"
+  },
+  "depositor": {
+    "version": "core/tasks/primitives/depositor/v2.1.0",
+    "address": "0xb62A12aEBe21f7538a55A63D1809dCE8Bb5DceC5"
+  },
+  "MigrationClaimer": "0xd96557b5ae9784B040A533d4e85fCca9C08AC2f2",
+  "migration-claimer": {
+    "version": "MigrationClaimer",
+    "address": "0xc8B1cEe97D9b1055ace1d6cfa77cc9F010139a10"
+  },
+  "BalancerClaimer": "0x582DD0eae0043bEB15737e626179f3C93D3e8bA0",
+  "asset-collector-v2": {
+    "version": "BalancerClaimer",
+    "address": "0xDEf579cf580A81ea68C043341433379b7C350280"
+  },
+  "bpt-exiter-v2": {
+    "version": "core/tasks/liquidity/balancer/bpt-exiter/v2.1.0",
+    "address": "0x09A8c88EfBce9Dd70293bb9688d8a4b0F189703C"
+  },
+  "balancer-v2-boosted-swapper": {
+    "version": "core/tasks/swap/balancer-v2-boosted-swapper/v2.0.0",
+    "address": "0xc89E74fE1A05B8F157976319251649a146Ad9046"
+  },
+  "balancer-v2-linear-swapper": {
+    "version": "core/tasks/swap/balancer-v2-linear-swapper/v2.0.0",
+    "address": "0x8786977c3B5Fa154cA6408Ec3c6100dEEA76B7f3"
+  },
+  "bpt-handle-over": {
+    "version": "core/tasks/primitives/handle-over/v2.0.0",
+    "address": "0xEcdfA4deF80B78BB68fa3989a620ee33415e2308"
+  },
+  "1inch-swapper": {
+    "version": "core/tasks/swap/1inch-v5/v2.0.0",
+    "address": "0xfe81Dde00881C212092532660F613c3eb9002D58"
+  },
+  "paraswap-swapper-v2": {
+    "version": "core/tasks/swap/paraswap-v5/v2.1.0",
+    "address": "0xca86F3f673cbCf11e4DD57289b20DbFf5710f144"
+  },
+  "usdc-handle-over": {
+    "version": "core/tasks/primitives/handle-over/v2.0.0",
+    "address": "0x75D8d876887b2Cd5032c835002dD447F278D72EB"
+  },
+  "withdrawer": {
+    "version": "core/tasks/primitives/withdrawer/v2.0.0",
+    "address": "0x564D5794446b8038B189A9a12682694FfAAe0d5a"
+  },
+  "relayer-funder-swapper": {
+    "version": "core/tasks/relayer/1inch-v5-swapper/v2.0.0",
+    "address": "0x30094B5B189f24c3E37C4C26C69BA79c65133775"
+  },
+  "relayer-funder-unwrapper": {
+    "version": "core/tasks/primitives/unwrapper/v2.0.0",
+    "address": "0x94818e53BD73f689baef36a81c694aB6C48Dd890"
+  },
+  "relayer-depositor": {
+    "version": "core/tasks/relayer/depositor/v2.0.0",
+    "address": "0x25125b9E890C3f68Ed46d29875a104d2Ea1eD858"
+  }
+}
