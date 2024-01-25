@@ -54,7 +54,7 @@ const deployment: EnvironmentDeployment = {
     pivot: chainlink.denominations.USD,
     feeds: [],
   },
-  smartVault: [
+  smartVaults: [
     {
       from: DEPLOYER,
       name: 'smart-vault',
@@ -331,7 +331,6 @@ const deployment: EnvironmentDeployment = {
           customDestinationChains: [],
           customMaxSlippages: [],
           customMaxFees: [],
-
           taskConfig: {
             baseConfig: {
               smartVault: dependency('smart-vault'),
