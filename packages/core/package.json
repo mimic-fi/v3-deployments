@@ -17,7 +17,7 @@
     "prepare": "yarn build"
   },
   "dependencies": {
-    "@mimic-fi/v3-helpers": "0.1.8"
+    "@mimic-fi/v3-helpers": "0.1.10"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.2.3",

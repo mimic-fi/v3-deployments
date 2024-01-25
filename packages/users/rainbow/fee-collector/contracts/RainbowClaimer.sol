@@ -32,38 +32,55 @@ contract RainbowClaimer is IRainbowClaimer, Task {
     // Fee collector address
     address public override feeCollector;
 
+    // Safe address
+    address public override safe;
+
     /**
      * @dev Initializes the Rainbow claimer
      * @param config Task config
      * @param collector Fee collector address
+     * @param _safe Safe address
      */
-    function initializeRainbowClaimer(TaskConfig memory config, address collector) external virtual initializer {
-        __RainbowClaimer_init(config, collector);
+    function initializeRainbowClaimer(TaskConfig memory config, address collector, address _safe)
+        external
+        virtual
+        initializer
+    {
+        __RainbowClaimer_init(config, collector, _safe);
     }
 
     /**
      * @dev Initializes the Rainbow claimer. It does call upper contracts initializers.
      * @param config Task config
      * @param collector Fee collector address
+     * @param _safe Safe address
      */
-    function __RainbowClaimer_init(TaskConfig memory config, address collector) internal onlyInitializing {
+    function __RainbowClaimer_init(TaskConfig memory config, address collector, address _safe)
+        internal
+        onlyInitializing
+    {
         __Task_init(config);
-        __RainbowClaimer_init_unchained(config, collector);
+        __RainbowClaimer_init_unchained(config, collector, _safe);
     }
 
     /**
      * @dev Initializes the Rainbow claimer. It does not call upper contracts initializers.
      * @param collector Fee collector address
+     * @param _safe Safe address
      */
-    function __RainbowClaimer_init_unchained(TaskConfig memory, address collector) internal onlyInitializing {
+    function __RainbowClaimer_init_unchained(TaskConfig memory, address collector, address _safe)
+        internal
+        onlyInitializing
+    {
         _setFeeCollector(collector);
+        _setSafe(_safe);
     }
 
     /**
      * @dev Tells the address from where the token amounts to execute this task are fetched
      */
     function getTokensSource() external view virtual override(IBaseTask, BaseTask) returns (address) {
-        return feeCollector;
+        return safe;
     }
 
     /**
@@ -71,7 +88,7 @@ contract RainbowClaimer is IRainbowClaimer, Task {
      * @param token Address of the token being queried
      */
     function getTaskAmount(address token) public view virtual override(IBaseTask, BaseTask) returns (uint256) {
-        return ERC20Helpers.balanceOf(token, feeCollector);
+        return ERC20Helpers.balanceOf(token, safe);
     }
 
     /**
@@ -80,6 +97,14 @@ contract RainbowClaimer is IRainbowClaimer, Task {
      */
     function setFeeCollector(address newFeeCollector) external override authP(authParams(newFeeCollector)) {
         _setFeeCollector(newFeeCollector);
+    }
+
+    /**
+     * @dev Sets the safe address. Sender must be authorized.
+     * @param newSafe Address of the safe to be set
+     */
+    function setSafe(address newSafe) external override authP(authParams(newSafe)) {
+        _setSafe(newSafe);
     }
 
     /**
@@ -128,6 +153,16 @@ contract RainbowClaimer is IRainbowClaimer, Task {
         if (newFeeCollector == address(0)) revert TaskFeeCollectorZero();
         feeCollector = newFeeCollector;
         emit FeeCollectorSet(newFeeCollector);
+    }
+
+    /**
+     * @dev Sets the safe address
+     * @param newSafe Address of the safe to be set
+     */
+    function _setSafe(address newSafe) internal {
+        if (newSafe == address(0)) revert TaskSafeZero();
+        safe = newSafe;
+        emit SafeSet(newSafe);
     }
 
     /**
