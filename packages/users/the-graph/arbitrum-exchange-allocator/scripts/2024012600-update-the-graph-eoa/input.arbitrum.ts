@@ -1,5 +1,7 @@
 import { dependency, DEPLOYER, EnvironmentUpdate, USERS_ADMIN } from '@mimic-fi/v3-deployments-lib'
 
+/* eslint-disable no-secrets/no-secrets */
+
 const THE_GRAPH_FUNDER = '0xeDFEd47b96834338DFd71967Ab15AFaD4E7b7c2E'
 
 const update: EnvironmentUpdate = {
