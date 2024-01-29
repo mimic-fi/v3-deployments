@@ -4,9 +4,9 @@ pragma solidity ^0.8.0;
 
 import '@mimic-fi/v3-helpers/contracts/utils/ERC20Helpers.sol';
 
-import '../interfaces/v5/IFeeClaimer.sol';
+import '../interfaces/v6/IAugustusV6FeeVault.sol';
 
-contract FeeClaimerMock is IFeeClaimer {
+contract AugustusFeeVaultMock is IAugustusV6FeeVault {
     bool public fail;
 
     receive() external payable {
@@ -17,19 +17,11 @@ contract FeeClaimerMock is IFeeClaimer {
         fail = _fail;
     }
 
-    function augustusSwapper() external pure override returns (address) {
-        return address(0);
-    }
-
     function getBalance(address token, address) external view override returns (uint256) {
         return ERC20Helpers.balanceOf(token, address(this));
     }
 
-    function registerFee(address, address, uint256) external override {
-        // solhint-disable-previous-line no-empty-blocks
-    }
-
-    function withdrawSomeERC20(address token, uint256 amount, address recipient) external override returns (bool) {
+    function collect(address token, uint256 amount, address recipient, address) external override returns (bool) {
         ERC20Helpers.transfer(token, recipient, amount);
         return !fail;
     }

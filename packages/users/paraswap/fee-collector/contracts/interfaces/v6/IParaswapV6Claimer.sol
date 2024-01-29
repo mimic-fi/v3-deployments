@@ -17,9 +17,9 @@ pragma solidity >=0.8.0;
 import '@mimic-fi/v3-tasks/contracts/interfaces/ITask.sol';
 
 /**
- * @title Balancer claimer interface
+ * @title Paraswap v6 claimer interface
  */
-interface IParaswapClaimer is ITask {
+interface IParaswapV6Claimer is ITask {
     /**
      * @dev The token is zero
      */
@@ -31,9 +31,9 @@ interface IParaswapClaimer is ITask {
     error TaskAmountZero();
 
     /**
-     * @dev The fee claimer is zero
+     * @dev The fee vault is zero
      */
-    error TaskFeeClaimerZero();
+    error TaskFeeVaultZero();
 
     /**
      * @dev The previous balance connector is not zero
@@ -41,28 +41,28 @@ interface IParaswapClaimer is ITask {
     error TaskPreviousConnectorNotZero(bytes32 id);
 
     /**
-     * @dev The Paraswap claim failed
+     * @dev The Paraswap v6 claim failed
      */
     error TaskClaimFailed();
 
     /**
-     * @dev Emitted every time the fee claimer is set
+     * @dev Emitted every time the fee vault is set
      */
-    event FeeClaimerSet(address indexed feeClaimer);
+    event FeeVaultSet(address indexed feeVault);
 
     /**
-     * @dev Tells the fee claimer address
+     * @dev Tells the Augustus fee vault address
      */
-    function feeClaimer() external view returns (address);
+    function feeVault() external view returns (address);
 
     /**
-     * @dev Sets the fee claimer address. Sender must be authorized.
-     * @param newFeeClaimer Address of the fee claimer to be set
+     * @dev Sets the Augustus fee vault address. Sender must be authorized.
+     * @param newFeeVault Address of the Augustus fee vault to be set
      */
-    function setFeeClaimer(address newFeeClaimer) external;
+    function setFeeVault(address newFeeVault) external;
 
     /**
-     * @dev Executes the Balancer claimer task
+     * @dev Executes the Paraswap v6 claimer task
      */
     function call(address token, uint256 amount) external;
 }
