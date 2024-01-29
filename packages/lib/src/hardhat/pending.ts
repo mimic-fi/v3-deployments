@@ -9,6 +9,12 @@ import { NETWORKS } from '../types'
 const IGNORED_NETWORKS = ['localhost', 'hardhat', 'goerli', 'mumbai']
 const TRACKED_NETWORKS = NETWORKS.filter((network) => !IGNORED_NETWORKS.includes(network))
 
+const SKIPPED_VERSIONS: { [key: string]: string[] } = {
+  tasks: ['v1.0.0'],
+  authorizer: ['v1.0.0'],
+  relayer: ['v1.0.0'],
+}
+
 type Result = { scriptId: string; missingNetworks: string[] }
 
 task('pending', 'List pending deployments').setAction(async () => {
@@ -28,16 +34,16 @@ function lookForPendingDeployments(dir: string, results: Result[]): void {
 }
 
 function trackPendingDeployments(scriptPath: string, results: Result[]): void {
+  const scriptId = scriptPath.substring(scriptPath.indexOf('/') + 1)
+  const version = scriptId.substring(scriptId.lastIndexOf('/') + 1)
+  const key = Object.keys(SKIPPED_VERSIONS).find((key) => scriptId.startsWith(key))
+  if (key && SKIPPED_VERSIONS[key].includes(version)) return
+
   const outputPath = path.join(scriptPath, 'output')
   const files = fs.readdirSync(outputPath)
   const fileNames = files.map((file) => path.parse(file).name)
   const missingNetworks = TRACKED_NETWORKS.filter((network) => !fileNames.includes(network))
-
-  const scriptId = scriptPath.substring(scriptPath.indexOf('/') + 1)
-  const result = { scriptId, missingNetworks }
-  const scriptIdsWithoutVersion = results.map((r) => r.scriptId.substring(0, r.scriptId.lastIndexOf('/')))
-  const index = scriptIdsWithoutVersion.indexOf(scriptId.substring(0, scriptId.lastIndexOf('/')))
-  index < 0 ? results.push(result) : (results[index] = result)
+  results.push({ scriptId, missingNetworks })
 }
 
 function printPendingDeployments(results: Result[]): void {
@@ -61,6 +67,10 @@ function printPendingDeployments(results: Result[]): void {
     table.push(row)
   }
 
-  console.log(table.toString())
-  console.log('Total results:', results.length)
+  console.log(table.toString() + '\n')
+  console.log('⭕️ - Error parsing input')
+  console.log('🔴 - Missing deployment')
+  console.log('🟠 - No deployment defined')
+  console.log('🟢 - Deployed')
+  console.log('\nTotal results:', results.length)
 }

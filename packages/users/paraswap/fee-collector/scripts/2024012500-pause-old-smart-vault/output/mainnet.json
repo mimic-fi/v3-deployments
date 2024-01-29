@@ -1,0 +1,10 @@
+{
+  "old-authorizer": {
+    "version": "core/authorizer/v1.1.0",
+    "address": "0xe9Ddeab33529e047Fca7963dD0824E3f5c6478E2"
+  },
+  "old-smart-vault": {
+    "version": "core/smart-vault/v1.0.0",
+    "address": "0x4b30e33c1f78aa107cf8c5c27ea5b7e68243bc87"
+  }
+}
