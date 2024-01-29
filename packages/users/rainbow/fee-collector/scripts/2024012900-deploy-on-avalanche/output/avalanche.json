@@ -1,0 +1,59 @@
+{
+  "authorizer": {
+    "version": "core/authorizer/v1.1.0",
+    "address": "0xfdA4eA4D550E113AdEe3f15Ff5a4fd83B71a6711"
+  },
+  "price-oracle": {
+    "version": "core/price-oracle/v1.0.0",
+    "address": "0x9352ec1824b60beBAa8509e3218De9d0A4C8244d"
+  },
+  "smart-vault": {
+    "version": "core/smart-vault/v1.0.0",
+    "address": "0xce4C24c2A44E4ab92cB1b0CFDdAC314971430E66"
+  },
+  "depositor": {
+    "version": "core/tasks/primitives/depositor/v2.1.0",
+    "address": "0x99D1FCBb8FA78Ed13d7ae6843eD6f5eEbf1b5185"
+  },
+  "RainbowClaimer": "0x2eF11C24c9f8e3E91E24F24b0B2a2A02771bCe6E",
+  "asset-collector-v3": {
+    "version": "RainbowClaimer",
+    "address": "0x732F7e38Cb14E4120eb309298c476EC7EfD0592B"
+  },
+  "wrapper": {
+    "version": "core/tasks/primitives/wrapper/v2.0.0",
+    "address": "0x5198461fA298644c1385D97bF47637a41e952aEf"
+  },
+  "wrapper-handle-over": {
+    "version": "core/tasks/primitives/handle-over/v2.0.0",
+    "address": "0xB10e4e8496c4AE6e4E73ca3Dcc392c1cdcC1d5bf"
+  },
+  "1inch-swapper": {
+    "version": "core/tasks/swap/1inch-v5/v2.0.0",
+    "address": "0x9482093e6342aCB9245CF1C407f410faA1acC880"
+  },
+  "paraswap-swapper-v2": {
+    "version": "core/tasks/swap/paraswap-v5/v2.1.0",
+    "address": "0xAd5cC8231F9b6CeF9043dDF81E2486DDA22bAe17"
+  },
+  "usdc-handle-over": {
+    "version": "core/tasks/primitives/handle-over/v2.0.0",
+    "address": "0x19eB35411bd6351901fdFbDb9BF95EbB88adA52f"
+  },
+  "wormhole-bridger": {
+    "version": "core/tasks/bridge/wormhole/v2.0.0",
+    "address": "0xf7dA5160825DEc5757d2C98DFd6C89567BE26AFb"
+  },
+  "relayer-funder-swapper": {
+    "version": "core/tasks/relayer/1inch-v5-swapper/v2.0.0",
+    "address": "0x397a0Ba3B162d1aB18e22C08eDB6603Df901cDE5"
+  },
+  "relayer-funder-unwrapper": {
+    "version": "core/tasks/primitives/unwrapper/v2.0.0",
+    "address": "0x23e8e837171eDF9cD22B094bD13cec7275f1ac3C"
+  },
+  "relayer-depositor": {
+    "version": "core/tasks/relayer/depositor/v2.0.0",
+    "address": "0x0803A46Ef4EEFb5183C22Bfa9F51654408cb9266"
+  }
+}
