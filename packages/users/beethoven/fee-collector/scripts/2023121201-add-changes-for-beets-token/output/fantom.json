@@ -1,0 +1,6 @@
+{
+  "withdrawer-beets": {
+    "version": "core/tasks/primitives/withdrawer/v2.0.0",
+    "address": "0x069141c581967C8240CeAE574Fc603E0298705DA"
+  }
+}

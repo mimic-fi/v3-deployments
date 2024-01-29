@@ -16,4 +16,5 @@ export default {
   avalanche: deployment,
   optimism: deployment,
   base: deployment,
+  polygon: deployment,
 }

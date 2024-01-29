@@ -1,0 +1,18 @@
+{
+  "arbitrum-depositor": {
+    "version": "core/tasks/primitives/depositor/v2.1.0",
+    "address": "0xE4DF8B6D543BBf76Da63C9E5C87e47d4595e2FeD"
+  },
+  "gnosis-depositor": {
+    "version": "core/tasks/primitives/depositor/v2.1.0",
+    "address": "0xf0F516EFa40A1fD61d14B2164579FEdBf89E0d5E"
+  },
+  "polygon-depositor": {
+    "version": "core/tasks/primitives/depositor/v2.1.0",
+    "address": "0xa701073E7107394AbfE0029BA7B9bA75482bc012"
+  },
+  "zkevm-depositor": {
+    "version": "core/tasks/primitives/depositor/v2.1.0",
+    "address": "0xC969B9f7909dC59421aBB220b6fA37131600D2B2"
+  }
+}

@@ -1,9 +1,17 @@
 import { dependency, DEPLOYER, EnvironmentUpdate, USERS_ADMIN } from '@mimic-fi/v3-deployments-lib'
 import { DAY } from '@mimic-fi/v3-helpers'
 
-const MODE = 1 //SECONDS
+/* eslint-disable no-secrets/no-secrets */
+const TIMELOCK_MODE = {
+  SECONDS: 0,
+  ON_DAY: 1,
+  ON_LAST_DAY: 2,
+  EVERY_X_MONTH: 3,
+}
+
+const MODE = TIMELOCK_MODE.SECONDS
 const FREQUENCY = 14 * DAY //14 days
-const ALLOWED_AT = 1700726400 //Thursday, 23 November 2023 8:00:00 GMT
+const ALLOWED_AT = 1701936000 //Thursday, 7 December 2023 8:00:00 GMT
 const WINDOW = 2 * DAY
 
 const update: EnvironmentUpdate = {

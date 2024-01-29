@@ -1,0 +1,47 @@
+{
+  "authorizer": {
+    "version": "core/authorizer/v1.1.0",
+    "address": "0x35c00767774cabFD8c108E9A156D25e440caBc10"
+  },
+  "price-oracle": {
+    "version": "core/price-oracle/v1.0.0",
+    "address": "0xFDb4B7683faaDfB2524066348383cC2811377b4a"
+  },
+  "smart-vault": {
+    "version": "core/smart-vault/v1.0.0",
+    "address": "0x9e5D6427D2cdaDC68870197b099C2Df535Ec3c97"
+  },
+  "depositor": {
+    "version": "core/tasks/primitives/depositor/v2.1.1",
+    "address": "0x68247248489fb0c1F55aeA1BBaC0aaE829D9BF77"
+  },
+  "BalancerClaimer": "0x1B1528E0845a062A30017B33c62B65Ef7029BBC1",
+  "asset-collector-v2": {
+    "version": "BalancerClaimer",
+    "address": "0xFBfF19FdfeeC906eD985EfD5fe122da0bF310726"
+  },
+  "bpt-exiter-v2": {
+    "version": "core/tasks/liquidity/balancer/bpt-exiter/v2.1.1",
+    "address": "0xC4bdaeE2a32Add090847c970547b3Db057eDeB49"
+  },
+  "balancer-v2-boosted-swapper": {
+    "version": "core/tasks/swap/balancer-v2-boosted-swapper/v2.0.1",
+    "address": "0xaBA2ad96046B5CE3E409D286D6Bcbd18344d7B5B"
+  },
+  "balancer-v2-linear-swapper": {
+    "version": "core/tasks/swap/balancer-v2-linear-swapper/v2.0.1",
+    "address": "0x9120cDBDa777E711FFc4CDFAE67659d7Cb7270Ef"
+  },
+  "bpt-handle-over": {
+    "version": "core/tasks/primitives/handle-over/v2.0.1",
+    "address": "0x72f4828bd8d8639dA3A3527e4E7b2288DFebe62e"
+  },
+  "paraswap-swapper-v2": {
+    "version": "core/tasks/swap/paraswap-v5/v2.1.1",
+    "address": "0xdD6a7585f318F8920e63913d2Fe193B61d0Eb751"
+  },
+  "usdc-handle-over": {
+    "version": "core/tasks/primitives/handle-over/v2.0.1",
+    "address": "0x5c4dac07e3DC029F7e79F1D619f928f2d61c2F3e"
+  }
+}
