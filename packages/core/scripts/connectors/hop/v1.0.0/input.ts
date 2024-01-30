@@ -34,4 +34,9 @@ const base: RegistryImplementationDeployment = {
   args: [tokens.base.WETH],
 }
 
-export default { mainnet, polygon, arbitrum, optimism, base }
+const zkevm: RegistryImplementationDeployment = {
+  ...shared,
+  args: [tokens.zkevm.WETH],
+}
+
+export default { mainnet, polygon, arbitrum, optimism, base, zkevm }
