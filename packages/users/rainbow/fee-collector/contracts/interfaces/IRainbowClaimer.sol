@@ -36,9 +36,9 @@ interface IRainbowClaimer is ITask {
     error TaskFeeCollectorZero();
 
     /**
-     * @dev The safe is zero
+     * @dev The Rainbow router is zero
      */
-    error TaskSafeZero();
+    error TaskRainbowRouterZero();
 
     /**
      * @dev The previous balance connector is not zero
@@ -51,9 +51,9 @@ interface IRainbowClaimer is ITask {
     event FeeCollectorSet(address indexed feeCollector);
 
     /**
-     * @dev Emitted every time the safe is set
+     * @dev Emitted every time the Rainbow router is set
      */
-    event SafeSet(address indexed safe);
+    event RainbowRouterSet(address indexed rainbowRouter);
 
     /**
      * @dev Tells the fee collector address
@@ -61,9 +61,9 @@ interface IRainbowClaimer is ITask {
     function feeCollector() external view returns (address);
 
     /**
-     * @dev Tells the safe address
+     * @dev Tells the Rainbow router address
      */
-    function safe() external view returns (address);
+    function rainbowRouter() external view returns (address);
 
     /**
      * @dev Sets the fee claimer address. Sender must be authorized.
@@ -72,10 +72,10 @@ interface IRainbowClaimer is ITask {
     function setFeeCollector(address newFeeCollector) external;
 
     /**
-     * @dev Sets the safe address. Sender must be authorized.
-     * @param newSafe Address of the safe to be set
+     * @dev Sets the Rainbow router address. Sender must be authorized.
+     * @param newRainbowRouter Address of the rainbowRouter to be set
      */
-    function setSafe(address newSafe) external;
+    function setRainbowRouter(address newRainbowRouter) external;
 
     /**
      * @dev Executes the Rainbow claimer task
