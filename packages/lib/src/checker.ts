@@ -1,3 +1,5 @@
+import { bn, fp } from '@mimic-fi/v3-helpers'
+
 import logger from './logger'
 import { Script } from './script'
 import { Dependency, EnvironmentDeployment, OptionalTaskConfig, TaskParams } from './types'
@@ -12,6 +14,36 @@ import {
 } from './types/tasks/checks'
 
 const PRIMITIVES = ['wrap', 'unwrap', 'collect', 'withdraw', 'call', 'execute']
+
+// Approximately 10 txs
+const MAX_EXPECTED_QUOTAS: Record<string, number> = {
+  mainnet: 0.0796,
+  optimism: 0.02,
+  bsc: 0.015,
+  gnosis: 0.006,
+  polygon: 0.54,
+  fantom: 0.79,
+  base: 0.000135,
+  avalanche: 0.148,
+  arbitrum: 0.0025,
+  zkevm: 0.0084,
+  aurora: 0,
+}
+
+// Approximately 10 txs
+const EXPECTED_GAS_LIMITS: Record<string, number> = {
+  mainnet: 100e9,
+  optimism: 0.5e9,
+  bsc: 10e9,
+  gnosis: 50e9,
+  polygon: 200e9,
+  fantom: 200e9,
+  base: 200e9,
+  avalanche: 900e9,
+  arbitrum: 10e9,
+  zkevm: 10e9,
+  aurora: 0,
+}
 
 export default class DeploymentChecker {
   private script: Script
@@ -61,6 +93,7 @@ export default class DeploymentChecker {
 
   private checkTasks(input: EnvironmentDeployment): void {
     this.checkNonDuplicatedNames(input.tasks)
+    this.checkGasLimits(input.tasks)
     this.checkBalanceConnectors(input.tasks)
     this.checkBridgeOrWithdrawTask(input.tasks)
     this.checkRelayerRelatedTask(input.tasks)
@@ -100,16 +133,41 @@ export default class DeploymentChecker {
     }
   }
 
+  private checkGasLimits(input: TaskParams[]): void {
+    for (const task of input) {
+      const config = this.getTaskConfig(task)
+      const gasLimit = config?.gasLimitConfig?.gasPriceLimit || 0
+      const maxExpectedLimit = EXPECTED_GAS_LIMITS[this.script.inputNetwork] || 0
+      if (gasLimit > maxExpectedLimit) this.error(`Gas price limit above ${maxExpectedLimit} for task ${task.name}`)
+
+      const txCostLimitPct = bn(config?.gasLimitConfig?.txCostLimitPct || 0)
+      if (txCostLimitPct.gt(fp(0.05))) this.error(`Tx cost limit pct above 5% for task ${task.name}`)
+    }
+  }
+
   private checkBridgeOrWithdrawTask(input: TaskParams[]): void {
     const isValid = input.some(({ config }) => isBridgeTaskConfig(config) || isWithdrawTaskConfig(config))
     if (!isValid) this.warn('Missing bridge or withdraw task')
   }
 
   private checkRelayerRelatedTask(input: TaskParams[]): void {
-    const isValid = input.some(
+    const relayerTasks = input.filter(
       ({ version }) => typeof version != 'string' && version.id.startsWith('core/tasks/relayer')
     )
-    if (!isValid) this.warn('Missing relayer-related task')
+    if (relayerTasks.length == 0) this.warn('Missing relayer-related task')
+
+    relayerTasks.forEach((task) => {
+      const config = this.getTaskConfig(task)
+      const maxExpectedQuota = fp(MAX_EXPECTED_QUOTAS[this.script.inputNetwork] || 0)
+
+      const minThreshold = bn(config?.tokenThresholdConfig?.defaultThreshold?.min || 0)
+      if (minThreshold.gt(maxExpectedQuota))
+        this.warn(`Relayer funder min threshold above ${maxExpectedQuota} for ${task.name}`)
+
+      const maxThreshold = bn(config?.tokenThresholdConfig?.defaultThreshold?.max || 0)
+      if (maxThreshold.gt(maxExpectedQuota.mul(10)))
+        this.warn(`Relayer funder max threshold above ${maxExpectedQuota.mul(10)} for ${task.name}`)
+    })
   }
 
   private checkPermissions(input: EnvironmentDeployment): void {
@@ -147,6 +205,10 @@ export default class DeploymentChecker {
     else {
       if (!this.isExpectedSmartVault(input, input.relayerSettings)) this.warn('Unexpected fee settings smart vault')
       if (!input.relayerSettings.relayer.id.startsWith('core/relayer')) this.warn('Unexpected fee controller')
+
+      const maxExpectedQuota = MAX_EXPECTED_QUOTAS[this.script.inputNetwork] || 0
+      const isQuotaHigh = input.relayerSettings.quota && input.relayerSettings.quota > fp(maxExpectedQuota)
+      if (isQuotaHigh) this.error(`High relayer quota, expected ${maxExpectedQuota} maximum`)
     }
   }
 
