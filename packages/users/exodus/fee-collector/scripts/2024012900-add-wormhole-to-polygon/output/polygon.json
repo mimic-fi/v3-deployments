@@ -1,0 +1,6 @@
+{
+  "wormhole-bridger": {
+    "version": "core/tasks/bridge/wormhole/v2.0.0",
+    "address": "0xf48421BbbE844Db29FAc7Fce6fcc8A1DA6b2437c"
+  }
+}

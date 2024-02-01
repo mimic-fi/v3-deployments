@@ -32,55 +32,55 @@ contract RainbowClaimer is IRainbowClaimer, Task {
     // Fee collector address
     address public override feeCollector;
 
-    // Safe address
-    address public override safe;
+    // Rainbow router address
+    address public override rainbowRouter;
 
     /**
      * @dev Initializes the Rainbow claimer
      * @param config Task config
      * @param collector Fee collector address
-     * @param _safe Safe address
+     * @param _rainbowRouter Rainbow router address
      */
-    function initializeRainbowClaimer(TaskConfig memory config, address collector, address _safe)
+    function initializeRainbowClaimer(TaskConfig memory config, address collector, address _rainbowRouter)
         external
         virtual
         initializer
     {
-        __RainbowClaimer_init(config, collector, _safe);
+        __RainbowClaimer_init(config, collector, _rainbowRouter);
     }
 
     /**
      * @dev Initializes the Rainbow claimer. It does call upper contracts initializers.
      * @param config Task config
      * @param collector Fee collector address
-     * @param _safe Safe address
+     * @param _rainbowRouter Rainbow router address
      */
-    function __RainbowClaimer_init(TaskConfig memory config, address collector, address _safe)
+    function __RainbowClaimer_init(TaskConfig memory config, address collector, address _rainbowRouter)
         internal
         onlyInitializing
     {
         __Task_init(config);
-        __RainbowClaimer_init_unchained(config, collector, _safe);
+        __RainbowClaimer_init_unchained(config, collector, _rainbowRouter);
     }
 
     /**
      * @dev Initializes the Rainbow claimer. It does not call upper contracts initializers.
      * @param collector Fee collector address
-     * @param _safe Safe address
+     * @param _rainbowRouter Rainbow router address
      */
-    function __RainbowClaimer_init_unchained(TaskConfig memory, address collector, address _safe)
+    function __RainbowClaimer_init_unchained(TaskConfig memory, address collector, address _rainbowRouter)
         internal
         onlyInitializing
     {
         _setFeeCollector(collector);
-        _setSafe(_safe);
+        _setRainbowRouter(_rainbowRouter);
     }
 
     /**
      * @dev Tells the address from where the token amounts to execute this task are fetched
      */
     function getTokensSource() external view virtual override(IBaseTask, BaseTask) returns (address) {
-        return safe;
+        return rainbowRouter;
     }
 
     /**
@@ -88,7 +88,7 @@ contract RainbowClaimer is IRainbowClaimer, Task {
      * @param token Address of the token being queried
      */
     function getTaskAmount(address token) public view virtual override(IBaseTask, BaseTask) returns (uint256) {
-        return ERC20Helpers.balanceOf(token, safe);
+        return ERC20Helpers.balanceOf(token, rainbowRouter);
     }
 
     /**
@@ -100,11 +100,11 @@ contract RainbowClaimer is IRainbowClaimer, Task {
     }
 
     /**
-     * @dev Sets the safe address. Sender must be authorized.
-     * @param newSafe Address of the safe to be set
+     * @dev Sets the Rainbow router address. Sender must be authorized.
+     * @param newRainbowRouter Address of the Rainbow router to be set
      */
-    function setSafe(address newSafe) external override authP(authParams(newSafe)) {
-        _setSafe(newSafe);
+    function setRainbowRouter(address newRainbowRouter) external override authP(authParams(newRainbowRouter)) {
+        _setRainbowRouter(newRainbowRouter);
     }
 
     /**
@@ -141,7 +141,8 @@ contract RainbowClaimer is IRainbowClaimer, Task {
      * @dev After Rainbow claimer task hook
      */
     function _afterRainbowClaimer(address token, uint256 amount) internal {
-        _increaseBalanceConnector(token, amount);
+        //Do not increase Balancer connector because Rainbow transfers fees to the depositor task
+        //_increaseBalanceConnector(token, amount);
         _afterTask(token, amount);
     }
 
@@ -156,13 +157,13 @@ contract RainbowClaimer is IRainbowClaimer, Task {
     }
 
     /**
-     * @dev Sets the safe address
-     * @param newSafe Address of the safe to be set
+     * @dev Sets the Rainbow router address
+     * @param newRainbowRouter Address of the Rainbow router to be set
      */
-    function _setSafe(address newSafe) internal {
-        if (newSafe == address(0)) revert TaskSafeZero();
-        safe = newSafe;
-        emit SafeSet(newSafe);
+    function _setRainbowRouter(address newRainbowRouter) internal {
+        if (newRainbowRouter == address(0)) revert TaskRainbowRouterZero();
+        rainbowRouter = newRainbowRouter;
+        emit RainbowRouterSet(newRainbowRouter);
     }
 
     /**
