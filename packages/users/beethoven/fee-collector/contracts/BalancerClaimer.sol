@@ -137,7 +137,7 @@ contract BalancerClaimer is IBalancerClaimer, Task {
     /**
      * @dev Before balancer claimer task hook
      */
-    function _beforeBalancerClaimer(address token, uint256 amount) internal {
+    function _beforeBalancerClaimer(address token, uint256 amount) internal virtual {
         _beforeTask(token, amount);
         if (token == address(0)) revert TaskTokenZero();
         if (amount == 0) revert TaskAmountZero();
@@ -146,7 +146,7 @@ contract BalancerClaimer is IBalancerClaimer, Task {
     /**
      * @dev After balancer claimer task hook
      */
-    function _afterBalancerClaimer(address token, uint256 amount) internal {
+    function _afterBalancerClaimer(address token, uint256 amount) internal virtual {
         _increaseBalanceConnector(token, amount);
         _afterTask(token, amount);
     }
