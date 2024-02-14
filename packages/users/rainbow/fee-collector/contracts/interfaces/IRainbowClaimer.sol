@@ -36,6 +36,11 @@ interface IRainbowClaimer is ITask {
     error TaskFeeCollectorZero();
 
     /**
+     * @dev The Rainbow router is zero
+     */
+    error TaskRainbowRouterZero();
+
+    /**
      * @dev The previous balance connector is not zero
      */
     error TaskPreviousConnectorNotZero(bytes32 id);
@@ -46,15 +51,31 @@ interface IRainbowClaimer is ITask {
     event FeeCollectorSet(address indexed feeCollector);
 
     /**
+     * @dev Emitted every time the Rainbow router is set
+     */
+    event RainbowRouterSet(address indexed rainbowRouter);
+
+    /**
      * @dev Tells the fee collector address
      */
     function feeCollector() external view returns (address);
+
+    /**
+     * @dev Tells the Rainbow router address
+     */
+    function rainbowRouter() external view returns (address);
 
     /**
      * @dev Sets the fee claimer address. Sender must be authorized.
      * @param newFeeCollector Address of the fee collector to be set
      */
     function setFeeCollector(address newFeeCollector) external;
+
+    /**
+     * @dev Sets the Rainbow router address. Sender must be authorized.
+     * @param newRainbowRouter Address of the rainbowRouter to be set
+     */
+    function setRainbowRouter(address newRainbowRouter) external;
 
     /**
      * @dev Executes the Rainbow claimer task

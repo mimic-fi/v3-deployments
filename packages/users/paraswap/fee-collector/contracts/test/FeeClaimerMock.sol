@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 
 import '@mimic-fi/v3-helpers/contracts/utils/ERC20Helpers.sol';
 
-import '../interfaces/IFeeClaimer.sol';
+import '../interfaces/v5/IFeeClaimer.sol';
 
 contract FeeClaimerMock is IFeeClaimer {
     bool public fail;

@@ -1,0 +1,6 @@
+{
+  "exceptions-withdrawer": {
+    "version": "core/tasks/primitives/withdrawer/v2.0.0",
+    "address": "0xc2a696b253324C1f8b50E4421Be2ecB80c7a21f6"
+  }
+}

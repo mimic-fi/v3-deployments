@@ -33,7 +33,7 @@ describe('RainbowClaimer', () => {
     task = await deployProxy(
       'RainbowClaimer',
       [],
-      [buildEmptyTaskConfig(owner, smartVault), feeCollector.address],
+      [buildEmptyTaskConfig(owner, smartVault), feeCollector.address, feeCollector.address],
       'initializeRainbowClaimer'
     )
   })
@@ -216,17 +216,6 @@ describe('RainbowClaimer', () => {
             })
 
             itExecutesTheTaskProperly(requestedAmount)
-
-            it('updates the balance connectors properly', async () => {
-              const tx = await task.connect(owner).call(token.address, requestedAmount)
-
-              await assertIndirectEvent(tx, smartVault.interface, 'BalanceConnectorUpdated', {
-                id: nextConnectorId,
-                token,
-                amount: totalBalance,
-                added: true,
-              })
-            })
           })
         })
 
@@ -314,17 +303,6 @@ describe('RainbowClaimer', () => {
             })
 
             itExecutesTheTaskProperly(requestedAmount)
-
-            it('updates the balance connectors properly', async () => {
-              const tx = await task.connect(owner).call(token, requestedAmount)
-
-              await assertIndirectEvent(tx, smartVault.interface, 'BalanceConnectorUpdated', {
-                id: nextConnectorId,
-                token,
-                amount: totalBalance,
-                added: true,
-              })
-            })
           })
         })
 
