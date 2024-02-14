@@ -15,7 +15,7 @@ const USDC = tokens.avalanche.USDC
 const WRAPPED_NATIVE_TOKEN = tokens.avalanche.WAVAX
 
 //Config - Addresses
-const BRIDGE_RECIPIENT = ''
+const BRIDGE_RECIPIENT = '0xD48bc93B9ca80a3ab7E5520BD52efA5e14558939'
 
 //Config - Threshold
 const USDC_THRESHOLD = bn(10e6) // 10 USDC

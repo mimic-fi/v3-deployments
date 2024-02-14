@@ -1,7 +1,6 @@
 import { OP } from '@mimic-fi/v3-authorizer'
 import {
   balanceConnectorId,
-  counterfactualDependency,
   dependency,
   DEPLOYER,
   EnvironmentDeployment,
@@ -16,10 +15,10 @@ const USDC = tokens.mainnet.USDC
 const WRAPPED_NATIVE_TOKEN = tokens.mainnet.WETH
 
 //Config - Addresses
-const WITHDRAWER_RECIPIENT = '0x979991695832F3321ad014564f1143A060cECE01' //Mimic testing
+const WITHDRAWER_RECIPIENT = '0x99983ed1a64540fb22582192d615082889547500'
 
 //Config - Threshold
-const USDC_THRESHOLD = bn(100e6) // 50 USDC
+const USDC_THRESHOLD = bn(10e6) // 10 USDC
 
 //Config - Gas
 const STANDARD_GAS_PRICE_LIMIT = 100e9
