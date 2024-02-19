@@ -1,5 +1,5 @@
 {
-  "name": "@mimic-fi/v3-deployments-exodus-fee-collector",
+  "name": "@mimic-fi/v3-deployments-sys-fee-collector",
   "version": "0.0.1",
   "license": "GPL-3.0",
   "private": true,

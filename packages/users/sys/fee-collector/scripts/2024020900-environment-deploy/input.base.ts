@@ -10,6 +10,8 @@ import {
 } from '@mimic-fi/v3-deployments-lib'
 import { bn, chainlink, fp, NATIVE_TOKEN_ADDRESS, tokens } from '@mimic-fi/v3-helpers'
 
+/* eslint-disable no-secrets/no-secrets */
+
 //Config - Tokens
 const USDC = tokens.base.USDC
 const WRAPPED_NATIVE_TOKEN = tokens.base.WETH
