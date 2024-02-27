@@ -74,30 +74,30 @@ const update: EnvironmentUpdate = {
         },
       },
     },
-    //Asset Collector: collect assets from external source
-    {
-      from: DEPLOYER,
-      name: 'asset-collector-v2',
-      version: 'ParaswapV6Claimer',
-      initialize: 'initializeParaswapV6Claimer',
-      args: [FEE_CLAIMER],
-      config: {
-        baseConfig: {
-          smartVault: dependency('2023111700-environment-deploy', 'smart-vault'),
-          nextBalanceConnectorId: balanceConnectorId('swapper-connection'),
-        },
-        gasLimitConfig: {
-          txCostLimitPct: TX_COST_LIMIT_PCT,
-        },
-        tokenThresholdConfig: {
-          defaultThreshold: {
-            token: USDC,
-            min: USDC_CONVERT_THRESHOLD,
-            max: 0,
-          },
-        },
-      },
-    },
+    // //Asset Collector: collect assets from external source
+    // {
+    //   from: DEPLOYER,
+    //   name: 'asset-collector-v2',
+    //   version: 'ParaswapV6Claimer',
+    //   initialize: 'initializeParaswapV6Claimer',
+    //   args: [FEE_CLAIMER],
+    //   config: {
+    //     baseConfig: {
+    //       smartVault: dependency('2023111700-environment-deploy', 'smart-vault'),
+    //       nextBalanceConnectorId: balanceConnectorId('swapper-connection'),
+    //     },
+    //     gasLimitConfig: {
+    //       txCostLimitPct: TX_COST_LIMIT_PCT,
+    //     },
+    //     tokenThresholdConfig: {
+    //       defaultThreshold: {
+    //         token: USDC,
+    //         min: USDC_CONVERT_THRESHOLD,
+    //         max: 0,
+    //       },
+    //     },
+    //   },
+    // },
     //Wrapper: wraps native tokens
     {
       from: DEPLOYER,
@@ -203,7 +203,7 @@ const update: EnvironmentUpdate = {
           customMaxFees: [],
           taskConfig: {
             baseConfig: {
-              smartVault: dependency('smart-vault'),
+              smartVault: dependency('2023111700-environment-deploy','smart-vault'),
               previousBalanceConnectorId: balanceConnectorId('bridger-connection'),
             },
             tokenIndexConfig: {
@@ -247,7 +247,7 @@ const update: EnvironmentUpdate = {
           baseConfig: {
             smartVault: dependency('2023111700-environment-deploy', 'smart-vault'),
             previousBalanceConnectorId: balanceConnectorId('bridger-connection'),
-            nextBalanceConnectorId: balanceConnectorId('relayer-depositor-v2'),
+            nextBalanceConnectorId: balanceConnectorId('relayer-depositor'),
           },
           gasLimitConfig: {
             gasPriceLimit: STANDARD_GAS_PRICE_LIMIT,
@@ -275,7 +275,7 @@ const update: EnvironmentUpdate = {
       config: {
         baseConfig: {
           smartVault: dependency('2023111700-environment-deploy', 'smart-vault'),
-          previousBalanceConnectorId: balanceConnectorId('relayer-depositor-v2'),
+          previousBalanceConnectorId: balanceConnectorId('relayer-depositor'),
         },
         gasLimitConfig: {
           gasPriceLimit: STANDARD_GAS_PRICE_LIMIT,
