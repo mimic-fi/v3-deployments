@@ -16,8 +16,8 @@ pragma solidity ^0.8.0;
 
 import '@mimic-fi/v3-tasks/contracts/Task.sol';
 
-import './interfaces/IFeeClaimer.sol';
-import './interfaces/IParaswapClaimer.sol';
+import './interfaces/v5/IFeeClaimer.sol';
+import './interfaces/v5/IParaswapClaimer.sol';
 
 // solhint-disable avoid-low-level-calls
 

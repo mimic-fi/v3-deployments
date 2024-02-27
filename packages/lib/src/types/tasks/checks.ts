@@ -8,6 +8,7 @@ import {
   StandardTaskConfig,
   SwapTaskConfig,
   TaskConfig,
+  WithdrawConfig,
 } from './index'
 
 export function isTaskConfig(config: StandardTaskConfig): config is TaskConfig {
@@ -24,6 +25,10 @@ export function isSwapTaskConfig(config: StandardTaskConfig): config is SwapTask
 
 export function isPrimitiveTaskConfig(config: StandardTaskConfig): config is PrimitiveTaskConfig {
   return !!(config as PrimitiveTaskConfig).taskConfig
+}
+
+export function isWithdrawTaskConfig(config: StandardTaskConfig): config is WithdrawConfig {
+  return isPrimitiveTaskConfig(config) && !!(config as WithdrawConfig).recipient
 }
 
 export function isCollectTaskConfig(config: PrimitiveTaskConfig): config is CollectConfig {
