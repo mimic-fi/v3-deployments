@@ -16,6 +16,7 @@ import fs from 'fs'
 import { BuildInfo, HardhatRuntimeEnvironment } from 'hardhat/types'
 import path, { extname } from 'path'
 
+import Checker from './checker'
 import { dependency, solveDependency } from './dependencies'
 import { deployEnvironment, updateEnvironment } from './deployer'
 import logger from './logger'
@@ -57,6 +58,7 @@ export class Script {
   inputNetwork: Network
   outputNetwork: Network
   _verifier?: Verifier
+  _checker: Checker
 
   static forNetwork(id: string, network: string, verifier?: Verifier): Script {
     return new this(id, SCRIPTS_DIRECTORY, network, network, verifier)
@@ -79,6 +81,7 @@ export class Script {
     this.inputNetwork = inputNetwork
     this.outputNetwork = outputNetwork
     this._verifier = verifier
+    this._checker = new Checker(this)
   }
 
   get isDevelopment(): boolean {
@@ -143,10 +146,26 @@ export class Script {
     return typeof output === 'string' ? output : output.address
   }
 
-  async run(): Promise<void> {
-    if (this.isDevelopment) this.delete()
+  check(): boolean {
     const input = this.input() as ScriptInput
+    if (isEnvironmentDeployment(input)) {
+      logger.info('Checking environment deploy...')
+      return this._checker.call(input as EnvironmentDeployment)
+    } else {
+      logger.warn('Only environment deploys supported for now')
+      return true
+    }
+  }
 
+  async run(force = false): Promise<void> {
+    if (this.isDevelopment) this.delete()
+    const isValid = this.check()
+    if (!isValid && !force) {
+      logger.warn('Please use --force flag in case you want to proceed with the deployment')
+      return
+    }
+
+    const input = this.input() as ScriptInput
     if (isEnvironmentDeployment(input)) {
       logger.info('Deploying environment...')
       await deployEnvironment(this, input as EnvironmentDeployment)

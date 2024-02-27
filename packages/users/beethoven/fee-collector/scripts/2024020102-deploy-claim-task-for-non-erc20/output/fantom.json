@@ -1,0 +1,7 @@
+{
+  "NonERC20BalancerClaimer": "0x0523912Fc39DB7144fbdD9aB790Ca686C74e0cAb",
+  "non-erc20-asset-collector": {
+    "version": "NonERC20BalancerClaimer",
+    "address": "0xb34e25CbdE806EB788A5c20bd193e1D3b5422DA5"
+  }
+}
