@@ -15,32 +15,11 @@
 pragma solidity >=0.8.0;
 
 interface IGNSMultiCollatDiamond {
-    struct ReferrerDetails {
-        address ally;
-        address[] tradersReferred;
-        uint256 volumeReferredUsd;
-        uint256 pendingRewardsToken;
-        uint256 totalRewardsToken;
-        uint256 totalRewardsValueUsd;
-        bool active;
-    }
-
     struct Addresses {
         address gns;
     }
 
-    /**
-     * @dev Get referrer details
-     */
-    function getReferrerDetails(address referrer) external view returns (ReferrerDetails memory);
-
-    /**
-     * @dev Get addresses related to GNS protocol
-     */
     function getAddresses() external view returns (Addresses memory);
 
-    /**
-     * @dev Claim referrer rewards
-     */
     function claimReferrerRewards() external;
 }

@@ -77,10 +77,11 @@ contract GainsTradeRewardsClaimer is IGainsTradeRewardsClaimer, Task {
     }
 
     /**
-     * @dev Tells the amount a task should use for a token. In this case it is the unclaimed rewards amount.
+     * @dev Tells the amount a task should use for a token, in this case always zero since it is not
+     * possible to claim a specific number of tokens
      */
-    function getTaskAmount(address) public view virtual override(IBaseTask, BaseTask) returns (uint256) {
-        return IGNSMultiCollatDiamond(gnsMultiCollatDiamond).getReferrerDetails(smartVault).pendingRewardsToken;
+    function getTaskAmount(address) public pure virtual override(IBaseTask, BaseTask) returns (uint256) {
+        return 0;
     }
 
     /**
@@ -97,9 +98,10 @@ contract GainsTradeRewardsClaimer is IGainsTradeRewardsClaimer, Task {
 
     /**
      * @dev Executes the GainsTrade rewards claimer task
+     * @param token Address of the token to claim rewards for
+     * @param amount Must be zero, it is not possible to claim a specific number of tokens
      */
     function call(address token, uint256 amount) external override authP(authParams(token, amount)) {
-        if (amount == 0) amount = getTaskAmount(token);
         _beforeGainsTradeRewardsClaimer(token, amount);
         uint256 preBalance = IERC20(token).balanceOf(smartVault);
 
@@ -119,7 +121,7 @@ contract GainsTradeRewardsClaimer is IGainsTradeRewardsClaimer, Task {
         _beforeTask(token, amount);
         address gnsToken = IGNSMultiCollatDiamond(gnsMultiCollatDiamond).getAddresses().gns;
         if (token != gnsToken) revert TaskTokenNotGns(token, gnsToken);
-        if (amount == 0) revert TaskAmountZero();
+        if (amount != 0) revert TaskAmountNotZero();
     }
 
     /**

@@ -2,7 +2,6 @@ import {
   assertEvent,
   assertIndirectEvent,
   assertNoEvent,
-  BigNumberish,
   deploy,
   deployProxy,
   deployTokenMock,
@@ -59,7 +58,7 @@ describe('GainsTradeRewardsClaimer', () => {
       })
 
       context('when the given address is not zero', () => {
-        it('sets the protocol fee withdrawer', async () => {
+        it('sets the GNS multi collat diamond', async () => {
           await task.setGnsMultiCollatDiamond(other.address)
 
           expect(await task.gnsMultiCollatDiamond()).to.be.equal(other.address)
@@ -157,18 +156,17 @@ describe('GainsTradeRewardsClaimer', () => {
       })
 
       context('when the token to claim is the GNS token', () => {
-        context('when the amount is greater than zero', () => {
+        context('when the amount is zero', () => {
+          const amount = 0
           const totalBalance = pendingRewards
 
           beforeEach('fund GNS mutli collat diamond', async () => {
             await gnsToken.mint(gnsMultiCollatDiamond.address, totalBalance)
           })
 
-          const itExecutesTheTaskProperly = (requestedAmount: BigNumberish) => {
-            const transactedAmount = pendingRewards
-
+          const itExecutesTheTaskProperly = () => {
             it('calls the call primitive', async () => {
-              const tx = await task.connect(owner).call(gnsToken.address, requestedAmount)
+              const tx = await task.connect(owner).call(gnsToken.address, amount)
 
               const data = gnsMultiCollatDiamond.interface.encodeFunctionData('claimReferrerRewards', [])
 
@@ -183,36 +181,33 @@ describe('GainsTradeRewardsClaimer', () => {
               const previousSmartVaultBalance = await gnsToken.balanceOf(smartVault.address)
               const previousFeesCollectorBalance = await gnsToken.balanceOf(gnsMultiCollatDiamond.address)
 
-              await task.connect(owner).call(gnsToken.address, requestedAmount)
+              await task.connect(owner).call(gnsToken.address, amount)
 
               const currentSmartVaultBalance = await gnsToken.balanceOf(smartVault.address)
-              expect(currentSmartVaultBalance).to.be.eq(previousSmartVaultBalance.add(transactedAmount))
+              expect(currentSmartVaultBalance).to.be.eq(previousSmartVaultBalance.add(pendingRewards))
 
               const currentFeesCollectorBalance = await gnsToken.balanceOf(gnsMultiCollatDiamond.address)
-              expect(currentFeesCollectorBalance).to.be.eq(previousFeesCollectorBalance.sub(transactedAmount))
+              expect(currentFeesCollectorBalance).to.be.eq(previousFeesCollectorBalance.sub(pendingRewards))
             })
 
             it('emits an Executed event', async () => {
-              const tx = await task.connect(owner).call(gnsToken.address, requestedAmount)
+              const tx = await task.connect(owner).call(gnsToken.address, amount)
 
               await assertIndirectEvent(tx, task.interface, 'Executed')
             })
           }
 
           context('without balance connectors', () => {
-            const requestedAmount = pendingRewards.div(2)
-
-            itExecutesTheTaskProperly(requestedAmount)
+            itExecutesTheTaskProperly()
 
             it('does not update any balance connectors', async () => {
-              const tx = await task.connect(owner).call(gnsToken.address, requestedAmount)
+              const tx = await task.connect(owner).call(gnsToken.address, amount)
 
               await assertNoEvent(tx, 'BalanceConnectorUpdated')
             })
           })
 
           context('with balance connectors', () => {
-            const requestedAmount = 0
             const nextConnectorId = '0x0000000000000000000000000000000000000000000000000000000000000002'
 
             beforeEach('set balance connectors', async () => {
@@ -228,10 +223,10 @@ describe('GainsTradeRewardsClaimer', () => {
                 .authorize(task.address, smartVault.address, updateBalanceConnectorRole, [])
             })
 
-            itExecutesTheTaskProperly(requestedAmount)
+            itExecutesTheTaskProperly()
 
             it('updates the balance connectors properly', async () => {
-              const tx = await task.connect(owner).call(gnsToken.address, requestedAmount)
+              const tx = await task.connect(owner).call(gnsToken.address, amount)
 
               await assertIndirectEvent(tx, smartVault.interface, 'BalanceConnectorUpdated', {
                 id: nextConnectorId,
@@ -243,15 +238,11 @@ describe('GainsTradeRewardsClaimer', () => {
           })
         })
 
-        context('when the amount is zero', () => {
-          const amount = 0
-
-          beforeEach('set pending rewards to zero', async () => {
-            await gnsMultiCollatDiamond.setPendingRewards(0)
-          })
+        context('when the amount is not zero', () => {
+          const amount = 1
 
           it('reverts', async () => {
-            await expect(task.connect(owner).call(gnsToken.address, amount)).to.be.revertedWith('TaskAmountZero')
+            await expect(task.connect(owner).call(gnsToken.address, amount)).to.be.revertedWith('TaskAmountNotZero')
           })
         })
       })

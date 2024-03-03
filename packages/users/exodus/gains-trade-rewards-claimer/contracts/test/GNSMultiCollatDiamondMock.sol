@@ -16,23 +16,6 @@ contract GNSMultiCollatDiamondMock is IGNSMultiCollatDiamond {
         gnsToken = _gnsToken;
     }
 
-    function setPendingRewards(uint256 newPendingRewards) external {
-        pendingRewards = newPendingRewards;
-    }
-
-    function getReferrerDetails(address) external view returns (ReferrerDetails memory) {
-        return
-            ReferrerDetails({
-                ally: address(0),
-                tradersReferred: new address[](0),
-                volumeReferredUsd: 0,
-                pendingRewardsToken: pendingRewards,
-                totalRewardsToken: 0,
-                totalRewardsValueUsd: 0,
-                active: false
-            });
-    }
-
     function getAddresses() external view returns (Addresses memory) {
         return Addresses({ gns: gnsToken });
     }

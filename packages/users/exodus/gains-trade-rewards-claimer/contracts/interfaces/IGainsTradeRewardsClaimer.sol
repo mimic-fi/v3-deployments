@@ -21,9 +21,9 @@ import '@mimic-fi/v3-tasks/contracts/interfaces/ITask.sol';
  */
 interface IGainsTradeRewardsClaimer is ITask {
     /**
-     * @dev The amount is zero
+     * @dev The amount is not zero
      */
-    error TaskAmountZero();
+    error TaskAmountNotZero();
 
     /**
      * @dev The GNS contract address is zero
@@ -58,6 +58,8 @@ interface IGainsTradeRewardsClaimer is ITask {
 
     /**
      * @dev Executes the GainsTrade rewards claimer task
+     * @param token Address of the token to claim rewards for
+     * @param amount Must be zero, it is not possible to claim a specific number of tokens
      */
     function call(address token, uint256 amount) external;
 }
