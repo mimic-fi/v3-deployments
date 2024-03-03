@@ -14,19 +14,17 @@ contract ExchangeRouterMock is IExchangeRouter {
         pendingRewards = _pendingRewards;
     }
 
-    function setPendingRewards(uint256 newPendingRewards) external {
-        pendingRewards = newPendingRewards;
-    }
-
-    function dataStore() external view returns (address) {
+    function dataStore() external pure returns (address) {
         return address(0);
     }
 
     function claimAffiliateRewards(address[] memory, address[] memory tokens, address receiver)
         external
-        returns (uint256[] memory)
+        returns (uint256[] memory amounts)
     {
         IERC20(tokens[0]).safeTransfer(receiver, pendingRewards);
+        amounts = new uint256[](1);
+        amounts[0] = pendingRewards;
         pendingRewards = 0;
     }
 }
