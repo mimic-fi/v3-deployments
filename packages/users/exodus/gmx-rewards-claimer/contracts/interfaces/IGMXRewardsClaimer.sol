@@ -63,9 +63,9 @@ interface IGMXRewardsClaimer is ITask {
 
     /**
      * @dev Executes the GMX rewards claimer task
-     * @param market Address of the market to claim rewards for
      * @param token Address of the token to claim rewards for
      * @param amount Must be zero, it is not possible to claim a specific number of tokens
+     * @param market Address of the market to claim rewards for
      */
-    function call(address market, address token, uint256 amount) external;
+    function call(address token, uint256 amount, address market) external;
 }

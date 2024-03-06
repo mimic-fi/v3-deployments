@@ -151,19 +151,19 @@ describe('GMXRewardsClaimer', () => {
         await authorizer.connect(owner).authorize(owner.address, task.address, callRole, [])
       })
 
-      context('when the market is not the address zero', () => {
-        const market = ONES_ADDRESS
+      context('when the token to claim is not the address zero', () => {
+        let token: Contract
 
-        context('when the token to claim is not the address zero', () => {
-          let token: Contract
+        beforeEach('deploy token', async () => {
+          token = await deployTokenMock('TKN')
+        })
 
-          beforeEach('deploy token', async () => {
-            token = await deployTokenMock('TKN')
-          })
+        context('when the amount is zero', () => {
+          const amount = 0
+          const totalBalance = pendingRewards
 
-          context('when the amount is zero', () => {
-            const amount = 0
-            const totalBalance = pendingRewards
+          context('when the market is not the address zero', () => {
+            const market = ONES_ADDRESS
 
             beforeEach('fund exchange router', async () => {
               await token.mint(exchangeRouter.address, totalBalance)
@@ -171,7 +171,7 @@ describe('GMXRewardsClaimer', () => {
 
             const itExecutesTheTaskProperly = () => {
               it('calls the call primitive', async () => {
-                const tx = await task.connect(owner).call(market, token.address, amount)
+                const tx = await task.connect(owner).call(token.address, amount, market)
 
                 const data = exchangeRouter.interface.encodeFunctionData('claimAffiliateRewards', [
                   [market],
@@ -190,7 +190,7 @@ describe('GMXRewardsClaimer', () => {
                 const previousSmartVaultBalance = await token.balanceOf(smartVault.address)
                 const previousFeesCollectorBalance = await token.balanceOf(exchangeRouter.address)
 
-                await task.connect(owner).call(market, token.address, amount)
+                await task.connect(owner).call(token.address, amount, market)
 
                 const currentSmartVaultBalance = await token.balanceOf(smartVault.address)
                 expect(currentSmartVaultBalance).to.be.eq(previousSmartVaultBalance.add(pendingRewards))
@@ -200,7 +200,7 @@ describe('GMXRewardsClaimer', () => {
               })
 
               it('emits an Executed event', async () => {
-                const tx = await task.connect(owner).call(market, token.address, amount)
+                const tx = await task.connect(owner).call(token.address, amount, market)
 
                 await assertIndirectEvent(tx, task.interface, 'Executed')
               })
@@ -210,7 +210,7 @@ describe('GMXRewardsClaimer', () => {
               itExecutesTheTaskProperly()
 
               it('does not update any balance connectors', async () => {
-                const tx = await task.connect(owner).call(market, token.address, amount)
+                const tx = await task.connect(owner).call(token.address, amount, market)
 
                 await assertNoEvent(tx, 'BalanceConnectorUpdated')
               })
@@ -235,7 +235,7 @@ describe('GMXRewardsClaimer', () => {
               itExecutesTheTaskProperly()
 
               it('updates the balance connectors properly', async () => {
-                const tx = await task.connect(owner).call(market, token.address, amount)
+                const tx = await task.connect(owner).call(token.address, amount, market)
 
                 await assertIndirectEvent(tx, smartVault.interface, 'BalanceConnectorUpdated', {
                   id: nextConnectorId,
@@ -246,39 +246,39 @@ describe('GMXRewardsClaimer', () => {
               })
             })
           })
+        })
 
-          context('when the amount is not zero', () => {
-            const amount = 1
+        context('when the market is the zero address', () => {
+          const market = ZERO_ADDRESS
 
-            it('reverts', async () => {
-              await expect(task.connect(owner).call(market, token.address, amount)).to.be.revertedWith(
-                'TaskAmountNotZero'
-              )
-            })
+          it('reverts', async () => {
+            await expect(task.connect(owner).call(token.address, 0, market)).to.be.revertedWith('TaskMarketZero')
           })
         })
 
-        context('when the token to claim is the zero address', () => {
-          const token = ZERO_ADDRESS
+        context('when the amount is not zero', () => {
+          const amount = 1
 
           it('reverts', async () => {
-            await expect(task.connect(owner).call(market, token, 0)).to.be.revertedWith('TaskTokenZero')
+            await expect(task.connect(owner).call(token.address, amount, ZERO_ADDRESS)).to.be.revertedWith(
+              'TaskAmountNotZero'
+            )
           })
         })
       })
 
-      context('when the market is the zero address', () => {
-        const market = ZERO_ADDRESS
+      context('when the token to claim is the zero address', () => {
+        const token = ZERO_ADDRESS
 
         it('reverts', async () => {
-          await expect(task.connect(owner).call(market, ZERO_ADDRESS, 0)).to.be.revertedWith('TaskMarketZero')
+          await expect(task.connect(owner).call(token, 0, ZERO_ADDRESS)).to.be.revertedWith('TaskTokenZero')
         })
       })
     })
 
     context('when the sender is not authorized', () => {
       it('reverts', async () => {
-        await expect(task.call(ZERO_ADDRESS, ZERO_ADDRESS, 0)).to.be.revertedWith('AuthSenderNotAllowed')
+        await expect(task.call(ZERO_ADDRESS, 0, ZERO_ADDRESS)).to.be.revertedWith('AuthSenderNotAllowed')
       })
     })
   })
