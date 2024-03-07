@@ -26,19 +26,24 @@ interface IGMXRewardsClaimer is ITask {
     error TaskTokenZero();
 
     /**
-     * @dev The market is zero
-     */
-    error TaskMarketZero();
-
-    /**
      * @dev The amount is not zero
      */
     error TaskAmountNotZero();
 
     /**
+     * @dev The markets array is empty
+     */
+    error TaskMarketsEmpty();
+
+    /**
      * @dev The GMX exchange router address is zero
      */
     error TaskGmxExchangeRouterZero();
+
+    /**
+     * @dev The market is zero
+     */
+    error TaskMarketZero(uint256 index);
 
     /**
      * @dev The previous balance connector is not zero
@@ -65,7 +70,7 @@ interface IGMXRewardsClaimer is ITask {
      * @dev Executes the GMX rewards claimer task
      * @param token Address of the token to claim rewards for
      * @param amount Must be zero, it is not possible to claim a specific number of tokens
-     * @param market Address of the market to claim rewards for
+     * @param markets Addresses of the markets to claim rewards for
      */
-    function call(address token, uint256 amount, address market) external;
+    function call(address token, uint256 amount, address[] memory markets) external;
 }

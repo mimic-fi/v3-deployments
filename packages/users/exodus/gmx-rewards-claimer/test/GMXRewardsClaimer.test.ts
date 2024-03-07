@@ -162,97 +162,108 @@ describe('GMXRewardsClaimer', () => {
           const amount = 0
           const totalBalance = pendingRewards
 
-          context('when the market is not the address zero', () => {
-            const market = ONES_ADDRESS
+          context('when the markets array is not empty', () => {
+            context('when all the markets are not zero', () => {
+              const markets = [ONES_ADDRESS, ONES_ADDRESS]
 
-            beforeEach('fund exchange router', async () => {
-              await token.mint(exchangeRouter.address, totalBalance)
-            })
+              beforeEach('fund exchange router', async () => {
+                await token.mint(exchangeRouter.address, totalBalance)
+              })
 
-            const itExecutesTheTaskProperly = () => {
-              it('calls the call primitive', async () => {
-                const tx = await task.connect(owner).call(token.address, amount, market)
+              const itExecutesTheTaskProperly = () => {
+                it('calls the call primitive', async () => {
+                  const tx = await task.connect(owner).call(token.address, amount, markets)
 
-                const data = exchangeRouter.interface.encodeFunctionData('claimAffiliateRewards', [
-                  [market],
-                  [token.address],
-                  smartVault.address,
-                ])
+                  const tokens = [token.address, token.address]
+                  const data = exchangeRouter.interface.encodeFunctionData('claimAffiliateRewards', [
+                    markets,
+                    tokens,
+                    smartVault.address,
+                  ])
 
-                await assertIndirectEvent(tx, smartVault.interface, 'Called', {
-                  target: exchangeRouter,
-                  data,
-                  value: 0,
+                  await assertIndirectEvent(tx, smartVault.interface, 'Called', {
+                    target: exchangeRouter,
+                    data,
+                    value: 0,
+                  })
+                })
+
+                it('transfers the token to the smart vault', async () => {
+                  const previousSmartVaultBalance = await token.balanceOf(smartVault.address)
+                  const previousFeesCollectorBalance = await token.balanceOf(exchangeRouter.address)
+
+                  await task.connect(owner).call(token.address, amount, markets)
+
+                  const currentSmartVaultBalance = await token.balanceOf(smartVault.address)
+                  expect(currentSmartVaultBalance).to.be.eq(previousSmartVaultBalance.add(pendingRewards))
+
+                  const currentFeesCollectorBalance = await token.balanceOf(exchangeRouter.address)
+                  expect(currentFeesCollectorBalance).to.be.eq(previousFeesCollectorBalance.sub(pendingRewards))
+                })
+
+                it('emits an Executed event', async () => {
+                  const tx = await task.connect(owner).call(token.address, amount, markets)
+
+                  await assertIndirectEvent(tx, task.interface, 'Executed')
+                })
+              }
+
+              context('without balance connectors', () => {
+                itExecutesTheTaskProperly()
+
+                it('does not update any balance connectors', async () => {
+                  const tx = await task.connect(owner).call(token.address, amount, markets)
+
+                  await assertNoEvent(tx, 'BalanceConnectorUpdated')
                 })
               })
 
-              it('transfers the token to the smart vault', async () => {
-                const previousSmartVaultBalance = await token.balanceOf(smartVault.address)
-                const previousFeesCollectorBalance = await token.balanceOf(exchangeRouter.address)
+              context('with balance connectors', () => {
+                const nextConnectorId = '0x0000000000000000000000000000000000000000000000000000000000000002'
 
-                await task.connect(owner).call(token.address, amount, market)
+                beforeEach('set balance connectors', async () => {
+                  const setBalanceConnectorsRole = task.interface.getSighash('setBalanceConnectors')
+                  await authorizer.connect(owner).authorize(owner.address, task.address, setBalanceConnectorsRole, [])
+                  await task.connect(owner).setBalanceConnectors(ZERO_BYTES32, nextConnectorId)
+                })
 
-                const currentSmartVaultBalance = await token.balanceOf(smartVault.address)
-                expect(currentSmartVaultBalance).to.be.eq(previousSmartVaultBalance.add(pendingRewards))
+                beforeEach('authorize task to update balance connectors', async () => {
+                  const updateBalanceConnectorRole = smartVault.interface.getSighash('updateBalanceConnector')
+                  await authorizer
+                    .connect(owner)
+                    .authorize(task.address, smartVault.address, updateBalanceConnectorRole, [])
+                })
 
-                const currentFeesCollectorBalance = await token.balanceOf(exchangeRouter.address)
-                expect(currentFeesCollectorBalance).to.be.eq(previousFeesCollectorBalance.sub(pendingRewards))
-              })
+                itExecutesTheTaskProperly()
 
-              it('emits an Executed event', async () => {
-                const tx = await task.connect(owner).call(token.address, amount, market)
+                it('updates the balance connectors properly', async () => {
+                  const tx = await task.connect(owner).call(token.address, amount, markets)
 
-                await assertIndirectEvent(tx, task.interface, 'Executed')
-              })
-            }
-
-            context('without balance connectors', () => {
-              itExecutesTheTaskProperly()
-
-              it('does not update any balance connectors', async () => {
-                const tx = await task.connect(owner).call(token.address, amount, market)
-
-                await assertNoEvent(tx, 'BalanceConnectorUpdated')
+                  await assertIndirectEvent(tx, smartVault.interface, 'BalanceConnectorUpdated', {
+                    id: nextConnectorId,
+                    token: token,
+                    amount: totalBalance,
+                    added: true,
+                  })
+                })
               })
             })
 
-            context('with balance connectors', () => {
-              const nextConnectorId = '0x0000000000000000000000000000000000000000000000000000000000000002'
+            context('when some market is zero', () => {
+              const markets = [ONES_ADDRESS, ZERO_ADDRESS, ONES_ADDRESS]
 
-              beforeEach('set balance connectors', async () => {
-                const setBalanceConnectorsRole = task.interface.getSighash('setBalanceConnectors')
-                await authorizer.connect(owner).authorize(owner.address, task.address, setBalanceConnectorsRole, [])
-                await task.connect(owner).setBalanceConnectors(ZERO_BYTES32, nextConnectorId)
-              })
-
-              beforeEach('authorize task to update balance connectors', async () => {
-                const updateBalanceConnectorRole = smartVault.interface.getSighash('updateBalanceConnector')
-                await authorizer
-                  .connect(owner)
-                  .authorize(task.address, smartVault.address, updateBalanceConnectorRole, [])
-              })
-
-              itExecutesTheTaskProperly()
-
-              it('updates the balance connectors properly', async () => {
-                const tx = await task.connect(owner).call(token.address, amount, market)
-
-                await assertIndirectEvent(tx, smartVault.interface, 'BalanceConnectorUpdated', {
-                  id: nextConnectorId,
-                  token: token,
-                  amount: totalBalance,
-                  added: true,
-                })
+              it('reverts', async () => {
+                await expect(task.connect(owner).call(token.address, 0, markets)).to.be.revertedWith('TaskMarketZero')
               })
             })
           })
-        })
 
-        context('when the market is the zero address', () => {
-          const market = ZERO_ADDRESS
+          context('when the markets array is empty', () => {
+            const markets = []
 
-          it('reverts', async () => {
-            await expect(task.connect(owner).call(token.address, 0, market)).to.be.revertedWith('TaskMarketZero')
+            it('reverts', async () => {
+              await expect(task.connect(owner).call(token.address, 0, markets)).to.be.revertedWith('TaskMarketsEmpty')
+            })
           })
         })
 
@@ -260,7 +271,7 @@ describe('GMXRewardsClaimer', () => {
           const amount = 1
 
           it('reverts', async () => {
-            await expect(task.connect(owner).call(token.address, amount, ZERO_ADDRESS)).to.be.revertedWith(
+            await expect(task.connect(owner).call(token.address, amount, [ZERO_ADDRESS])).to.be.revertedWith(
               'TaskAmountNotZero'
             )
           })
@@ -271,14 +282,14 @@ describe('GMXRewardsClaimer', () => {
         const token = ZERO_ADDRESS
 
         it('reverts', async () => {
-          await expect(task.connect(owner).call(token, 0, ZERO_ADDRESS)).to.be.revertedWith('TaskTokenZero')
+          await expect(task.connect(owner).call(token, 0, [ZERO_ADDRESS])).to.be.revertedWith('TaskTokenZero')
         })
       })
     })
 
     context('when the sender is not authorized', () => {
       it('reverts', async () => {
-        await expect(task.call(ZERO_ADDRESS, 0, ZERO_ADDRESS)).to.be.revertedWith('AuthSenderNotAllowed')
+        await expect(task.call(ZERO_ADDRESS, 0, [ZERO_ADDRESS])).to.be.revertedWith('AuthSenderNotAllowed')
       })
     })
   })
