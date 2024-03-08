@@ -97,32 +97,30 @@ contract GMXRewardsClaimer is IGMXRewardsClaimer, Task {
      * @dev Executes the GMX rewards claimer task
      * @param token Address of the token to claim rewards for
      * @param amount Must be zero, it is not possible to claim a specific number of tokens
-     * @param market Address of the market to claim rewards for
+     * @param markets Addresses of the markets to claim rewards for
      */
-    function call(address token, uint256 amount, address market)
+    function call(address token, uint256 amount, address[] memory markets)
         external
         override
-        authP(authParams(token, market, amount))
+        authP(authParams(token, amount))
     {
-        _beforeGMXRewardsClaimer(token, amount, market);
+        _beforeGMXRewardsClaimer(token, amount, markets);
         uint256 preBalance = IERC20(token).balanceOf(smartVault);
 
         // solhint-disable-next-line avoid-low-level-calls
-        ISmartVault(smartVault).call(gmxExchangeRouter, _buildGMXRewardsClaimerData(token, market), 0);
+        ISmartVault(smartVault).call(gmxExchangeRouter, _buildGMXRewardsClaimerData(token, markets), 0);
 
         uint256 postBalance = IERC20(token).balanceOf(smartVault);
         uint256 amountClaimed = postBalance - preBalance;
-        _afterGMXRewardsClaimer(token, amountClaimed, market);
+        _afterGMXRewardsClaimer(token, amountClaimed, markets);
     }
 
     /**
      * @dev Builds GMX exchange router calldata
      */
-    function _buildGMXRewardsClaimerData(address token, address market) internal view returns (bytes memory) {
-        address[] memory tokens = new address[](1);
-        tokens[0] = token;
-        address[] memory markets = new address[](1);
-        markets[0] = market;
+    function _buildGMXRewardsClaimerData(address token, address[] memory markets) internal view returns (bytes memory) {
+        address[] memory tokens = new address[](markets.length);
+        for (uint256 i = 0; i < markets.length; i++) tokens[i] = token;
         // Note `claimAffiliateRewards` receives `markets` as the first parameter and `tokens` as the second one
         return abi.encodeWithSelector(IExchangeRouter.claimAffiliateRewards.selector, markets, tokens, smartVault);
     }
@@ -130,17 +128,18 @@ contract GMXRewardsClaimer is IGMXRewardsClaimer, Task {
     /**
      * @dev Before GMX rewards claimer task hook
      */
-    function _beforeGMXRewardsClaimer(address token, uint256 amount, address market) internal virtual {
+    function _beforeGMXRewardsClaimer(address token, uint256 amount, address[] memory markets) internal virtual {
         _beforeTask(token, amount);
         if (token == address(0)) revert TaskTokenZero();
         if (amount != 0) revert TaskAmountNotZero();
-        if (market == address(0)) revert TaskMarketZero();
+        if (markets.length == 0) revert TaskMarketsEmpty();
+        for (uint256 i = 0; i < markets.length; i++) if (markets[i] == address(0)) revert TaskMarketZero(i);
     }
 
     /**
      * @dev After GMX rewards claimer task hook
      */
-    function _afterGMXRewardsClaimer(address token, uint256 amount, address) internal virtual {
+    function _afterGMXRewardsClaimer(address token, uint256 amount, address[] memory) internal virtual {
         _increaseBalanceConnector(token, amount);
         _afterTask(token, amount);
     }
