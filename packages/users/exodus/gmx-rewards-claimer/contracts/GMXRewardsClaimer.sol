@@ -133,9 +133,7 @@ contract GMXRewardsClaimer is IGMXRewardsClaimer, Task {
         if (token == address(0)) revert TaskTokenZero();
         if (amount != 0) revert TaskAmountNotZero();
         if (markets.length == 0) revert TaskMarketsEmpty();
-        for (uint256 i = 0; i < markets.length; i++) {
-            if (markets[i] == address(0)) revert TaskMarketZero(i);
-        }
+        for (uint256 i = 0; i < markets.length; i++) if (markets[i] == address(0)) revert TaskMarketZero(i);
     }
 
     /**
