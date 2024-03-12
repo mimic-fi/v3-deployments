@@ -26,7 +26,6 @@ const WRAPPED_NATIVE_TOKEN = tokens.zkevm.WETH
 //Config - Addresses
 const MAINNET_DEPOSITOR_TASK = '0xDFC4457250804c2e701eB409cc664Da2C24595dB'
 const PARASWAP_QUOTE_SIGNER = '0x6278c27cf5534f07fa8f1ab6188a155cb8750ffa'
-const FEE_CLAIMER = ''
 const HOP_ENTRY_POINT = '0xbd72882120508518FCba2AE58E134EceaD18d979' //Confirm
 
 //Config - Threshold
@@ -74,30 +73,6 @@ const update: EnvironmentUpdate = {
         },
       },
     },
-    // //Asset Collector: collect assets from external source
-    // {
-    //   from: DEPLOYER,
-    //   name: 'asset-collector-v2',
-    //   version: 'ParaswapV6Claimer',
-    //   initialize: 'initializeParaswapV6Claimer',
-    //   args: [FEE_CLAIMER],
-    //   config: {
-    //     baseConfig: {
-    //       smartVault: dependency('2023111700-environment-deploy', 'smart-vault'),
-    //       nextBalanceConnectorId: balanceConnectorId('swapper-connection'),
-    //     },
-    //     gasLimitConfig: {
-    //       txCostLimitPct: TX_COST_LIMIT_PCT,
-    //     },
-    //     tokenThresholdConfig: {
-    //       defaultThreshold: {
-    //         token: USDC,
-    //         min: USDC_CONVERT_THRESHOLD,
-    //         max: 0,
-    //       },
-    //     },
-    //   },
-    // },
     //Wrapper: wraps native tokens
     {
       from: DEPLOYER,
@@ -203,7 +178,7 @@ const update: EnvironmentUpdate = {
           customMaxFees: [],
           taskConfig: {
             baseConfig: {
-              smartVault: dependency('2023111700-environment-deploy','smart-vault'),
+              smartVault: dependency('2023111700-environment-deploy', 'smart-vault'),
               previousBalanceConnectorId: balanceConnectorId('bridger-connection'),
             },
             tokenIndexConfig: {
@@ -247,7 +222,7 @@ const update: EnvironmentUpdate = {
           baseConfig: {
             smartVault: dependency('2023111700-environment-deploy', 'smart-vault'),
             previousBalanceConnectorId: balanceConnectorId('bridger-connection'),
-            nextBalanceConnectorId: balanceConnectorId('relayer-depositor'),
+            nextBalanceConnectorId: balanceConnectorId('relayer-depositor-v2'),
           },
           gasLimitConfig: {
             gasPriceLimit: STANDARD_GAS_PRICE_LIMIT,
@@ -275,7 +250,7 @@ const update: EnvironmentUpdate = {
       config: {
         baseConfig: {
           smartVault: dependency('2023111700-environment-deploy', 'smart-vault'),
-          previousBalanceConnectorId: balanceConnectorId('relayer-depositor'),
+          previousBalanceConnectorId: balanceConnectorId('relayer-depositor-v2'),
         },
         gasLimitConfig: {
           gasPriceLimit: STANDARD_GAS_PRICE_LIMIT,
@@ -301,12 +276,12 @@ const update: EnvironmentUpdate = {
               params: [],
             },
             {
-              who: dependency('asset-collector-v2'),
+              who: dependency('2023111700-environment-deploy', 'asset-collector'),
               what: 'call',
               params: [],
             },
             {
-              who: dependency('asset-collector-v2'),
+              who: dependency('2023111700-environment-deploy', 'asset-collector'),
               what: 'updateBalanceConnector',
               params: [],
             },
@@ -369,7 +344,7 @@ const update: EnvironmentUpdate = {
           grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
         },
         {
-          where: dependency('asset-collector-v2'),
+          where: dependency('2023111700-environment-deploy', 'asset-collector'),
           revokes: [],
           grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
         },
@@ -406,11 +381,6 @@ const update: EnvironmentUpdate = {
         //Revoke
         {
           where: dependency('2023111700-environment-deploy', 'depositor'),
-          revokes: [{ who: dependency('core/relayer/v1.1.0'), what: 'call' }],
-          grants: [],
-        },
-        {
-          where: dependency('2023111700-environment-deploy', 'asset-collector'),
           revokes: [{ who: dependency('core/relayer/v1.1.0'), what: 'call' }],
           grants: [],
         },

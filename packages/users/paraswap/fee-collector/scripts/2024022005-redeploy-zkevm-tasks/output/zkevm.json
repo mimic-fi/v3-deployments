@@ -3,7 +3,6 @@
     "version": "core/tasks/primitives/depositor/v2.1.1",
     "address": "0x5Bfd6fA1834DF561578c2D4a8D5b20858BF8Cfde"
   },
-  "ParaswapV6Claimer": "0xB6bA38D9E63a68df2b43a6Bf3950126060183170",
   "wrapper-v2": {
     "version": "core/tasks/primitives/wrapper/v2.0.1",
     "address": "0xAA4DfDC31d29D0599c39B72b95ACA7e2c427DB58"
