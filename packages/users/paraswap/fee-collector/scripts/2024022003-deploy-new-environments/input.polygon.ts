@@ -85,10 +85,10 @@ const deployment: EnvironmentDeployment = {
     //Depositor: for manual transfers and testing purposes
     {
       from: DEPLOYER,
-      name: 'depositor',
+      name: 'depositor-v2',
       version: dependency('core/tasks/primitives/depositor/v2.0.0'),
       config: {
-        tokensSource: counterfactualDependency('depositor'),
+        tokensSource: counterfactualDependency('depositor-v2'),
         taskConfig: {
           baseConfig: {
             smartVault: dependency('smart-vault'),
@@ -349,9 +349,9 @@ const deployment: EnvironmentDeployment = {
         where: dependency('smart-vault'),
         revokes: [],
         grants: [
-          { who: dependency('depositor'), what: 'collect', params: [] },
+          { who: dependency('depositor-v2'), what: 'collect', params: [] },
           {
-            who: dependency('depositor'),
+            who: dependency('depositor-v2'),
             what: 'updateBalanceConnector',
             params: [],
           },
@@ -429,7 +429,7 @@ const deployment: EnvironmentDeployment = {
         ],
       },
       {
-        where: dependency('depositor'),
+        where: dependency('depositor-v2'),
         revokes: [],
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },

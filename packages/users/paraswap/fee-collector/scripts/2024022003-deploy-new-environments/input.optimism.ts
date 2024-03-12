@@ -24,8 +24,8 @@ const WRAPPED_NATIVE_TOKEN = tokens.optimism.WETH
 
 //Config - Addresses
 const MAINNET_DEPOSITOR_TASK = '0x0927491Eb32638Df6E1BCf66825c814F7bd2f028'
-const PARASWAP_QUOTE_SIGNER = ''
-const FEE_CLAIMER = '0x3eA4ab8e815D1Ed1dCD967Df392588cb3345Ab9A'
+const PARASWAP_QUOTE_SIGNER = '0x6278c27cf5534f07fa8f1ab6188a155cb8750ffa'
+const FEE_CLAIMER = '0x000000009002f5D48013D49b0826CAa11F4070Ab'
 const OWNER = '0xf93A7F819F83DBfDbC307d4D4f0FE5a208C50318'
 
 //Config - Threshold
@@ -85,10 +85,10 @@ const deployment: EnvironmentDeployment = {
     //Depositor: for manual transfers and testing purposes
     {
       from: DEPLOYER,
-      name: 'depositor',
+      name: 'depositor-v2',
       version: dependency('core/tasks/primitives/depositor/v2.0.0'),
       config: {
-        tokensSource: counterfactualDependency('depositor'),
+        tokensSource: counterfactualDependency('depositor-v2'),
         taskConfig: {
           baseConfig: {
             smartVault: dependency('smart-vault'),
@@ -110,9 +110,9 @@ const deployment: EnvironmentDeployment = {
     //Asset Collector: collect assets from external source
     {
       from: DEPLOYER,
-      name: 'asset-collector-v2',
-      version: 'ParaswapV6Claimer',
-      initialize: 'initializeParaswapV6Claimer',
+      name: 'asset-collector',
+      version: 'ParaswapClaimer',
+      initialize: 'initializeParaswapClaimer',
       args: [FEE_CLAIMER],
       config: {
         baseConfig: {
@@ -292,7 +292,7 @@ const deployment: EnvironmentDeployment = {
     //Relayer Funder Unwrapper: unwraps wrapped native token
     {
       from: DEPLOYER,
-      name: 'relayer-funder-unwrapper-v2',
+      name: 'relayer-funder-unwrapper',
       version: dependency('core/tasks/relayer/unwrapper/v2.0.0'),
       initialize: 'initializeUnwrapperRelayerFunder',
       args: [dependency('core/relayer/v1.1.0')],
@@ -349,19 +349,19 @@ const deployment: EnvironmentDeployment = {
         where: dependency('smart-vault'),
         revokes: [],
         grants: [
-          { who: dependency('depositor'), what: 'collect', params: [] },
+          { who: dependency('depositor-v2'), what: 'collect', params: [] },
           {
-            who: dependency('depositor'),
+            who: dependency('depositor-v2'),
             what: 'updateBalanceConnector',
             params: [],
           },
           {
-            who: dependency('asset-collector-v2'),
+            who: dependency('asset-collector'),
             what: 'call',
             params: [],
           },
           {
-            who: dependency('asset-collector-v2'),
+            who: dependency('asset-collector'),
             what: 'updateBalanceConnector',
             params: [],
           },
@@ -429,12 +429,12 @@ const deployment: EnvironmentDeployment = {
         ],
       },
       {
-        where: dependency('depositor'),
+        where: dependency('depositor-v2'),
         revokes: [],
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency('asset-collector-v2'),
+        where: dependency('asset-collector'),
         revokes: [],
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },

@@ -304,7 +304,7 @@ const deployment: EnvironmentDeployment = {
     //Relayer Funder Swapper: swaps assets into native wrapped token to fund the relayer
     {
       from: DEPLOYER,
-      name: 'relayer-funder-swapper-v2',
+      name: 'relayer-funder-swapper',
       version: dependency('core/tasks/relayer/1inch-v5-swapper/v2.0.0'),
       initialize: 'initializeOneInchV5RelayerFunder',
       args: [dependency('core/relayer/v1.1.0')],

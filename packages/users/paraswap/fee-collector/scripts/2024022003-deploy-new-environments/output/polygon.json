@@ -11,10 +11,6 @@
     "version": "core/smart-vault/v1.0.0",
     "address": "0x45a6e007c874Ffc6321D6fB90eAC272Dd6864bFA"
   },
-  "depositor": {
-    "version": "core/tasks/primitives/depositor/v2.0.0",
-    "address": "0x6A618F7f71a7B10c5811c16a849933ACeE4D5964"
-  },
   "ParaswapV6Claimer": "0x170b02C7aa74e2C5E3B29259d08F7D24D4cc01A0",
   "asset-collector-v2": {
     "version": "ParaswapV6Claimer",
@@ -47,5 +43,9 @@
   "relayer-depositor": {
     "version": "core/tasks/relayer/depositor/v2.0.0",
     "address": "0x6009b25fa88eFC86472E6c1C749A90c4ab65fb49"
+  },
+  "depositor-v2": {
+    "version": "core/tasks/primitives/depositor/v2.0.0",
+    "address": "0x5Bfd6fA1834DF561578c2D4a8D5b20858BF8Cfde"
   }
 }
