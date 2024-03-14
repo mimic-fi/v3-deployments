@@ -52,8 +52,6 @@ const BRIDGER_TIMELOCK_WINDOW = 2 * DAY //2 days
 //Config - Fee
 const FEE_PCT = fp(0.02) // 2%
 
-export default deployment
-
 const deployment: EnvironmentDeployment = {
   deployer: dependency('core/deployer/v1.0.0'),
   namespace: 'paraswap-fee-collector-v3',
@@ -482,3 +480,5 @@ const deployment: EnvironmentDeployment = {
     quota: QUOTA,
   },
 }
+
+export default deployment
