@@ -1,0 +1,10 @@
+{
+  "relayer-funder-swapper-v3": {
+    "version": "core/tasks/relayer/paraswap-v5-swapper/v2.0.1",
+    "address": "0xD4e3DDfcCfFBEA694E78c71A679EF8dE53949359"
+  },
+  "relayer-funder-unwrapper-v3": {
+    "version": "core/tasks/primitives/unwrapper/v2.0.0",
+    "address": "0x94f9d950f7b8b7434E49B4eD7910F55fAeF2B330"
+  }
+}

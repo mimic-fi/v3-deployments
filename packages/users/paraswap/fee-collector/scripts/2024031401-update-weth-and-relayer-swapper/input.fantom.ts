@@ -1,56 +1,59 @@
+import { OP } from '@mimic-fi/v3-authorizer'
 import { balanceConnectorId, dependency, DEPLOYER, EnvironmentUpdate, USERS_ADMIN } from '@mimic-fi/v3-deployments-lib'
-import { bn, fp, NATIVE_TOKEN_ADDRESS, tokens } from '@mimic-fi/v3-helpers'
+import { fp, tokens } from '@mimic-fi/v3-helpers'
 
 /* eslint-disable no-secrets/no-secrets */
 
 //Config - Tokens
-const USDC = tokens.base.USDC
-const WRAPPED_NATIVE_TOKEN = tokens.base.WETH
+const WRAPPED_NATIVE_TOKEN = tokens.fantom.WFTM
+const WETH = '0x695921034f0387eAc4e11620EE91b1b15A6A09fE' //ZeroLayer WETH
+
+//Config - Gas
+const STANDARD_GAS_PRICE_LIMIT = 200e9
+const QUOTA = fp(0.79)
+const MIN_WINDOW_GAS = QUOTA
+const MAX_WINDOW_GAS = QUOTA.mul(10)
 
 //Config - Addresses
 const PARASWAP_QUOTE_SIGNER = '0x6278c27cf5534f07fa8f1ab6188a155cb8750ffa'
-
-//Config - Threshold
-const USDC_CONVERT_THRESHOLD = bn(100e6) // 100 USDC
-
-//Config - Gas
-const TX_COST_LIMIT_PCT = fp(0.05) // 5%
 
 const update: EnvironmentUpdate = {
   deployer: dependency('core/deployer/v1.0.0'),
   namespace: 'paraswap-fee-collector-v3',
   steps: [
-    //Paraswap Swapper: swap assets using Paraswap dex aggregator
+    //Relayer Funder Swapper: swaps assets into native wrapped token to fund the relayer
     {
       from: DEPLOYER,
-      name: 'paraswap-swapper-v2',
-      version: dependency('core/tasks/swap/paraswap-v5/v2.1.0'),
+      name: 'relayer-funder-swapper-v3',
+      version: dependency('core/tasks/relayer/paraswap-v5-swapper/v2.0.1'),
+      initialize: 'initializeParaswapV5RelayerFunder',
+      args: [dependency('core/relayer/v1.1.0')],
       config: {
         quoteSigner: PARASWAP_QUOTE_SIGNER,
         baseSwapConfig: {
           connector: dependency('core/connectors/paraswap-v5/v1.0.0'),
           tokenOut: WRAPPED_NATIVE_TOKEN,
-          maxSlippage: fp(0.02), //2%
+          maxSlippage: fp(0.02),
           customTokensOut: [],
           customMaxSlippages: [],
           taskConfig: {
             baseConfig: {
               smartVault: dependency('2023111700-environment-deploy', 'smart-vault'),
-              previousBalanceConnectorId: balanceConnectorId('swapper-connection'),
-              nextBalanceConnectorId: balanceConnectorId('withdrawer-connection'),
+              previousBalanceConnectorId: balanceConnectorId('weth-to-usdc-swapper-connection'),
+              nextBalanceConnectorId: balanceConnectorId('relayer-funder-unwrapper'),
             },
             gasLimitConfig: {
-              txCostLimitPct: TX_COST_LIMIT_PCT,
+              gasPriceLimit: STANDARD_GAS_PRICE_LIMIT,
             },
             tokenIndexConfig: {
-              acceptanceType: 0, //Deny list
-              tokens: [WRAPPED_NATIVE_TOKEN, NATIVE_TOKEN_ADDRESS],
+              acceptanceType: 1,
+              tokens: [WETH],
             },
             tokenThresholdConfig: {
               defaultThreshold: {
-                token: USDC,
-                min: USDC_CONVERT_THRESHOLD,
-                max: 0,
+                token: WRAPPED_NATIVE_TOKEN,
+                min: MIN_WINDOW_GAS,
+                max: MAX_WINDOW_GAS,
               },
             },
           },
@@ -65,34 +68,39 @@ const update: EnvironmentUpdate = {
           where: dependency('2023111700-environment-deploy', 'smart-vault'),
           revokes: [
             {
-              who: dependency('2023111700-environment-deploy', 'paraswap-swapper'),
+              who: dependency('2023120400-replace-relayer-funder-tasks', 'relayer-funder-swapper-v2'),
               what: 'execute',
             },
             {
-              who: dependency('2023111700-environment-deploy', 'paraswap-swapper'),
+              who: dependency('2023120400-replace-relayer-funder-tasks', 'relayer-funder-swapper-v2'),
               what: 'updateBalanceConnector',
             },
           ],
           grants: [
             {
-              who: dependency('paraswap-swapper-v2'),
+              who: dependency('relayer-funder-swapper-v3'),
               what: 'execute',
-              params: [],
+              params: [
+                {
+                  op: OP.EQ,
+                  value: dependency('core/connectors/1inch-v5/v1.0.0'),
+                },
+              ],
             },
             {
-              who: dependency('paraswap-swapper-v2'),
+              who: dependency('relayer-funder-swapper-v3'),
               what: 'updateBalanceConnector',
               params: [],
             },
           ],
         },
         {
-          where: dependency('2023111700-environment-deploy', 'paraswap-swapper'),
+          where: dependency('2023120400-replace-relayer-funder-tasks', 'relayer-funder-swapper-v2'),
           revokes: [{ who: dependency('core/relayer/v1.1.0'), what: 'call' }],
           grants: [],
         },
         {
-          where: dependency('paraswap-swapper-v2'),
+          where: dependency('relayer-funder-swapper-v3'),
           revokes: [],
           grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
         },
