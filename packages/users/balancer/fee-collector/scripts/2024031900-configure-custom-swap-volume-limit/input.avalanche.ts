@@ -17,12 +17,17 @@ const update: EnvironmentUpdate = {
       authorizer: dependency('2023101700-environment-deploy', 'authorizer'),
       changes: [
         {
-          where: dependency('2023101700-environment-deploy', '1inch-swapper'),
+          where: dependency('2023101700-environment-deploy', 'bpt-exiter-v2'),
           grants: [{ who: DEPLOYER.address, what: 'setCustomVolumeLimit', params: [] }],
           revokes: [],
         },
         {
-          where: dependency('2024011600-deploy-new-ps-swapper', 'paraswap-swapper-v2'),
+          where: dependency('2023101700-environment-deploy', 'balancer-v2-boosted-swapper'),
+          grants: [{ who: DEPLOYER.address, what: 'setCustomVolumeLimit', params: [] }],
+          revokes: [],
+        },
+        {
+          where: dependency('2023101700-environment-deploy', 'balancer-v2-linear-swapper'),
           grants: [{ who: DEPLOYER.address, what: 'setCustomVolumeLimit', params: [] }],
           revokes: [],
         },
@@ -30,13 +35,19 @@ const update: EnvironmentUpdate = {
     },
     {
       from: DEPLOYER,
-      target: dependency('2023101700-environment-deploy', '1inch-swapper'),
+      target: dependency('2023101700-environment-deploy', 'bpt-exiter-v2'),
       method: 'setCustomVolumeLimit',
       args: [TOKEN, LIMIT_TOKEN, LIMIT_AMOUNT, LIMIT_PERIOD],
     },
     {
       from: DEPLOYER,
-      target: dependency('2024011600-deploy-new-ps-swapper', 'paraswap-swapper-v2'),
+      target: dependency('2023101700-environment-deploy', 'balancer-v2-boosted-swapper'),
+      method: 'setCustomVolumeLimit',
+      args: [TOKEN, LIMIT_TOKEN, LIMIT_AMOUNT, LIMIT_PERIOD],
+    },
+    {
+      from: DEPLOYER,
+      target: dependency('2023101700-environment-deploy', 'balancer-v2-linear-swapper'),
       method: 'setCustomVolumeLimit',
       args: [TOKEN, LIMIT_TOKEN, LIMIT_AMOUNT, LIMIT_PERIOD],
     },
@@ -45,12 +56,17 @@ const update: EnvironmentUpdate = {
       authorizer: dependency('2023101700-environment-deploy', 'authorizer'),
       changes: [
         {
-          where: dependency('2023101700-environment-deploy', '1inch-swapper'),
+          where: dependency('2023101700-environment-deploy', 'bpt-exiter-v2'),
           revokes: [{ who: DEPLOYER.address, what: 'setCustomVolumeLimit' }],
           grants: [],
         },
         {
-          where: dependency('2024011600-deploy-new-ps-swapper', 'paraswap-swapper-v2'),
+          where: dependency('2023101700-environment-deploy', 'balancer-v2-boosted-swapper'),
+          revokes: [{ who: DEPLOYER.address, what: 'setCustomVolumeLimit' }],
+          grants: [],
+        },
+        {
+          where: dependency('2023101700-environment-deploy', 'balancer-v2-linear-swapper'),
           revokes: [{ who: DEPLOYER.address, what: 'setCustomVolumeLimit' }],
           grants: [],
         },
