@@ -5,7 +5,7 @@ import { DAY, fp, tokens } from '@mimic-fi/v3-helpers'
 
 const TOKEN = '0x594fe86e60d8df04ec9c5b2f7fec09dc14175804'
 const LIMIT_TOKEN = tokens.avalanche.USDC
-const LIMIT_AMOUNT = '5000e6'
+const LIMIT_AMOUNT = 5000e6
 const LIMIT_PERIOD = DAY
 
 const update: EnvironmentUpdate = {
