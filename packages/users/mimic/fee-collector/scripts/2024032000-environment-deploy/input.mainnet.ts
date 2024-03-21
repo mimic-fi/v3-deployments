@@ -1,4 +1,3 @@
-import { OP } from '@mimic-fi/v3-authorizer'
 import {
   balanceConnectorId,
   counterfactualDependency,
@@ -64,57 +63,6 @@ const deployment: EnvironmentDeployment = {
     },
   ],
   tasks: [
-    /**
-     *  Relayer Income
-     */
-    // Depositor
-    {
-      from: DEPLOYER,
-      name: 'relayer-income-depositor',
-      version: dependency('core/tasks/primitives/depositor/v2.1.0'),
-      config: {
-        tokensSource: counterfactualDependency('relayer-income-depositor'),
-        taskConfig: {
-          baseConfig: {
-            smartVault: dependency('smart-vault'),
-            nextBalanceConnectorId: balanceConnectorId('relayer-income-connection'),
-          },
-          tokenIndexConfig: {
-            acceptanceType: 1, //Allow list
-            tokens: [NATIVE_TOKEN_ADDRESS],
-          },
-          gasLimitConfig: {
-            txCostLimitPct: TX_COST_LIMIT_PCT,
-          },
-          tokenThresholdConfig: {
-            defaultThreshold: {
-              token: NATIVE_TOKEN_ADDRESS,
-              min: fp(0.1),
-              max: 0,
-            },
-          },
-        },
-      },
-    },
-    // Withdrawer
-    {
-      from: DEPLOYER,
-      name: 'relayer-income-withdrawer',
-      version: dependency('core/tasks/primitives/withdrawer/v2.0.0'),
-      config: {
-        recipient: MIMIC_V2_BOT.address,
-        taskConfig: {
-          baseConfig: {
-            smartVault: dependency('smart-vault'),
-            previousBalanceConnectorId: balanceConnectorId('relayer-income-connection'),
-          },
-          tokenIndexConfig: {
-            acceptanceType: 1, //Allow list
-            tokens: [NATIVE_TOKEN_ADDRESS],
-          },
-        },
-      },
-    },
     /**
      *  Fee Handling
      */
@@ -620,26 +568,6 @@ const deployment: EnvironmentDeployment = {
         revokes: [],
         grants: [
           {
-            who: dependency('relayer-income-depositor'),
-            what: 'collect',
-            params: [],
-          },
-          {
-            who: dependency('relayer-income-depositor'),
-            what: 'updateBalanceConnector',
-            params: [],
-          },
-          {
-            who: dependency('relayer-income-withdrawer'),
-            what: 'withdraw',
-            params: [],
-          },
-          {
-            who: dependency('relayer-income-withdrawer'),
-            what: 'updateBalanceConnector',
-            params: [],
-          },
-          {
             who: dependency('fee-depositor'),
             what: 'collect',
             params: [],
@@ -677,12 +605,7 @@ const deployment: EnvironmentDeployment = {
           {
             who: dependency('funder-deployer-swapper'),
             what: 'execute',
-            params: [
-              {
-                op: OP.EQ,
-                value: dependency('core/connectors/1inch-v5/v1.0.0'),
-              },
-            ],
+            params: [],
           },
           {
             who: dependency('funder-deployer-swapper'),
@@ -708,12 +631,7 @@ const deployment: EnvironmentDeployment = {
           {
             who: dependency('funder-sv-owner-swapper'),
             what: 'execute',
-            params: [
-              {
-                op: OP.EQ,
-                value: dependency('core/connectors/1inch-v5/v1.0.0'),
-              },
-            ],
+            params: [],
           },
           {
             who: dependency('funder-sv-owner-swapper'),
@@ -739,12 +657,7 @@ const deployment: EnvironmentDeployment = {
           {
             who: dependency('funder-testing-eoa-swapper'),
             what: 'execute',
-            params: [
-              {
-                op: OP.EQ,
-                value: dependency('core/connectors/1inch-v5/v1.0.0'),
-              },
-            ],
+            params: [],
           },
           {
             who: dependency('funder-testing-eoa-swapper'),
@@ -770,12 +683,7 @@ const deployment: EnvironmentDeployment = {
           {
             who: dependency('relayer-funder-swapper'),
             what: 'execute',
-            params: [
-              {
-                op: OP.EQ,
-                value: dependency('core/connectors/1inch-v5/v1.0.0'),
-              },
-            ],
+            params: [],
           },
           {
             who: dependency('relayer-funder-swapper'),
@@ -799,16 +707,6 @@ const deployment: EnvironmentDeployment = {
             params: [],
           },
         ],
-      },
-      {
-        where: dependency('relayer-income-depositor'),
-        revokes: [],
-        grants: [{ who: dependency('core/relayer/v2.0.0'), what: 'call', params: [] }],
-      },
-      {
-        where: dependency('relayer-income-withdrawer'),
-        revokes: [],
-        grants: [{ who: dependency('core/relayer/v2.0.0'), what: 'call', params: [] }],
       },
       {
         where: dependency('fee-depositor'),
