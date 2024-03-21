@@ -19,6 +19,11 @@ const polygon: RegistryImplementationDeployment = {
   args: [tokens.polygon.WMATIC],
 }
 
+const gnosis: RegistryImplementationDeployment = {
+  ...shared,
+  args: [tokens.gnosis.WXDAI],
+}
+
 const arbitrum: RegistryImplementationDeployment = {
   ...shared,
   args: [tokens.arbitrum.WETH],
@@ -39,4 +44,4 @@ const zkevm: RegistryImplementationDeployment = {
   args: [tokens.zkevm.WETH],
 }
 
-export default { mainnet, polygon, arbitrum, optimism, base, zkevm }
+export default { mainnet, polygon, gnosis, arbitrum, optimism, base, zkevm }
