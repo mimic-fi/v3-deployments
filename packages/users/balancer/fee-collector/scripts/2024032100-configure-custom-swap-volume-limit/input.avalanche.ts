@@ -8,7 +8,7 @@ const TOKENS = [
   '0x0df1Be54B29aA9828Bea1De6A6DFE3d03EC63082', // BPT AF Culture Coins
 ]
 const LIMIT_TOKEN = tokens.avalanche.USDC
-const LIMIT_AMOUNT = 5000e6
+const LIMIT_AMOUNT = 2000e6
 const LIMIT_PERIOD = 6 * HOUR
 
 const update: EnvironmentUpdate = {
