@@ -1,0 +1,6 @@
+{
+  "hop-bridger": {
+    "version": "core/tasks/bridge/hop/v2.0.0",
+    "address": "0x87C9Cf2dDa8B2ee210Af8df8575361352d9F2939"
+  }
+}
