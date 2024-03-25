@@ -1,0 +1,79 @@
+{
+  "authorizer": {
+    "version": "core/authorizer/v1.1.0",
+    "address": "0xD14E223EeA1B7955FC6a4f1417c1732B727b574f"
+  },
+  "price-oracle": {
+    "version": "core/price-oracle/v1.0.0",
+    "address": "0xEcbeE3Deb073b87416e30276b49Fb28e93a6F468"
+  },
+  "smart-vault": {
+    "version": "core/smart-vault/v1.0.0",
+    "address": "0x42e5F12Db51e0494800119f47ac03AE1E9C489Ad"
+  },
+  "fee-depositor": {
+    "version": "core/tasks/primitives/depositor/v2.1.0",
+    "address": "0xc340AB5B3b32a8DBAAc2E5a640EaA4005B900bC8"
+  },
+  "1inch-swapper": {
+    "version": "core/tasks/swap/1inch-v5/v2.0.0",
+    "address": "0x91F8bcD74Beed354Ab8d75cc49d486AFF21Cb70D"
+  },
+  "paraswap-swapper": {
+    "version": "core/tasks/swap/paraswap-v5/v2.0.0",
+    "address": "0x17408243bf899dA5B6C8A081c78893aDA78cb29e"
+  },
+  "usdc-handle-over": {
+    "version": "core/tasks/primitives/handle-over/v2.0.0",
+    "address": "0xF998dE2D62B98e474B6a39309fEd7C98522B4D3C"
+  },
+  "OneInchV5AccountFunder": "0x02FEBD10Cc8421112a4Bf2Af9Df4d97F165b5f54",
+  "funder-deployer-swapper": {
+    "version": "OneInchV5AccountFunder",
+    "address": "0xFaF98C533A5CCd7Eafc794a059130B484982CD0D"
+  },
+  "funder-deployer-unwrapper": {
+    "version": "core/tasks/primitives/unwrapper/v2.0.0",
+    "address": "0x8aa883757F4046F7c1b64924b7e06938BF285E84"
+  },
+  "funder-deployer-withdrawer": {
+    "version": "core/tasks/primitives/withdrawer/v2.0.0",
+    "address": "0x5fe1447B1fd32d435d3C4fA68fcD8E6617Fb0525"
+  },
+  "funder-sv-owner-swapper": {
+    "version": "OneInchV5AccountFunder",
+    "address": "0xd1f708a9C5fD139df441Daa5268710Be07ADc46A"
+  },
+  "funder-sv-owner-unwrapper": {
+    "version": "core/tasks/primitives/unwrapper/v2.0.0",
+    "address": "0x3B8822235429135C4a6e6C6b35957f266c0c5211"
+  },
+  "funder-sv-owner-withdrawer": {
+    "version": "core/tasks/primitives/withdrawer/v2.0.0",
+    "address": "0xDE4e94e98171c53a7bD6fB450EfCe497C3a68E1d"
+  },
+  "funder-testing-eoa-swapper": {
+    "version": "OneInchV5AccountFunder",
+    "address": "0xa9aA5e6EDC7E5bF9E3120c8D254f22C62AB5407d"
+  },
+  "funder-testing-eoa-unwrapper": {
+    "version": "core/tasks/primitives/unwrapper/v2.0.0",
+    "address": "0x97D5aEeDB2430A690128Acb1f91196Daea35022E"
+  },
+  "funder-testing-eoa-withdrawer": {
+    "version": "core/tasks/primitives/withdrawer/v2.0.0",
+    "address": "0x494D10e25E4337fABb5FD6e087D8096e85478600"
+  },
+  "relayer-funder-swapper": {
+    "version": "core/tasks/relayer/1inch-v5-swapper/v2.0.0",
+    "address": "0xEE03A1D53b78cc5d4d6768c8A6199C2F88abdA40"
+  },
+  "relayer-funder-unwrapper": {
+    "version": "core/tasks/primitives/unwrapper/v2.0.0",
+    "address": "0x510c7F4ADf309E8bB72fd15F5873c5DC848922fD"
+  },
+  "relayer-depositor": {
+    "version": "core/tasks/relayer/depositor/v2.0.0",
+    "address": "0x6A03DfbBdadA595dB76DEaB455cE9628C7B7a57C"
+  }
+}
