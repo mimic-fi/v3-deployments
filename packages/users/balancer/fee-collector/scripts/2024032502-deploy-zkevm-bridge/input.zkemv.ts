@@ -46,7 +46,7 @@ const update: EnvironmentUpdate = {
           customMaxFees: [],
           taskConfig: {
             baseConfig: {
-              smartVault: dependency('smart-vault'),
+              smartVault: dependency('2024011602-deploy-other-environments', 'smart-vault'),
               previousBalanceConnectorId: balanceConnectorId('bridger-connection'),
             },
             tokenIndexConfig: {
