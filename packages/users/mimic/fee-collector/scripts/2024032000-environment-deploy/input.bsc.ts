@@ -794,7 +794,7 @@ const deployment: EnvironmentDeployment = {
     from: PROTOCOL_ADMIN,
     smartVault: dependency('smart-vault'),
     feeController: dependency('core/fee-controller/v1.0.0'),
-    maxFeePct: fp(0), // 0%
+    maxFeePct: fp(0.00000001), // 0%
     feePct: FEE_PCT,
   },
   relayerSettings: {
