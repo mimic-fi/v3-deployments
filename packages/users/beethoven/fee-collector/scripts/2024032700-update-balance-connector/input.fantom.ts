@@ -3,7 +3,7 @@ import { fp, HOUR, tokens } from '@mimic-fi/v3-helpers'
 
 const BALANCE_CONNECTOR_ID = balanceConnectorId('swapper-connection')
 const TOKEN = '0x74ccbe53f77b08632ce0cb91d3a545bf6b8e0979'
-const AMOUNT = '363830662092277394239162'
+const AMOUNT = '270399006336404782912141'
 const ADD = false
 
 const LIMIT_TOKEN = tokens.fantom.USDCe
