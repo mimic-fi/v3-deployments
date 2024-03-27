@@ -1028,10 +1028,10 @@
     hardhat "^2.14.1"
     mocha "^6.2.3"
 
-"@mimic-fi/v3-helpers@0.1.11":
-  version "0.1.11"
-  resolved "https://registry.yarnpkg.com/@mimic-fi/v3-helpers/-/v3-helpers-0.1.11.tgz#19dbf04488a8da258ecdb8aace7e94e7f91ef815"
-  integrity sha512-Nop7yRAB4Kk8B+0R5Zur58G9FNi2qjnBAy0oy5D0GrffA/oXOp0q/weeLiNG4XIWHnt7F0nxX9DUceiUwFUWaw==
+"@mimic-fi/v3-helpers@0.1.12":
+  version "0.1.12"
+  resolved "https://registry.yarnpkg.com/@mimic-fi/v3-helpers/-/v3-helpers-0.1.12.tgz#43e22c02e5e5514a546eb7f24c7629b8cc2e32a6"
+  integrity sha512-jhpWATa5S7Sl4os1rN+E2YaTSnKkDuaMLi/dk7jTYqciRkvW7oOzV68/M5sbAC8u/ZoMXgdGl40A2kEdbtGIbA==
   dependencies:
     "@nomiclabs/hardhat-ethers" "^2.2.3"
     "@nomiclabs/hardhat-waffle" "2.0.3"
