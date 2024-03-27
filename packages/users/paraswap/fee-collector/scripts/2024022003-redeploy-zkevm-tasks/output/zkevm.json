@@ -18,5 +18,13 @@
   "hop-bridger": {
     "version": "core/tasks/bridge/hop/v2.0.1",
     "address": "0x2ceAE6bD8170e1539e9862bAEfFE476d2C24F3e4"
+  },
+  "relayer-funder-unwrapper-v3": {
+    "version": "core/tasks/relayer/unwrapper/v2.0.1",
+    "address": "0x94f9d950f7b8b7434E49B4eD7910F55fAeF2B330"
+  },
+  "relayer-depositor-v2": {
+    "version": "core/tasks/relayer/depositor/v2.0.1",
+    "address": "0xb05fbF47A6CFd3576824CB42D093b0398b09620f"
   }
 }

@@ -311,22 +311,22 @@ const update: EnvironmentUpdate = {
               params: [],
             },
             {
-              who: dependency('connext-bridger'),
+              who: dependency('hop-bridger'),
               what: 'execute',
               params: [],
             },
             {
-              who: dependency('connext-bridger'),
+              who: dependency('hop-bridger'),
               what: 'updateBalanceConnector',
               params: [],
             },
             {
-              who: dependency('relayer-funder-unwrapper-v2'),
+              who: dependency('relayer-funder-unwrapper-v3'),
               what: 'unwrap',
               params: [],
             },
             {
-              who: dependency('relayer-funder-unwrapper-v2'),
+              who: dependency('relayer-funder-unwrapper-v3'),
               what: 'updateBalanceConnector',
               params: [],
             },
@@ -364,12 +364,12 @@ const update: EnvironmentUpdate = {
           grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
         },
         {
-          where: dependency('connext-bridger'),
+          where: dependency('hop-bridger'),
           revokes: [],
           grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
         },
         {
-          where: dependency('relayer-funder-unwrapper-v2'),
+          where: dependency('relayer-funder-unwrapper-v3'),
           revokes: [],
           grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
         },
