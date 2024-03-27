@@ -1,4 +1,3 @@
-import { OP } from '@mimic-fi/v3-authorizer'
 import {
   balanceConnectorId,
   counterfactualDependency,
@@ -16,40 +15,41 @@ const TIMELOCK_MODE = {
   SECONDS: 0,
   ON_DAY: 1,
   ON_LAST_DAY: 2,
+  EVERY_X_MONTH: 3,
 }
 
 //Config - Tokens
-const USDC = '0x1B6382DBDEa11d97f24495C9A90b7c88469134a4' //Axelar USDC
-const WETH = tokens.fantom.WETH
-const WRAPPED_NATIVE_TOKEN = tokens.fantom.WFTM
+const USDC = tokens.avalanche.USDC
+const WRAPPED_NATIVE_TOKEN = tokens.avalanche.WAVAX
 
 //Config - Addresses
-const OWNER = '0x5487683dc3216655D0C8AA31255e2e313b99B477'
-const MAINNET_DEPOSITOR_TASK = '0x476e3b019AbE4d506735FadFe5a0cF7c81d7B36B'
-const FEE_CLAIMER = '0x4F14fE8c86A00D6DFB9e91239738499Fc0F587De'
+const MAINNET_DEPOSITOR_TASK = '0x1eE8108572F5C08527e3AD29DeA55C38658dDA0f'
 const PARASWAP_QUOTE_SIGNER = '0x6278c27cf5534f07fa8f1ab6188a155cb8750ffa'
+const FEE_CLAIMER = '0x000000009002f5D48013D49b0826CAa11F4070Ab'
+const OWNER = '0xAFFdeC0FE0B5BBfd725642D87D14c465d25F8dE8'
 
 //Config - Threshold
-const USDC_CONVERT_THRESHOLD = bn(10000000) // 10 USDC
+const USDC_CONVERT_THRESHOLD = bn(100e6) // 100 USDC
 
 //Config - Gas
-const STANDARD_GAS_PRICE_LIMIT = 200e9
-const TX_COST_LIMIT_PCT = fp(0.02) // 2%
-const QUOTA = fp(0.79)
-const MIN_WINDOW_GAS = QUOTA
-const MAX_WINDOW_GAS = QUOTA.mul(10)
+const STANDARD_GAS_PRICE_LIMIT = 900e9
+const TX_COST_LIMIT_PCT = fp(0.05) // 5%
+const TEN_TX_GAS = fp(0.148) //10 tx
+const QUOTA = TEN_TX_GAS.mul(10) //100 tx
+const MIN_WINDOW_GAS = TEN_TX_GAS // 10 tx
+const MAX_WINDOW_GAS = TEN_TX_GAS.mul(10) //100 tx
 
 //Config - To USDC Swapper Timelock
 const WETH_TO_USDC_SWAPPER_TIMELOCK_MODE = TIMELOCK_MODE.SECONDS //SECONDS
 const WETH_TO_USDC_SWAPPER_TIMELOCK_FREQUENCY = 2419200 //28 days
-const WETH_TO_USDC_SWAPPER_TIMELOCK_ALLOWED_AT = 1698634800 //Monday, 30 October 2023 3:00:00
+const WETH_TO_USDC_SWAPPER_TIMELOCK_ALLOWED_AT = 1701054000 //Monday, 27 November 2023 3:00:00
 const WETH_TO_USDC_SWAPPER_TIMELOCK_WINDOW = 2 * DAY //2 days
 
 //Config - Bridger Timelock
 const BRIDGER_TIMELOCK_MODE = TIMELOCK_MODE.SECONDS //SECONDS
 const BRIDGER_TIMELOCK_FREQUENCY = 2419200 //28 days
-const BRIDGER_TIMELOCK_ALLOWED_AT = 1698645600 //Monday, 30 October 2023 6:00:00
-const BRIDGER_TIMELOCK_WINDOW = 25 * DAY //25 days
+const BRIDGER_TIMELOCK_ALLOWED_AT = 1701064800 //Monday, 27 November 2023 6:00:00
+const BRIDGER_TIMELOCK_WINDOW = 2 * DAY //2 days
 
 //Config - Fee
 const FEE_PCT = fp(0.02) // 2%
@@ -85,10 +85,10 @@ const deployment: EnvironmentDeployment = {
     //Depositor: for manual transfers and testing purposes
     {
       from: DEPLOYER,
-      name: 'depositor',
+      name: 'depositor-v2',
       version: dependency('core/tasks/primitives/depositor/v2.0.0'),
       config: {
-        tokensSource: counterfactualDependency('depositor'),
+        tokensSource: counterfactualDependency('depositor-v2'),
         taskConfig: {
           baseConfig: {
             smartVault: dependency('smart-vault'),
@@ -96,6 +96,13 @@ const deployment: EnvironmentDeployment = {
           },
           gasLimitConfig: {
             gasPriceLimit: STANDARD_GAS_PRICE_LIMIT,
+          },
+          tokenThresholdConfig: {
+            defaultThreshold: {
+              token: USDC,
+              min: USDC_CONVERT_THRESHOLD,
+              max: 0,
+            },
           },
         },
       },
@@ -134,7 +141,7 @@ const deployment: EnvironmentDeployment = {
           baseConfig: {
             smartVault: dependency('smart-vault'),
             previousBalanceConnectorId: balanceConnectorId('swapper-connection'),
-            nextBalanceConnectorId: balanceConnectorId('wrapper-handle-over-connection'),
+            nextBalanceConnectorId: balanceConnectorId('weth-to-usdc-swapper-connection'),
           },
           gasLimitConfig: {
             txCostLimitPct: TX_COST_LIMIT_PCT,
@@ -156,26 +163,7 @@ const deployment: EnvironmentDeployment = {
     //Handle over: moves wrapped native to be bridged
     {
       from: DEPLOYER,
-      name: 'wrapper-handle-over',
-      version: dependency('core/tasks/primitives/handle-over/v2.0.0'),
-      config: {
-        taskConfig: {
-          baseConfig: {
-            smartVault: dependency('smart-vault'),
-            previousBalanceConnectorId: balanceConnectorId('wrapper-handle-over-connection'),
-            nextBalanceConnectorId: balanceConnectorId('swapper-connection'),
-          },
-          tokenIndexConfig: {
-            acceptanceType: 1, //Allow list
-            tokens: [WRAPPED_NATIVE_TOKEN],
-          },
-        },
-      },
-    },
-    //Handle over: moves wrapped native to be bridged
-    {
-      from: DEPLOYER,
-      name: 'weth-handle-over',
+      name: 'wrapped-native-token-handle-over',
       version: dependency('core/tasks/primitives/handle-over/v2.0.0'),
       config: {
         taskConfig: {
@@ -186,7 +174,7 @@ const deployment: EnvironmentDeployment = {
           },
           tokenIndexConfig: {
             acceptanceType: 1, //Allow list
-            tokens: [WETH],
+            tokens: [WRAPPED_NATIVE_TOKEN],
           },
         },
       },
@@ -194,13 +182,13 @@ const deployment: EnvironmentDeployment = {
     //Paraswap Swapper: swap assets using Paraswap dex aggregator
     {
       from: DEPLOYER,
-      name: 'paraswap-swapper',
-      version: dependency('core/tasks/swap/paraswap-v5/v2.0.0'),
+      name: 'paraswap-swapper-v2',
+      version: dependency('core/tasks/swap/paraswap-v5/v2.1.0'),
       config: {
         quoteSigner: PARASWAP_QUOTE_SIGNER,
         baseSwapConfig: {
           connector: dependency('core/connectors/paraswap-v5/v1.0.0'),
-          tokenOut: WETH,
+          tokenOut: WRAPPED_NATIVE_TOKEN,
           maxSlippage: fp(0.02), //2%
           customTokensOut: [],
           customMaxSlippages: [],
@@ -215,7 +203,7 @@ const deployment: EnvironmentDeployment = {
             },
             tokenIndexConfig: {
               acceptanceType: 0, //Deny list
-              tokens: [WETH, NATIVE_TOKEN_ADDRESS],
+              tokens: [WRAPPED_NATIVE_TOKEN, NATIVE_TOKEN_ADDRESS],
             },
             tokenThresholdConfig: {
               defaultThreshold: {
@@ -231,8 +219,8 @@ const deployment: EnvironmentDeployment = {
     //Paraswap Swapper: swap assets using Paraswap dex aggregator
     {
       from: DEPLOYER,
-      name: 'paraswap-weth-to-usdc-swapper',
-      version: dependency('core/tasks/swap/paraswap-v5/v2.0.0'),
+      name: 'paraswap-weth-to-usdc-swapper-v2',
+      version: dependency('core/tasks/swap/paraswap-v5/v2.1.0'),
       config: {
         quoteSigner: PARASWAP_QUOTE_SIGNER,
         baseSwapConfig: {
@@ -252,7 +240,7 @@ const deployment: EnvironmentDeployment = {
             },
             tokenIndexConfig: {
               acceptanceType: 1, //Allow list
-              tokens: [WETH],
+              tokens: [WRAPPED_NATIVE_TOKEN],
             },
             timeLockConfig: {
               mode: WETH_TO_USDC_SWAPPER_TIMELOCK_MODE,
@@ -267,11 +255,11 @@ const deployment: EnvironmentDeployment = {
     //Bridger by time: makes sure that by the end of the period, it bridges everything
     {
       from: DEPLOYER,
-      name: 'axelar-bridger',
-      version: dependency('core/tasks/bridge/axelar/v2.0.0'),
+      name: 'wormhole-bridger',
+      version: dependency('core/tasks/bridge/wormhole/v2.0.0'),
       config: {
         baseBridgeConfig: {
-          connector: dependency('core/connectors/axelar/v1.0.0'),
+          connector: dependency('core/connectors/wormhole/v1.0.0'),
           recipient: MAINNET_DEPOSITOR_TASK,
           destinationChain: 1, // mainnet
           maxSlippage: fp(0.02), //2%
@@ -301,54 +289,18 @@ const deployment: EnvironmentDeployment = {
         },
       },
     },
-    //Relayer Funder Swapper: swaps assets into native wrapped token to fund the relayer
-    {
-      from: DEPLOYER,
-      name: 'relayer-funder-swapper',
-      version: dependency('core/tasks/relayer/1inch-v5-swapper/v2.0.0'),
-      initialize: 'initializeOneInchV5RelayerFunder',
-      args: [dependency('core/relayer/v1.1.0')],
-      config: {
-        baseSwapConfig: {
-          connector: dependency('core/connectors/1inch-v5/v1.0.0'),
-          tokenOut: WRAPPED_NATIVE_TOKEN,
-          maxSlippage: fp(0.02),
-          customTokensOut: [],
-          customMaxSlippages: [],
-          taskConfig: {
-            baseConfig: {
-              smartVault: dependency('smart-vault'),
-              previousBalanceConnectorId: balanceConnectorId('weth-to-usdc-swapper-connection'),
-              nextBalanceConnectorId: balanceConnectorId('relayer-funder-unwrapper'),
-            },
-            gasLimitConfig: {
-              gasPriceLimit: STANDARD_GAS_PRICE_LIMIT,
-            },
-            tokenIndexConfig: {
-              acceptanceType: 1,
-              tokens: [WETH],
-            },
-            tokenThresholdConfig: {
-              defaultThreshold: {
-                token: WRAPPED_NATIVE_TOKEN,
-                min: MIN_WINDOW_GAS,
-                max: MAX_WINDOW_GAS,
-              },
-            },
-          },
-        },
-      },
-    },
     //Relayer Funder Unwrapper: unwraps wrapped native token
     {
       from: DEPLOYER,
       name: 'relayer-funder-unwrapper',
-      version: dependency('core/tasks/primitives/unwrapper/v2.0.0'),
+      version: dependency('core/tasks/relayer/unwrapper/v2.0.0'),
+      initialize: 'initializeUnwrapperRelayerFunder',
+      args: [dependency('core/relayer/v1.1.0')],
       config: {
         taskConfig: {
           baseConfig: {
             smartVault: dependency('smart-vault'),
-            previousBalanceConnectorId: balanceConnectorId('relayer-funder-unwrapper'),
+            previousBalanceConnectorId: balanceConnectorId('weth-to-usdc-swapper-connection'),
             nextBalanceConnectorId: balanceConnectorId('relayer-depositor'),
           },
           gasLimitConfig: {
@@ -357,6 +309,13 @@ const deployment: EnvironmentDeployment = {
           tokenIndexConfig: {
             acceptanceType: 1,
             tokens: [WRAPPED_NATIVE_TOKEN],
+          },
+          tokenThresholdConfig: {
+            defaultThreshold: {
+              token: WRAPPED_NATIVE_TOKEN,
+              min: MIN_WINDOW_GAS,
+              max: MAX_WINDOW_GAS,
+            },
           },
         },
       },
@@ -390,9 +349,9 @@ const deployment: EnvironmentDeployment = {
         where: dependency('smart-vault'),
         revokes: [],
         grants: [
-          { who: dependency('depositor'), what: 'collect', params: [] },
+          { who: dependency('depositor-v2'), what: 'collect', params: [] },
           {
-            who: dependency('depositor'),
+            who: dependency('depositor-v2'),
             what: 'updateBalanceConnector',
             params: [],
           },
@@ -417,49 +376,39 @@ const deployment: EnvironmentDeployment = {
             params: [],
           },
           {
-            who: dependency('wrapper-handle-over'),
+            who: dependency('wrapped-native-token-handle-over'),
             what: 'updateBalanceConnector',
             params: [],
           },
           {
-            who: dependency('weth-handle-over'),
-            what: 'updateBalanceConnector',
-            params: [],
-          },
-          {
-            who: dependency('paraswap-swapper'),
+            who: dependency('paraswap-swapper-v2'),
             what: 'execute',
             params: [],
           },
           {
-            who: dependency('paraswap-swapper'),
+            who: dependency('paraswap-swapper-v2'),
             what: 'updateBalanceConnector',
             params: [],
           },
           {
-            who: dependency('paraswap-weth-to-usdc-swapper'),
+            who: dependency('paraswap-weth-to-usdc-swapper-v2'),
             what: 'execute',
             params: [],
           },
           {
-            who: dependency('paraswap-weth-to-usdc-swapper'),
+            who: dependency('paraswap-weth-to-usdc-swapper-v2'),
             what: 'updateBalanceConnector',
             params: [],
           },
           {
-            who: dependency('axelar-bridger'),
+            who: dependency('wormhole-bridger'),
             what: 'execute',
             params: [],
           },
           {
-            who: dependency('axelar-bridger'),
+            who: dependency('wormhole-bridger'),
             what: 'updateBalanceConnector',
             params: [],
-          },
-          {
-            who: dependency('relayer-funder-swapper'),
-            what: 'execute',
-            params: [{ op: OP.EQ, value: dependency('core/connectors/1inch-v5/v1.0.0') }],
           },
           {
             who: dependency('relayer-funder-unwrapper'),
@@ -480,7 +429,7 @@ const deployment: EnvironmentDeployment = {
         ],
       },
       {
-        where: dependency('depositor'),
+        where: dependency('depositor-v2'),
         revokes: [],
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
@@ -495,32 +444,22 @@ const deployment: EnvironmentDeployment = {
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency('wrapper-handle-over'),
+        where: dependency('wrapped-native-token-handle-over'),
         revokes: [],
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency('weth-handle-over'),
+        where: dependency('paraswap-swapper-v2'),
         revokes: [],
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency('paraswap-swapper'),
+        where: dependency('paraswap-weth-to-usdc-swapper-v2'),
         revokes: [],
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },
       {
-        where: dependency('paraswap-weth-to-usdc-swapper'),
-        revokes: [],
-        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
-      },
-      {
-        where: dependency('axelar-bridger'),
-        revokes: [],
-        grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
-      },
-      {
-        where: dependency('relayer-funder-swapper'),
+        where: dependency('wormhole-bridger'),
         revokes: [],
         grants: [{ who: dependency('core/relayer/v1.1.0'), what: 'call', params: [] }],
       },

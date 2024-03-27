@@ -1,0 +1,6 @@
+{
+  "weth-handle-over": {
+    "version": "core/tasks/primitives/handle-over/v2.0.0",
+    "address": "0x95C0BcC103e156a315c76fFeeCB57189D705A7a6"
+  }
+}

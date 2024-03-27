@@ -1,0 +1,30 @@
+{
+  "depositor-v2": {
+    "version": "core/tasks/primitives/depositor/v2.1.1",
+    "address": "0x5Bfd6fA1834DF561578c2D4a8D5b20858BF8Cfde"
+  },
+  "wrapper-v2": {
+    "version": "core/tasks/primitives/wrapper/v2.0.1",
+    "address": "0xAA4DfDC31d29D0599c39B72b95ACA7e2c427DB58"
+  },
+  "wrapped-native-token-handle-over-v2": {
+    "version": "core/tasks/primitives/handle-over/v2.0.1",
+    "address": "0xf168F786D942Db4Ca54493c9215bdD3cad300fee"
+  },
+  "paraswap-swapper-v2": {
+    "version": "core/tasks/swap/paraswap-v5/v2.1.1",
+    "address": "0x4B2699633baE61c41F74CF469FF3B71F13073C5A"
+  },
+  "hop-bridger": {
+    "version": "core/tasks/bridge/hop/v2.0.1",
+    "address": "0x2ceAE6bD8170e1539e9862bAEfFE476d2C24F3e4"
+  },
+  "relayer-funder-unwrapper-v3": {
+    "version": "core/tasks/relayer/unwrapper/v2.0.1",
+    "address": "0x94f9d950f7b8b7434E49B4eD7910F55fAeF2B330"
+  },
+  "relayer-depositor-v2": {
+    "version": "core/tasks/relayer/depositor/v2.0.1",
+    "address": "0xb05fbF47A6CFd3576824CB42D093b0398b09620f"
+  }
+}

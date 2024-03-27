@@ -1,0 +1,51 @@
+{
+  "authorizer": {
+    "version": "core/authorizer/v1.1.0",
+    "address": "0xbBF4362611804c9f7856574889E3A5DE6673b08b"
+  },
+  "price-oracle": {
+    "version": "core/price-oracle/v1.0.0",
+    "address": "0xb04b7813BF44Fa7Bb5C8E8CFc38CD770ffb3cA38"
+  },
+  "smart-vault": {
+    "version": "core/smart-vault/v1.0.0",
+    "address": "0x45a6e007c874Ffc6321D6fB90eAC272Dd6864bFA"
+  },
+  "ParaswapV6Claimer": "0x170b02C7aa74e2C5E3B29259d08F7D24D4cc01A0",
+  "asset-collector-v2": {
+    "version": "ParaswapV6Claimer",
+    "address": "0xca7810b8929795648b6d2223754df7f1c4b9df1e"
+  },
+  "wrapper": {
+    "version": "core/tasks/primitives/wrapper/v2.0.0",
+    "address": "0x9cc77127ffe3f38e588709d5fe78d20e4e28ee83"
+  },
+  "wrapped-native-token-handle-over": {
+    "version": "core/tasks/primitives/handle-over/v2.0.0",
+    "address": "0x03e3fd3d37ddcfd565225cdbba83b9fa151e88f7"
+  },
+  "paraswap-swapper-v2": {
+    "version": "core/tasks/swap/paraswap-v5/v2.1.0",
+    "address": "0x4b2699633bae61c41f74cf469ff3b71f13073c5a"
+  },
+  "paraswap-weth-to-usdc-swapper-v2": {
+    "version": "core/tasks/swap/paraswap-v5/v2.1.0",
+    "address": "0x33AcB622bCD29D03FC9244480879902BBc068689"
+  },
+  "wormhole-bridger": {
+    "version": "core/tasks/bridge/wormhole/v2.0.0",
+    "address": "0x3653f1e90694999155e52e31a980456df57cb0c9"
+  },
+  "relayer-funder-unwrapper-v2": {
+    "version": "core/tasks/relayer/unwrapper/v2.0.0",
+    "address": "0x56d20a29f17E0cD2D8FC6Dd9A9eb8836a79E9bCE"
+  },
+  "relayer-depositor": {
+    "version": "core/tasks/relayer/depositor/v2.0.0",
+    "address": "0x6009b25fa88eFC86472E6c1C749A90c4ab65fb49"
+  },
+  "depositor-v2": {
+    "version": "core/tasks/primitives/depositor/v2.0.0",
+    "address": "0x5Bfd6fA1834DF561578c2D4a8D5b20858BF8Cfde"
+  }
+}
