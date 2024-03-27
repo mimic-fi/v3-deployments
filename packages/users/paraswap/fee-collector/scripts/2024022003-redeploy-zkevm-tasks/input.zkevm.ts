@@ -213,7 +213,7 @@ const update: EnvironmentUpdate = {
     //Relayer Funder Unwrapper: unwraps wrapped native token
     {
       from: DEPLOYER,
-      name: 'relayer-funder-unwrapper-v2',
+      name: 'relayer-funder-unwrapper-v3',
       version: dependency('core/tasks/relayer/unwrapper/v2.0.1'),
       initialize: 'initializeUnwrapperRelayerFunder',
       args: [dependency('core/relayer/v1.1.0')],
