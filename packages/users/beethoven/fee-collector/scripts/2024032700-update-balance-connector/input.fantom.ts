@@ -2,7 +2,7 @@ import { balanceConnectorId, dependency, DEPLOYER, EnvironmentUpdate, USERS_ADMI
 import { fp, HOUR, tokens } from '@mimic-fi/v3-helpers'
 
 const BALANCE_CONNECTOR_ID = balanceConnectorId('swapper-connection')
-const TOKEN = 0x74ccbe53f77b08632ce0cb91d3a545bf6b8e0979
+const TOKEN = '0x74ccbe53f77b08632ce0cb91d3a545bf6b8e0979'
 const AMOUNT = '363830662092277394239162'
 const ADD = false
 
