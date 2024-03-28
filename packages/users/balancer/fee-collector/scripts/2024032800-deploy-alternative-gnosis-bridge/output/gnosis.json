@@ -1,0 +1,6 @@
+{
+  "connext-bridger": {
+    "version": "core/tasks/bridge/connext/v2.0.0",
+    "address": "0x554fA0864D48C9448Cd1Faa015dd6418DeE4AdA2"
+  }
+}
