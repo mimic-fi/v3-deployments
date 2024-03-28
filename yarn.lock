@@ -1028,6 +1028,22 @@
     hardhat "^2.14.1"
     mocha "^6.2.3"
 
+"@mimic-fi/v3-helpers@0.1.12":
+  version "0.1.12"
+  resolved "https://registry.yarnpkg.com/@mimic-fi/v3-helpers/-/v3-helpers-0.1.12.tgz#43e22c02e5e5514a546eb7f24c7629b8cc2e32a6"
+  integrity sha512-jhpWATa5S7Sl4os1rN+E2YaTSnKkDuaMLi/dk7jTYqciRkvW7oOzV68/M5sbAC8u/ZoMXgdGl40A2kEdbtGIbA==
+  dependencies:
+    "@nomiclabs/hardhat-ethers" "^2.2.3"
+    "@nomiclabs/hardhat-waffle" "2.0.3"
+    "@types/chai" "^4.3.5"
+    "@types/mocha" "^10.0.1"
+    "@types/sinon-chai" "^3.2.3"
+    chai "^4.3.7"
+    decimal.js "~10.4.3"
+    ethers "~5.6.0"
+    hardhat "^2.14.1"
+    mocha "^6.2.3"
+
 "@mimic-fi/v3-helpers@0.1.3":
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/@mimic-fi/v3-helpers/-/v3-helpers-0.1.3.tgz#95b0717f8a0f73b195bc552c043cac0234ade0e9"
